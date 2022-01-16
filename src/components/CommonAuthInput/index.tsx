@@ -14,10 +14,12 @@ const CommonAuthInput: FC<IProps> = function ({ touched, error, ...props }) {
     } else {
       ref.current?.classList.remove('border-red-400');
     }
-    return () => {
-      ref.current?.classList.remove('border-red-400');
-    };
-  }, [touched, error]);
+
+    // return () => {
+    //   ref.current?.classList.remove('border-red-400');
+    // };
+  }, [ref, touched, error]);
+
   return (
     <div className="h-[70px] flex flex-col">
       <input

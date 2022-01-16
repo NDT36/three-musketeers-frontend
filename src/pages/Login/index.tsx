@@ -1,31 +1,59 @@
+import { login } from 'api/auth';
+import { ACCESS_TOKEN, callApi, REFRESH_TOKEN } from 'api/axios';
 import CommonAuthInput from 'components/CommonAuthInput';
 import CommonButton from 'components/CommonButton/Index';
 import { useFormik } from 'formik';
+import Cookies from 'js-cookie';
 import React from 'react';
+import { useAlert } from 'react-alert';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 
-type TLoginForm = {
+export interface ILoginResult {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface ILoginParams {
   email: string;
   password: string;
-};
-
-const validationSchema: Yup.SchemaOf<TLoginForm> = Yup.object().shape({
-  email: Yup.string().email('Invalid email').required('Required'),
-  password: Yup.string().min(6, 'Too Short!').max(32, 'Too Long!').required('Required'),
-});
+}
 
 function Login() {
-  const initialValues = {
-    email: '',
-    password: '',
+  const alert = useAlert();
+  const { t } = useTranslation();
+
+  const validationSchema: Yup.SchemaOf<ILoginParams> = Yup.object().shape({
+    email: Yup.string()
+      .matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, t('login.invalidEmail'))
+      .email(t('login.invalidEmail'))
+      .required(t('login.emailIsRequired')),
+    password: Yup.string()
+      .min(6, t('login.invalidPassword'))
+      .max(32, t('login.invalidPassword'))
+      .required(t('login.passwordIsRequired')),
+  });
+
+  const onSubmit = async (values: ILoginParams) => {
+    values.email = values.email.trim();
+    values.password = values.password.trim();
+    const { error, data } = await callApi(() => login(values));
+    if (error) {
+      alert.error(t(`error.${error}`));
+    }
+
+    if (!error && data) {
+      Cookies.set(ACCESS_TOKEN, data.data?.[ACCESS_TOKEN]);
+      Cookies.set(REFRESH_TOKEN, data.data?.[REFRESH_TOKEN]);
+      alert.info('Login success!');
+    }
+
+    // window.location.hash = '#/sign-up';
+    // alert(JSON.stringify(values, null, 2));
   };
 
-  const onSubmit = (values: TLoginForm) => {
-    alert(JSON.stringify(values, null, 2));
-  };
-
-  const formik = useFormik<TLoginForm>({
-    initialValues,
+  const formik = useFormik<ILoginParams>({
+    initialValues: { email: '', password: '' },
     validationSchema,
     onSubmit,
   });
@@ -67,13 +95,13 @@ function Login() {
 
             <div className="h-[80px] flex items-center">
               <CommonButton type="submit" className="font-bold text-2xl">
-                Login
+                {t('login.txtLogin')}
               </CommonButton>
             </div>
           </form>
 
           <div className="h-[100px]">
-            <p className="text-sm text-[#808080]">Or login with</p>
+            <p className="text-sm text-[#808080]">{t('login.orLoginWith')}</p>
             <div className="flex flex-row justify-between">
               <div className="w-1/2 p-3 text-[#4267B2] ">
                 <CommonButton className="font-bold h-[40px]">Facebook</CommonButton>
@@ -84,9 +112,9 @@ function Login() {
             </div>
           </div>
           <div className="text-[#808080]">
-            Not a member?
+            {t('login.notAMember')}
             <a href="#/sign-up" className="text-[#5fa8f3] underline decoration-1">
-              Sign up now
+              {t('login.signupNow')}
             </a>
           </div>
         </div>

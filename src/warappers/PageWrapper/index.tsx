@@ -1,5 +1,5 @@
 import Home from 'pages/Home';
-import React, { lazy } from 'react';
+import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 export default function PageWrapper() {
