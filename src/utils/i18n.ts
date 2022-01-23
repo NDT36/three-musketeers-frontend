@@ -13,17 +13,4 @@ i18next.use(initReactI18next).init({
   resources: { vi: { translation: TRANSLATIONS_VI }, en: { translation: TRANSLATIONS_EN } },
 });
 
-// export const setResourceI18n = async () => {
-//   try {
-//     const { data } = await getListLanguageByEnvironment();
-
-//     const listLanguage = Object.keys(data);
-
-//     listLanguage.forEach((language: any) => {
-//       i18n.addResourceBundle(language, 'translation', data[language], true, true);
-//     });
-//   } catch (error) {
-//     handleErrorMessage(error);
-//   }
-// };
 export default i18next;

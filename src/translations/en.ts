@@ -3,6 +3,7 @@ export const TRANSLATIONS_EN = {
   date_format_two: '{{date, DD-MM-YYYY}}',
   error: {
     Password_Incorrect: 'Incorrect password!',
+    Network_Error: 'Network Error!',
   },
   login: {
     txtLogin: 'Login',
@@ -13,5 +14,17 @@ export const TRANSLATIONS_EN = {
     invalidPassword: 'Password must be 6-32 characters',
     emailIsRequired: 'Email is required!',
     passwordIsRequired: 'Password is required!',
+  },
+  signUp: {
+    txtSignUp: 'Sign Up',
+    loginNow: 'Login now',
+    orSignUpWith: 'Or sign up with',
+    alreadyRegistered: 'Already Registered?',
+    invalidEmail: 'Invalid email!',
+    invalidPassword: 'Password must be 6-32 characters',
+    invalidNickname: 'Nickname must be 1-30 characters',
+    emailIsRequired: 'Email is required!',
+    passwordIsRequired: 'Password is required!',
+    nicknameIsRequired: 'Nickname is required!',
   },
 };

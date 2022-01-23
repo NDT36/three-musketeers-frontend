@@ -3,3 +3,10 @@ export const customNavigate = (path: string) => {
 };
 
 export const toBearer = (token: string) => `Bearer ${token}`;
+
+export const reverseObjectEnum = (obj: { [key: string]: any }) => {
+  return Object.keys(obj).reduce((acc, cur) => {
+    acc[String(obj[cur])] = cur;
+    return acc;
+  }, {} as { [key: string]: string });
+};

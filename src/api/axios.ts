@@ -2,6 +2,7 @@ import Axios, { AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import configs from 'config';
 import { customNavigate, toBearer } from 'utils';
+import { ErrorCode } from 'types/enum';
 
 const baseURL = configs.API_DOMAIN;
 
@@ -26,13 +27,15 @@ AxiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-const logout = (error: any) => {
+const handleRefreshTokenError = (error: any) => {
+  logout();
+  return Promise.reject(error);
+};
+
+export const logout = () => {
   Cookies.remove(ACCESS_TOKEN);
   Cookies.remove(REFRESH_TOKEN);
-
   customNavigate('/login');
-
-  return Promise.reject(error);
 };
 
 AxiosInstance.interceptors.response.use(
@@ -44,20 +47,20 @@ AxiosInstance.interceptors.response.use(
     if (error?.response?.status !== 401) return Promise.reject(error);
 
     const refreshToken = Cookies.get(REFRESH_TOKEN);
-    if (!refreshToken) return logout(error);
+    if (!refreshToken) return handleRefreshTokenError(error);
 
     // Call API refresh token and set it to header.
     return Axios.post(API_REFRESH_TOKEN, { refreshToken })
       .then((res) => {
         const accessToken = res.data?.data?.[ACCESS_TOKEN];
-        if (!accessToken) return logout(error);
+        if (!accessToken) return handleRefreshTokenError(error);
 
         Cookies.set(ACCESS_TOKEN, accessToken);
         originalConfig.headers.Authorization = toBearer(accessToken);
 
         return Axios(originalConfig);
       })
-      .catch(() => logout(error));
+      .catch(() => handleRefreshTokenError(error));
   }
 );
 
@@ -73,16 +76,17 @@ export interface IResult<T> {
 }
 export async function callApi<T = any, D = any>(
   callback: () => Promise<AxiosResponse<IResult<T>, D>>
-): Promise<{ error?: string; data?: IResult<T> }> {
+): Promise<{ error?: string; result?: IResult<T> }> {
   try {
     const result = await callback();
 
-    return { data: result?.data };
+    return { result: result?.data };
   } catch (error: any) {
-    if (error.response) return { error: error.response.data.message };
-    if (error.message === 'Network Error') return { error: 'Network_Error' };
+    /**Message from server */
+    if (error.response) return { error: error.response?.data?.message };
+    if (error.message === 'Network Error') return { error: ErrorCode.Network_Error };
 
-    return { error: 'Unexpected_Error' };
+    return { error: ErrorCode.Unexpected_Error };
   }
 }
 

@@ -1,12 +1,14 @@
-import { login } from 'api/auth';
-import { ACCESS_TOKEN, callApi, REFRESH_TOKEN } from 'api/axios';
+import { login, setTokenToCookies } from 'api/auth';
+import { ACCESS_TOKEN, callApi } from 'api/axios';
 import CommonAuthInput from 'components/CommonAuthInput';
 import CommonButton from 'components/CommonButton/Index';
+import Loader from 'components/Loader';
 import { useFormik } from 'formik';
 import Cookies from 'js-cookie';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAlert } from 'react-alert';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 
 export interface ILoginResult {
@@ -20,8 +22,10 @@ export interface ILoginParams {
 }
 
 function Login() {
-  const alert = useAlert();
+  const reactAlert = useAlert();
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const validationSchema: Yup.SchemaOf<ILoginParams> = Yup.object().shape({
     email: Yup.string()
@@ -35,21 +39,23 @@ function Login() {
   });
 
   const onSubmit = async (values: ILoginParams) => {
-    values.email = values.email.trim();
-    values.password = values.password.trim();
-    const { error, data } = await callApi(() => login(values));
+    setLoading(true);
+
+    const { error, result } = await callApi<ILoginResult, ILoginParams>(login(values));
     if (error) {
-      alert.error(t(`error.${error}`));
+      reactAlert.error(t(`error.${error}`));
     }
 
-    if (!error && data) {
-      Cookies.set(ACCESS_TOKEN, data.data?.[ACCESS_TOKEN]);
-      Cookies.set(REFRESH_TOKEN, data.data?.[REFRESH_TOKEN]);
-      alert.info('Login success!');
+    if (result) {
+      setTokenToCookies(result.data);
+      navigate('/home');
     }
 
-    // window.location.hash = '#/sign-up';
-    // alert(JSON.stringify(values, null, 2));
+    setLoading(false);
+  };
+
+  const onLoginSocial = () => {
+    reactAlert.info('Comming soon...!');
   };
 
   const formik = useFormik<ILoginParams>({
@@ -58,8 +64,15 @@ function Login() {
     onSubmit,
   });
 
+  useEffect(() => {
+    if (Cookies.get(ACCESS_TOKEN)) {
+      navigate('/home');
+    }
+  }, [navigate]);
+
   return (
     <div className="w-full h-screen flex justify-center">
+      <Loader loading={loading} />
       <div className="w-[355px] h-full text-center bg-white">
         <div className="h-[200px] flex items-center">
           <div className="text-5xl text-[#A45A5A]">
@@ -70,7 +83,7 @@ function Login() {
         <div>
           <form onSubmit={formik.handleSubmit}>
             <CommonAuthInput
-              type="text"
+              type="email"
               name="email"
               id="email"
               placeholder="Email"
@@ -104,10 +117,14 @@ function Login() {
             <p className="text-sm text-[#808080]">{t('login.orLoginWith')}</p>
             <div className="flex flex-row justify-between">
               <div className="w-1/2 p-3 text-[#4267B2] ">
-                <CommonButton className="font-bold h-[40px]">Facebook</CommonButton>
+                <CommonButton className="font-bold h-[40px]" onClick={onLoginSocial}>
+                  Facebook
+                </CommonButton>
               </div>
               <div className="w-1/2  p-3 text-[#DD4B39] ">
-                <CommonButton className="font-bold h-[40px]">Google</CommonButton>
+                <CommonButton className="font-bold h-[40px]" onClick={onLoginSocial}>
+                  Google
+                </CommonButton>
               </div>
             </div>
           </div>
