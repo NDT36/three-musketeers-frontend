@@ -5,7 +5,7 @@ interface IProps {}
 
 const MorePage: FC<IProps> = (props) => {
   return (
-    <div>
+    <div className="px-2">
       <Header title="Other" />
       <div>OtherPage</div>
     </div>

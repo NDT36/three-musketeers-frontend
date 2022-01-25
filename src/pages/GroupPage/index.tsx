@@ -5,7 +5,7 @@ interface IProps {}
 
 const GroupPage: FC<IProps> = (props) => {
   return (
-    <div>
+    <div className="px-2">
       <Header title="Group" />
       <div>GroupPage</div>
     </div>

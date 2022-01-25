@@ -2,13 +2,13 @@ import { login, setTokenToCookies } from 'api/auth';
 import { ACCESS_TOKEN, callApi } from 'api/axios';
 import CommonAuthInput from 'components/CommonAuthInput';
 import CommonButton from 'components/CommonButton/Index';
-import Loader from 'components/Loader';
 import { useFormik } from 'formik';
 import Cookies from 'js-cookie';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAlert } from 'react-alert';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useSetLoading } from 'state/global/hooks';
 import * as Yup from 'yup';
 
 export interface ILoginResult {
@@ -25,7 +25,7 @@ function Login() {
   const reactAlert = useAlert();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const setLoading = useSetLoading();
 
   const validationSchema: Yup.SchemaOf<ILoginParams> = Yup.object().shape({
     email: Yup.string()
@@ -41,7 +41,7 @@ function Login() {
   const onSubmit = async (values: ILoginParams) => {
     setLoading(true);
 
-    const { error, result } = await callApi<ILoginResult, ILoginParams>(login(values));
+    const { error, result } = await callApi(login(values));
     if (error) {
       reactAlert.error(t(`error.${error}`));
     }
@@ -72,7 +72,6 @@ function Login() {
 
   return (
     <div className="w-full h-screen flex justify-center">
-      <Loader loading={loading} />
       <div className="w-[355px] h-full text-center bg-white">
         <div className="h-[200px] flex items-center">
           <div className="text-5xl text-[#A45A5A]">

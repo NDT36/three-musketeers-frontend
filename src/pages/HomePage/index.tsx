@@ -1,14 +1,16 @@
 import { logout } from 'api/axios';
 import React from 'react';
 import visibility from 'assets/icons/visibility.png';
-import { useUserProfile } from 'state/user/hooks';
 import Header from 'components/Header';
+import { useSelector } from 'react-redux';
+import { AppState } from 'state';
+import { formatLongString } from 'utils';
 
 function HomePage() {
-  const profile = useUserProfile();
+  const profile = useSelector((state: AppState) => state.user.profile);
 
   const formatName = (name: string) => {
-    const result = name.length > 20 ? name.substring(0, 20) + '...' : name;
+    const result = formatLongString(name, 20);
     return 'Hi ' + result;
   };
 

@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { save, load } from 'redux-localstorage-simple';
 import user from './user/reducer';
+import global from './global/reducer';
 
 const PERSISTED_KEYS: string[] = ['user'];
 
 const store = configureStore({
   reducer: {
     user,
+    global,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false, immutableCheck: false }).concat(

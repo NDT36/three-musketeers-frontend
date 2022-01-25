@@ -5,7 +5,7 @@ interface IProps {}
 
 const CreatePage: FC<IProps> = (props) => {
   return (
-    <div>
+    <div className="px-2">
       <Header title="Transaction" />
       <div>TransactionPage</div>
     </div>

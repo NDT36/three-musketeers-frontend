@@ -74,6 +74,7 @@ export interface IResult<T> {
   pageSize: number;
   [key: string]: any;
 }
+
 export async function callApi<T = any, D = any>(
   callback: () => Promise<AxiosResponse<IResult<T>, D>>
 ): Promise<{ error?: string; result?: IResult<T> }> {
@@ -81,6 +82,22 @@ export async function callApi<T = any, D = any>(
     const result = await callback();
 
     return { result: result?.data };
+  } catch (error: any) {
+    /**Message from server */
+    if (error.response) return { error: error.response?.data?.message };
+    if (error.message === 'Network Error') return { error: ErrorCode.Network_Error };
+
+    return { error: ErrorCode.Unexpected_Error };
+  }
+}
+
+export async function callMultipleApi<T = any, D = any>(
+  callbacks: Array<() => Promise<AxiosResponse<IResult<T>, D>>>
+): Promise<{ error?: string; result?: Array<IResult<T>> }> {
+  try {
+    const results = await Promise.all(callbacks.map((item) => item()));
+
+    return { result: results.map((item) => item.data) };
   } catch (error: any) {
     /**Message from server */
     if (error.response) return { error: error.response?.data?.message };

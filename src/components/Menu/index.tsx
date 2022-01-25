@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import MenuItem from './MenuItem';
 import iconHome from 'assets/icons/icon-home.png';
 import iconGroup from 'assets/icons/icon-group.png';
@@ -11,33 +11,42 @@ import { reverseObjectEnum } from 'utils';
 
 interface IProps {}
 
-const initTabState = {
-  [`${MenuKey.HOME}`]: false,
-  [`${MenuKey.GROUP}`]: false,
-  [`${MenuKey.CREATE}`]: false,
-  [`${MenuKey.ASSET}`]: false,
-  [`${MenuKey.MORE}`]: false,
-};
-
-const navigatePath = {
-  [`${MenuKey.HOME}`]: RoutePath.HOME,
-  [`${MenuKey.GROUP}`]: RoutePath.GROUP,
-  [`${MenuKey.CREATE}`]: RoutePath.CREATE,
-  [`${MenuKey.ASSET}`]: RoutePath.ASSET,
-  [`${MenuKey.MORE}`]: RoutePath.MORE,
-};
-
 const Menu: FC<IProps> = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [active, setActive] = useState(initTabState);
+  const [active, setActive] = useState({
+    [`${MenuKey.HOME}`]: false,
+    [`${MenuKey.GROUP}`]: false,
+    [`${MenuKey.CREATE}`]: false,
+    [`${MenuKey.ASSET}`]: false,
+    [`${MenuKey.MORE}`]: false,
+  });
+
+  const navigatePath = useMemo(
+    () => ({
+      [`${MenuKey.HOME}`]: RoutePath.HOME,
+      [`${MenuKey.GROUP}`]: RoutePath.GROUP,
+      [`${MenuKey.CREATE}`]: RoutePath.CREATE,
+      [`${MenuKey.ASSET}`]: RoutePath.ASSET,
+      [`${MenuKey.MORE}`]: RoutePath.MORE,
+    }),
+    []
+  );
 
   const handleChangeTab = (key: MenuKey) => navigate(navigatePath[key]);
 
   useEffect(() => {
     const menuKey = reverseObjectEnum(navigatePath)[location.pathname];
-    if (menuKey) setActive({ ...initTabState, [menuKey]: true });
-  }, [navigatePath, location.pathname, initTabState]);
+    if (menuKey)
+      setActive({
+        [`${MenuKey.HOME}`]: false,
+        [`${MenuKey.GROUP}`]: false,
+        [`${MenuKey.CREATE}`]: false,
+        [`${MenuKey.ASSET}`]: false,
+        [`${MenuKey.MORE}`]: false,
+        [menuKey]: true,
+      });
+  }, [navigatePath, location.pathname]);
 
   return (
     <div className="absolute bottom-0 left-0 h-[75px] flex flex-row w-full bg-gray-100 rounded-br-lg rounded-bl-lg border-t border-t-gray-300 font-bold">

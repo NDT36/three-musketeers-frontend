@@ -7,6 +7,7 @@ import { IUserProfile } from 'types/interface';
 import { updateProfileData } from './actions';
 
 /**
+ * Just for demo
  * Get top pools addresses that token is included in
  * If not loaded, fetch and store
  * @param address

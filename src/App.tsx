@@ -8,7 +8,7 @@ function App() {
   return (
     <HashRouter>
       <Suspense fallback={null}>
-        <Provider template={AlertTemplate} timeout={5000} position={positions.TOP_RIGHT}>
+        <Provider template={AlertTemplate} timeout={5000} position={positions.TOP_CENTER}>
           <RootWrapper />
         </Provider>
       </Suspense>

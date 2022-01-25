@@ -7,7 +7,7 @@ type Props = {
 
 const Header: FC<Props> = (props) => {
   return (
-    <div className="flex flex-row h-[60px]">
+    <div className="flex flex-row h-[60px] border-b-2 border-b-gray-100">
       <div className="flex items-center h-full w-full text-2xl capitalize whitespace-nowrap overflow-hidden text-ellipsis">
         {props.title}
       </div>

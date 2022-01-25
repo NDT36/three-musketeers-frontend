@@ -13,7 +13,7 @@ export const initialState: IUserState = {
 export default createReducer(initialState, (builder) =>
   builder.addCase(updateProfileData, (state, { payload }) => {
     state.profile = {
-      ...state,
+      ...state.profile,
       ...payload,
     };
   })
