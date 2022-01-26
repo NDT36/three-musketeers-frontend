@@ -12,12 +12,11 @@ import { useAlert } from 'react-alert';
 
 interface IProps {
   title: string;
-  className?: string;
-  isLastItem?: boolean;
   source: IAssetSources;
+  onEdit: (source: IEditAssetParams) => void;
 }
 
-interface IEditAssetParams {
+export interface IEditAssetParams {
   name: string;
   description?: string;
 }
@@ -48,6 +47,7 @@ const EditAsset: FC<IProps> = (props) => {
 
     setTimeout(() => {
       setLoading(false);
+      props.onEdit(values);
       reactAlert.success('Sửa thành công');
       handleCloseModal();
     }, 1000);

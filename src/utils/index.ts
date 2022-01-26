@@ -18,3 +18,7 @@ export const formatLongString = (str: string, maxLength: number) => {
 export const formatCurrency = (number: number, separate = ',') => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separate);
 };
+
+export const timeout = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};

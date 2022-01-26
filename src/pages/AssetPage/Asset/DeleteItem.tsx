@@ -1,20 +1,22 @@
 import React, { FC, useState } from 'react';
-import YesNoPopup from 'components/YesNoPopup';
+import Popup from 'components/Popup';
 import { IAssetSources } from '.';
+import CommonButton from 'components/CommonButton/Index';
 
 interface IProps {
   source: IAssetSources;
+  onDelete: () => void;
 }
 
 const DeleteItem: FC<IProps> = (props) => {
-  const [popupVisible, setPopupVisible] = useState(true);
-
-  const handleClosePopup = () => {
-    setPopupVisible(false);
-  };
+  const [popupVisible, setPopupVisible] = useState(false);
 
   const handleOpenPopup = () => {
     setPopupVisible(true);
+  };
+
+  const handleClosePopup = () => {
+    setPopupVisible(false);
   };
 
   return (
@@ -25,9 +27,21 @@ const DeleteItem: FC<IProps> = (props) => {
       >
         Xóa
       </div>
-      <YesNoPopup title={'Xóa nguồn tiền'} isVisible={popupVisible} onClose={handleClosePopup}>
-        <div>Bạn có chắc chắn muốn xóa nguồn tiền này không?</div>
-      </YesNoPopup>
+      <Popup title={'Xóa nguồn tiền'} isVisible={popupVisible} onClose={handleClosePopup}>
+        <div className="px-3">
+          <div>Bạn có chắc chắn muốn xóa nguồn tiền này không?</div>
+          <div className="flex justify-center items-center pt-10 pb-3">
+            <div className="w-1/2 px-5">
+              <CommonButton className="text-red-500" onClick={handleClosePopup}>
+                No
+              </CommonButton>
+            </div>
+            <div className="w-1/2 px-5">
+              <CommonButton onClick={props.onDelete}>Yes</CommonButton>
+            </div>
+          </div>
+        </div>
+      </Popup>
     </>
   );
 };

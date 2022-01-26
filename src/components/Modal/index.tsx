@@ -1,4 +1,5 @@
 import React, { FC, useCallback, useRef } from 'react';
+import { timeout } from 'utils';
 
 type Props = {
   title?: string;
@@ -9,12 +10,13 @@ type Props = {
 const Modal: FC<Props> = ({ title, isVisible, children, onClose: parentHandleClose }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleClose = useCallback(() => {
+  const handleClose = useCallback(async () => {
     contentRef.current?.classList.remove('animate-[fadeInUp_0.25s_ease]');
     contentRef.current?.classList.remove('animate-[fadeOutDown_0.25s_ease]');
     contentRef.current?.classList.add('animate-[fadeOutDown_0.25s_ease]');
 
-    setTimeout(() => parentHandleClose(), 200);
+    await timeout(200);
+    parentHandleClose();
   }, [contentRef, parentHandleClose]);
 
   return isVisible ? (
@@ -32,7 +34,7 @@ const Modal: FC<Props> = ({ title, isVisible, children, onClose: parentHandleClo
                 <>
                   <h3 className="text-2xl font-semibold p-2">{title}</h3>
                   <div
-                    className="absolute right-2 top-0 w-[40px] h-full flex items-center justify-center cursor-pointer text-red-400 select-none"
+                    className="absolute right-2 top-0 w-[40px] h-[50px] flex items-center justify-center cursor-pointer text-red-400 select-none"
                     onClick={handleClose}
                   >
                     X

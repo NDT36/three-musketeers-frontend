@@ -6,7 +6,7 @@ type Props = {
   onClose: () => void;
 };
 
-const YesNoPopup: FC<Props> = ({ title, isVisible, children, onClose: parentHandleClose }) => {
+const Popup: FC<Props> = ({ title, isVisible, children, onClose: parentHandleClose }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const handleClose = useCallback(() => {
@@ -39,4 +39,4 @@ const YesNoPopup: FC<Props> = ({ title, isVisible, children, onClose: parentHand
   ) : null;
 };
 
-export default YesNoPopup;
+export default Popup;

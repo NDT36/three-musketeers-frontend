@@ -7,9 +7,9 @@ import FormTextAreaInput from 'components/FormTextArea';
 import CommonButton from 'components/CommonButton/Index';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
-import { useFormik } from 'formik';
+import { FormikHelpers, useFormik } from 'formik';
 import { useSetLoading } from 'state/global/hooks';
-import YesNoPopup from 'components/YesNoPopup';
+import { IEditAssetParams } from './EditAsset';
 
 interface IProps {}
 
@@ -33,7 +33,7 @@ const Asset: FC<IProps> = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const setLoading = useSetLoading();
 
-  const sources: Array<IAssetSources> = [
+  const [sources, setSource] = useState<Array<IAssetSources>>([
     {
       id: 'asdfasdfasfq24124234',
       userId: 'asdjfhalwkjr324',
@@ -51,14 +51,14 @@ const Asset: FC<IProps> = (props) => {
       color: 'purple',
     },
     {
-      id: 'asdfasdfasfq24124234',
+      id: 'asdfasdfasfq2412313124234',
       userId: 'asdjfhalwkjr324',
       name: 'Tài khoản ngân hàng Techcombank',
       balance: '0',
       description: 'Tài khoản này mở năm 2020 tại chi nhánh Trần Duy Hưng',
       color: 'pink',
     },
-  ];
+  ]);
 
   const handleCloseModal = () => {
     setModalVisible(false);
@@ -66,6 +66,17 @@ const Asset: FC<IProps> = (props) => {
 
   const handleOpenModal = () => {
     setModalVisible(true);
+  };
+
+  const handleDeleteItem = (id: string) => {
+    setSource(sources.filter((item) => item.id !== id));
+  };
+
+  const handleEditItem = (id: string, values: IEditAssetParams) => {
+    const item = sources.find((item) => item.id === id);
+    Object.assign(item, values);
+
+    setSource([...sources]);
   };
 
   const validationSchema: Yup.SchemaOf<ICreateAssetSourcesParams> = Yup.object().shape({
@@ -79,12 +90,28 @@ const Asset: FC<IProps> = (props) => {
       .max(1000000000000000, t('asset.invalidBalcane')),
   });
 
-  const onSubmit = async (values: ICreateAssetSourcesParams) => {
+  const onSubmit = async (
+    values: ICreateAssetSourcesParams,
+    { resetForm }: FormikHelpers<ICreateAssetSourcesParams>
+  ) => {
     setLoading(true);
 
     setTimeout(() => {
       setLoading(false);
-      alert(JSON.stringify(values, null, 2));
+      setSource([
+        ...sources,
+        {
+          id: Date.now().toString(),
+          userId: 'asdjfhalwkjr324',
+          name: values.name,
+          balance: values.balance,
+          description: values.description || '',
+          color: null,
+        },
+      ]);
+
+      handleCloseModal();
+      resetForm();
     }, 1000);
   };
 
@@ -109,7 +136,12 @@ const Asset: FC<IProps> = (props) => {
 
       <div>
         {sources.map((source) => (
-          <AssetItem key={source.id} source={source} />
+          <AssetItem
+            key={source.id}
+            source={source}
+            onDelete={handleDeleteItem}
+            onEdit={handleEditItem}
+          />
         ))}
       </div>
 

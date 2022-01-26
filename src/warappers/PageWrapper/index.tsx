@@ -19,7 +19,7 @@ export default function PageWrapper() {
   }
 
   return (
-    <div className="app-wrapper relative max-w-[450px] mx-auto border rounded-tl-lg rounded-tr-lg bg-white border-gray-200 h-full pb-20">
+    <div className="app-wrapper relative mx-auto border rounded-tl-lg rounded-tr-lg bg-white border-gray-200 h-full pb-20">
       <>
         <UserUpdater />
         <Loader />

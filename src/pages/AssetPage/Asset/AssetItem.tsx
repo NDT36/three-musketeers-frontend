@@ -4,12 +4,14 @@ import Modal from 'components/Modal';
 import { IAssetSources } from '.';
 import { formatCurrency } from 'utils';
 import classnames from 'classnames';
-import EditAsset from './EditAsset';
+import EditAsset, { IEditAssetParams } from './EditAsset';
 import TransferAsset from './TransferAsset';
 import DeleteItem from './DeleteItem';
 
 interface IProps {
   source: IAssetSources;
+  onDelete: (id: string) => void;
+  onEdit: (id: string, source: IEditAssetParams) => void;
 }
 
 const ActiveBG = {
@@ -17,7 +19,7 @@ const ActiveBG = {
   false: '',
 } as any;
 
-const AssetItem: FC<IProps> = ({ source }) => {
+const AssetItem: FC<IProps> = ({ source, onDelete, onEdit }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleCloseModal = () => {
@@ -26,6 +28,16 @@ const AssetItem: FC<IProps> = ({ source }) => {
 
   const handleOpenModal = () => {
     setModalVisible(true);
+  };
+
+  const handleDeleteItem = () => {
+    handleCloseModal();
+    onDelete(String(source.id));
+  };
+
+  const handleEditItem = (params: IEditAssetParams) => {
+    handleCloseModal();
+    onEdit(String(source.id), params);
   };
 
   return (
@@ -55,10 +67,10 @@ const AssetItem: FC<IProps> = ({ source }) => {
       {/* Modal menu select actions */}
       <Modal isVisible={modalVisible} title="" onClose={handleCloseModal}>
         <div className="px-4">
-          <EditAsset title={'Sửa'} source={source} />
+          <EditAsset title={'Sửa'} source={source} onEdit={handleEditItem} />
           <TransferAsset title={'Chuyển khoản'} />
           <TransferAsset title={'Điều chỉnh số dư'} />
-          <DeleteItem source={source} />
+          <DeleteItem source={source} onDelete={handleDeleteItem} />
         </div>
       </Modal>
     </div>

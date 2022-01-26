@@ -20,7 +20,7 @@ const FormInput: FC<IProps> = function ({ touched, error, ...props }) {
     <div className="h-[60px] flex flex-col">
       <input
         ref={ref}
-        className="w-full p-2 outline-none transition duration-300 text-neutral-500 border-b border-b-[silver] rounded-0"
+        className="w-full p-2 m-0 appearance-none outline-none transition duration-300 text-neutral-500 border-b border-b-[silver] rounded-0"
         {...props}
       />
       <div className="h-5 w-full">
