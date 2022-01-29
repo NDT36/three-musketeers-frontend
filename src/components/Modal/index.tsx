@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { timeout } from 'utils';
 
 type Props = {
@@ -7,19 +7,35 @@ type Props = {
   onClose: () => void;
 };
 
-const Modal: FC<Props> = ({ title, isVisible, children, onClose: parentHandleClose }) => {
+const Modal: FC<Props> = ({ title, isVisible, children, onClose: handleClose }) => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(isVisible);
 
-  const handleClose = useCallback(async () => {
+  const addAnimationClose = useCallback(() => {
     contentRef.current?.classList.remove('animate-[fadeInUp_0.25s_ease]');
     contentRef.current?.classList.remove('animate-[fadeOutDown_0.25s_ease]');
     contentRef.current?.classList.add('animate-[fadeOutDown_0.25s_ease]');
+  }, [contentRef]);
 
-    await timeout(200);
-    parentHandleClose();
-  }, [contentRef, parentHandleClose]);
+  useEffect(() => {
+    (async () => {
+      if (visible !== isVisible) {
+        if (isVisible) {
+          setVisible(true);
+        }
 
-  return isVisible ? (
+        if (!isVisible) {
+          addAnimationClose();
+          handleClose();
+
+          await timeout(200);
+          setVisible(false);
+        }
+      }
+    })();
+  }, [isVisible, addAnimationClose, visible, handleClose]);
+
+  return visible ? (
     <div className="fixed z-40 inset-0 h-full w-full">
       <div className="max-w-[450px] h-full mx-auto relative flex justify-center items-end overflow-hidden">
         <div className="opacity-30 absolute inset-0 bg-[#656565]" onClick={handleClose}></div>

@@ -55,7 +55,7 @@ AxiosInstance.interceptors.response.use(
         const accessToken = res.data?.data?.[ACCESS_TOKEN];
         if (!accessToken) return handleRefreshTokenError(error);
 
-        Cookies.set(ACCESS_TOKEN, accessToken);
+        Cookies.set(ACCESS_TOKEN, accessToken, { expires: 365 });
         originalConfig.headers.Authorization = toBearer(accessToken);
 
         return Axios(originalConfig);

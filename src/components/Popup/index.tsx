@@ -1,4 +1,5 @@
-import React, { FC, useCallback, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { timeout } from 'utils';
 
 type Props = {
   title?: string;
@@ -6,18 +7,35 @@ type Props = {
   onClose: () => void;
 };
 
-const Popup: FC<Props> = ({ title, isVisible, children, onClose: parentHandleClose }) => {
+const Popup: FC<Props> = ({ title, isVisible, children, onClose: handleClose }) => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
 
-  const handleClose = useCallback(() => {
+  const addAnimationClose = useCallback(() => {
     contentRef.current?.classList.remove('animate-[scaleUp_0.25s_ease]');
     contentRef.current?.classList.remove('animate-[scaleDown_0.25s_ease]');
     contentRef.current?.classList.add('animate-[scaleDown_0.25s_ease]');
+  }, [contentRef]);
 
-    setTimeout(() => parentHandleClose(), 200);
-  }, [contentRef, parentHandleClose]);
+  useEffect(() => {
+    (async () => {
+      if (visible !== isVisible) {
+        if (isVisible) {
+          setVisible(true);
+        }
 
-  return isVisible ? (
+        if (!isVisible) {
+          addAnimationClose();
+          handleClose();
+
+          await timeout(200);
+          setVisible(false);
+        }
+      }
+    })();
+  }, [isVisible, addAnimationClose, visible, handleClose]);
+
+  return visible ? (
     <div className="fixed z-50 inset-0 h-full w-full">
       <div className="max-w-[450px] h-full mx-auto flex justify-center items-center overflow-hidden px-10">
         <div className="opacity-30 absolute inset-0 bg-[#656565]" onClick={handleClose}></div>
@@ -25,7 +43,7 @@ const Popup: FC<Props> = ({ title, isVisible, children, onClose: parentHandleClo
         <div className="w-full">
           <div
             ref={contentRef}
-            className="animate-[scaleUp_0.25s_ease] border-0 rounded-t-lg shadow-lg relative flex flex-col w-full bg-white"
+            className="animate-[scaleUp_0.25s_ease] border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white"
           >
             <div className=" flex items-center justify-center border-b border-blueGray-200">
               <h3 className="text-2xl font-semibold p-2">{title}</h3>

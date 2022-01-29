@@ -46,10 +46,10 @@ const EditAsset: FC<IProps> = (props) => {
     setLoading(true);
 
     setTimeout(() => {
+      handleCloseModal();
       setLoading(false);
       props.onEdit(values);
       reactAlert.success('Sửa thành công');
-      handleCloseModal();
     }, 1000);
   };
 

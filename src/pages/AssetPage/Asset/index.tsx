@@ -9,12 +9,12 @@ import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { FormikHelpers, useFormik } from 'formik';
 import { useSetLoading } from 'state/global/hooks';
-import { IEditAssetParams } from './EditAsset';
+import { IEditAssetParams } from './BtnEditItem';
 
 interface IProps {}
 
 export interface IAssetSources {
-  id?: string;
+  id: string;
   userId?: string;
   name: string;
   balance: string | number;

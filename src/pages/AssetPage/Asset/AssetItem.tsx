@@ -4,9 +4,10 @@ import Modal from 'components/Modal';
 import { IAssetSources } from '.';
 import { formatCurrency } from 'utils';
 import classnames from 'classnames';
-import EditAsset, { IEditAssetParams } from './EditAsset';
-import TransferAsset from './TransferAsset';
-import DeleteItem from './DeleteItem';
+import BtnEditItem, { IEditAssetParams } from './BtnEditItem';
+import BtnTransferAsset from './BtnTransferAsset';
+import BtnDeleteItem from './BtnDeleteItem';
+import BtnEditBalance from './BtnEditBalance';
 
 interface IProps {
   source: IAssetSources;
@@ -67,10 +68,10 @@ const AssetItem: FC<IProps> = ({ source, onDelete, onEdit }) => {
       {/* Modal menu select actions */}
       <Modal isVisible={modalVisible} title="" onClose={handleCloseModal}>
         <div className="px-4">
-          <EditAsset title={'Sửa'} source={source} onEdit={handleEditItem} />
-          <TransferAsset title={'Chuyển khoản'} />
-          <TransferAsset title={'Điều chỉnh số dư'} />
-          <DeleteItem source={source} onDelete={handleDeleteItem} />
+          <BtnEditItem title={'Sửa'} source={source} onEdit={handleEditItem} />
+          <BtnTransferAsset source={source} title={'Chuyển khoản'} />
+          <BtnEditBalance source={source} title={'Điều chỉnh số dư'} />
+          <BtnDeleteItem source={source} onDelete={handleDeleteItem} />
         </div>
       </Modal>
     </div>

@@ -30,14 +30,14 @@ const DeleteItem: FC<IProps> = (props) => {
       <Popup title={'Xóa nguồn tiền'} isVisible={popupVisible} onClose={handleClosePopup}>
         <div className="px-3">
           <div>Bạn có chắc chắn muốn xóa nguồn tiền này không?</div>
-          <div className="flex justify-center items-center pt-10 pb-3">
+          <div className="flex justify-center items-center py-5">
             <div className="w-1/2 px-5">
-              <CommonButton className="text-red-500" onClick={handleClosePopup}>
-                No
-              </CommonButton>
+              <CommonButton onClick={handleClosePopup}>No</CommonButton>
             </div>
             <div className="w-1/2 px-5">
-              <CommonButton onClick={props.onDelete}>Yes</CommonButton>
+              <CommonButton className="text-red-500" onClick={props.onDelete}>
+                Yes
+              </CommonButton>
             </div>
           </div>
         </div>
