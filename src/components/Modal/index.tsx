@@ -3,11 +3,12 @@ import { timeout } from 'utils';
 
 type Props = {
   title?: string;
+  subTitle?: string;
   isVisible: boolean;
   onClose: () => void;
 };
 
-const Modal: FC<Props> = ({ title, isVisible, children, onClose: handleClose }) => {
+const Modal: FC<Props> = ({ title, subTitle, isVisible, children, onClose: handleClose }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(isVisible);
 
@@ -45,10 +46,14 @@ const Modal: FC<Props> = ({ title, isVisible, children, onClose: handleClose }) 
             ref={contentRef}
             className="animate-[fadeInUp_0.25s_ease] border-0 rounded-t-lg shadow-lg relative flex flex-col w-full bg-white"
           >
-            <div className=" flex items-center justify-center border-b border-blueGray-200">
+            <div className="flex items-center justify-center border-b border-blueGray-200">
               {title && (
                 <>
-                  <h3 className="text-2xl font-semibold p-2">{title}</h3>
+                  <div className="flex flex-col text-center p-2">
+                    <h3 className="text-2xl font-semibold">{title}</h3>
+                    {subTitle && <h3 className="text-sm
+                     p-2">"{subTitle}"</h3>}
+                  </div>
                   <div
                     className="absolute right-2 top-0 w-[40px] h-[50px] flex items-center justify-center cursor-pointer text-red-400 select-none"
                     onClick={handleClose}

@@ -9,6 +9,7 @@ import FormInput from 'components/FormInput';
 import FormTextArea from 'components/FormTextArea';
 import CommonButton from 'components/CommonButton/Index';
 import { IAssetSources } from '.';
+import InputWithLabel from 'components/InputWithLabel';
 
 interface IProps {
   title: string;
@@ -67,7 +68,7 @@ const BtnTransferAsset: FC<IProps> = (props) => {
     initialValues: {
       money: '',
       otherMoney: '',
-      sourceId: props.source.id,
+      sourceId: props.source._id,
       targetId: '',
       actionAt: '',
       description: defaulDescription.replace('{A}', props.source.name),
@@ -110,8 +111,9 @@ const BtnTransferAsset: FC<IProps> = (props) => {
             error={formik.errors.targetId}
           />
 
-          <FormInput
-            type="date"
+          <InputWithLabel
+            label="Ngày thực hiện"
+            type="datetime-local"
             name="actionAt"
             id="actionAt"
             placeholder="Ngày thực hiện"

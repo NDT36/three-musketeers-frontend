@@ -1,18 +1,17 @@
 import React, { FC, useState } from 'react';
 import iconMoreAction from 'assets/icons/icon-more-action.png';
 import Modal from 'components/Modal';
-import { IAssetSources } from '.';
 import { formatCurrency } from 'utils';
 import classnames from 'classnames';
-import BtnEditItem, { IEditAssetParams } from './BtnEditItem';
-import BtnTransferAsset from './BtnTransferAsset';
-import BtnDeleteItem from './BtnDeleteItem';
-import BtnEditBalance from './BtnEditBalance';
+import { IAccumulateItem } from './';
+import BtnDepositAccumulate from './BtnDepositAccumulate';
+import BtnWithdrawAccumulate from './BtnWithdrawAccumulate';
+import BtnEditAccumulate from './BtnEditAccumulate';
+import BtnDeleteAccumulate from './BtnDeleteAccumulate';
+import BtnEndAccumulate from './BtnEndAccumulate';
 
 interface IProps {
-  source: IAssetSources;
-  onDelete: (_id: string) => void;
-  onEdit: (_id: string, source: IEditAssetParams, callback: () => void) => Promise<void>;
+  source: IAccumulateItem;
 }
 
 const ActiveBG = {
@@ -20,7 +19,7 @@ const ActiveBG = {
   false: '',
 } as any;
 
-const AssetItem: FC<IProps> = ({ source, onDelete, onEdit }) => {
+const AccumulateItem: FC<IProps> = ({ source }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleCloseModal = () => {
@@ -29,18 +28,6 @@ const AssetItem: FC<IProps> = ({ source, onDelete, onEdit }) => {
 
   const handleOpenModal = () => {
     setModalVisible(true);
-  };
-
-  const handleDeleteItem = () => {
-    handleCloseModal();
-    onDelete(String(source._id));
-  };
-
-  const handleEditItem = async (params: IEditAssetParams, callback: () => void) => {
-    await onEdit(String(source._id), params, () => {
-      handleCloseModal();
-      callback();
-    });
   };
 
   return (
@@ -57,10 +44,18 @@ const AssetItem: FC<IProps> = ({ source, onDelete, onEdit }) => {
         }}
       ></div>
       <div className="w-full h-full min-w-0 flex flex-col pl-2">
-        <div className="font-bold whitespace-nowrap overflow-hidden text-ellipsis">
-          {source.name}
+        <div className="flex flex-row justify-between">
+          <div className="font-bold whitespace-nowrap overflow-hidden text-ellipsis">
+            {source.name}
+          </div>
+          <div className="font-bold pl-1">{formatCurrency(Number(source.total))}</div>
         </div>
-        <div className="min-w-0 text-neutral-500">{formatCurrency(Number(source.balance))}</div>
+        <div className="flex flex-row justify-between">
+          <div className="min-w-0 text-green-500">{formatCurrency(Number(source.balance))}</div>
+          <div className="min-w-0 text-neutral-400">
+            {formatCurrency(Number(source.total) - Number(source.balance))}
+          </div>
+        </div>
       </div>
 
       <div className="h-full w-[50px] flex-shrink-0 flex-grow-0 cursor-pointer flex items-center justify-center">
@@ -70,14 +65,15 @@ const AssetItem: FC<IProps> = ({ source, onDelete, onEdit }) => {
       {/* Modal menu select actions */}
       <Modal isVisible={modalVisible} title="" onClose={handleCloseModal}>
         <div className="px-4">
-          <BtnEditItem title={'Sửa'} source={source} onEdit={handleEditItem} />
-          <BtnTransferAsset source={source} title={'Chuyển khoản'} />
-          <BtnEditBalance source={source} title={'Điều chỉnh số dư'} />
-          <BtnDeleteItem source={source} onDelete={handleDeleteItem} />
+          <BtnDepositAccumulate title="Gửi vào" source={source} />
+          <BtnWithdrawAccumulate title="Rút ra" source={source} />
+          <BtnEditAccumulate title="Sửa" source={source} />
+          <BtnEndAccumulate source={source} />
+          <BtnDeleteAccumulate source={source} onDelete={() => {}} />
         </div>
       </Modal>
     </div>
   );
 };
 
-export default AssetItem;
+export default AccumulateItem;

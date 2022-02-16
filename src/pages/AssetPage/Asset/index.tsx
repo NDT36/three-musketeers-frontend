@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import AssetItem from './AssetItem';
 import iconAdd from 'assets/icons/icon-add.png';
 import Modal from 'components/Modal';
@@ -10,11 +10,16 @@ import { useTranslation } from 'react-i18next';
 import { FormikHelpers, useFormik } from 'formik';
 import { useSetLoading } from 'state/global/hooks';
 import { IEditAssetParams } from './BtnEditItem';
+import { formatCurrency } from 'utils';
+import { callApi } from 'api/axios';
+import { createSource, editSource, fetchSources } from 'api/source';
+import ListLoading from 'components/ListLoading';
+import { useAlert } from 'react-alert';
 
 interface IProps {}
 
 export interface IAssetSources {
-  id: string;
+  _id: string;
   userId?: string;
   name: string;
   balance: string | number;
@@ -30,35 +35,12 @@ export interface ICreateAssetSourcesParams {
 
 const Asset: FC<IProps> = (props) => {
   const { t } = useTranslation();
+  const reactAlert = useAlert();
   const [modalVisible, setModalVisible] = useState(false);
+  const [sourceLoading, setSourceLoading] = useState(false);
   const setLoading = useSetLoading();
 
-  const [sources, setSource] = useState<Array<IAssetSources>>([
-    {
-      id: 'asdfasdfasfq24124234',
-      userId: 'asdjfhalwkjr324',
-      name: 'Tài khoản ngân hàng ACB',
-      balance: '100000000',
-      description: 'Ngân hàng ACB chi nhánh Đền Lừ',
-      color: 'green',
-    },
-    {
-      id: '1234werqwer12334',
-      userId: 'asdjfhalwkjr324',
-      name: 'Tài khoản ví',
-      balance: '2000000',
-      description: 'Tài khoản tiền mặt đang sử dụng',
-      color: 'purple',
-    },
-    {
-      id: 'asdfasdfasfq2412313124234',
-      userId: 'asdjfhalwkjr324',
-      name: 'Tài khoản ngân hàng Techcombank',
-      balance: '0',
-      description: 'Tài khoản này mở năm 2020 tại chi nhánh Trần Duy Hưng',
-      color: 'pink',
-    },
-  ]);
+  const [sources, setSource] = useState<Array<IAssetSources>>([]);
 
   const handleCloseModal = () => {
     setModalVisible(false);
@@ -68,15 +50,37 @@ const Asset: FC<IProps> = (props) => {
     setModalVisible(true);
   };
 
-  const handleDeleteItem = (id: string) => {
-    setSource(sources.filter((item) => item.id !== id));
+  const handleDeleteItem = (_id: string) => {
+    setSource(sources.filter((item) => item._id !== _id));
   };
 
-  const handleEditItem = (id: string, values: IEditAssetParams) => {
-    const item = sources.find((item) => item.id === id);
-    Object.assign(item, values);
+  const fetchListSources = useCallback(async () => {
+    setSourceLoading(true);
 
-    setSource([...sources]);
+    callApi(fetchSources())
+      .then(({ error, result }) => {
+        if (error) return;
+        if (result) setSource(result?.data);
+      })
+      .finally(() => setSourceLoading(false));
+  }, []);
+
+  const balance = sources.reduce((a, b) => a + Number(b.balance), 0);
+
+  const handleEditItem = async (id: string, values: IEditAssetParams, callback: () => void) => {
+    setLoading(true);
+
+    const { error } = await callApi(editSource(id, values));
+
+    if (error) {
+      reactAlert.error(t(`error.${error}`));
+      setLoading(false);
+      return;
+    }
+
+    callback();
+    fetchListSources();
+    setLoading(false);
   };
 
   const validationSchema: Yup.SchemaOf<ICreateAssetSourcesParams> = Yup.object().shape({
@@ -96,23 +100,18 @@ const Asset: FC<IProps> = (props) => {
   ) => {
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
-      setSource([
-        ...sources,
-        {
-          id: Date.now().toString(),
-          userId: 'asdjfhalwkjr324',
-          name: values.name,
-          balance: values.balance,
-          description: values.description || '',
-          color: null,
-        },
-      ]);
+    callApi(createSource(values))
+      .then(({ error }) => {
+        if (error) {
+          reactAlert.error(t(`error.${error}`));
+          return;
+        }
 
-      handleCloseModal();
-      resetForm();
-    }, 1000);
+        resetForm();
+        handleCloseModal();
+        fetchListSources();
+      })
+      .finally(() => setLoading(false));
   };
 
   const formik = useFormik<ICreateAssetSourcesParams>({
@@ -121,10 +120,14 @@ const Asset: FC<IProps> = (props) => {
     onSubmit,
   });
 
+  useEffect(() => {
+    fetchListSources();
+  }, [fetchListSources]);
+
   return (
     <div>
       <div className="h-[50px] flex items-center border-b border-b-gray-400">
-        Tổng tiền: <b className="pl-1">102.000.000</b>
+        Tổng tiền: <b className="pl-1">{formatCurrency(balance)}</b>
       </div>
       <div className="flex justify-between py-2 text-xl">
         <div>Danh sách tài khoản:</div>
@@ -135,14 +138,22 @@ const Asset: FC<IProps> = (props) => {
       </div>
 
       <div>
-        {sources.map((source) => (
-          <AssetItem
-            key={source.id}
-            source={source}
-            onDelete={handleDeleteItem}
-            onEdit={handleEditItem}
-          />
-        ))}
+        {sourceLoading ? (
+          <ListLoading loading={true} />
+        ) : sources.length ? (
+          sources.map((source) => (
+            <AssetItem
+              key={source._id}
+              source={source}
+              onDelete={handleDeleteItem}
+              onEdit={handleEditItem}
+            />
+          ))
+        ) : (
+          <div className="text-center pt-10 text-2xl text-[silver]">
+            Bạn chưa tạo nguồn tiền nào
+          </div>
+        )}
       </div>
 
       <Modal isVisible={modalVisible} title={'Tạo nguồn tiền'} onClose={handleCloseModal}>

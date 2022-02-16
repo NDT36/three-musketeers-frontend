@@ -4,16 +4,15 @@ import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { IAssetSources } from '.';
-import FormInput from 'components/FormInput';
 import CommonButton from 'components/CommonButton/Index';
 import FormTextArea from 'components/FormTextArea';
-import { useSetLoading } from 'state/global/hooks';
 import { useAlert } from 'react-alert';
+import InputWithLabel from 'components/InputWithLabel';
 
 interface IProps {
   title: string;
   source: IAssetSources;
-  onEdit: (source: IEditAssetParams) => void;
+  onEdit: (source: IEditAssetParams, callback: () => void) => Promise<void>;
 }
 
 export interface IEditAssetParams {
@@ -24,7 +23,6 @@ export interface IEditAssetParams {
 const EditAsset: FC<IProps> = (props) => {
   const { t } = useTranslation();
   const reactAlert = useAlert();
-  const setLoading = useSetLoading();
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleOpenModal = () => {
@@ -43,14 +41,10 @@ const EditAsset: FC<IProps> = (props) => {
   });
 
   const onSubmit = async (values: IEditAssetParams) => {
-    setLoading(true);
-
-    setTimeout(() => {
+    await props.onEdit(values, () => {
       handleCloseModal();
-      setLoading(false);
-      props.onEdit(values);
       reactAlert.success('Sửa thành công');
-    }, 1000);
+    });
   };
 
   const formik = useFormik<IEditAssetParams>({
@@ -69,7 +63,8 @@ const EditAsset: FC<IProps> = (props) => {
       </div>
       <Modal isVisible={modalVisible} title={props.title} onClose={handleCloseModal}>
         <form onSubmit={formik.handleSubmit} className="px-[10px]">
-          <FormInput
+          <InputWithLabel
+            label="Tên tài khoản"
             type="text"
             name="name"
             id="name"

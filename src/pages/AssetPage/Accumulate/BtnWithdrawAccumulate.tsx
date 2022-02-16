@@ -8,23 +8,24 @@ import { useFormik } from 'formik';
 import FormInput from 'components/FormInput';
 import FormTextArea from 'components/FormTextArea';
 import CommonButton from 'components/CommonButton/Index';
-import { IAssetSources } from '.';
 import { formatCurrency } from 'utils';
 import InputWithLabel from 'components/InputWithLabel';
+import { IAccumulateItem } from '.';
 
 interface IProps {
   title: string;
-  source: IAssetSources;
+  source: IAccumulateItem;
 }
 
-interface IEditBalance {
-  balance: number | string;
+interface IWithdrawAccumulate {
+  money: number | string;
+  otherMoney?: number | string;
   sourceId: string;
   actionAt: string;
   description?: string;
 }
 
-const BtnEditBalance: FC<IProps> = (props) => {
+const BtnWithdrawAccumulate: FC<IProps> = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const { t } = useTranslation();
   const reactAlert = useAlert();
@@ -38,10 +39,11 @@ const BtnEditBalance: FC<IProps> = (props) => {
     setModalVisible(true);
   };
 
-  const validationSchema: Yup.SchemaOf<IEditBalance> = Yup.object().shape({
-    balance: Yup.number()
+  const validationSchema: Yup.SchemaOf<IWithdrawAccumulate> = Yup.object().shape({
+    money: Yup.number()
       .min(0, t('asset.transferMoneyInvalid'))
       .required(t('asset.transferMoneyIsRequired')),
+    otherMoney: Yup.number().min(0, t('asset.transferOtherMoneyInvalid')),
     sourceId: Yup.string().required(),
     actionAt: Yup.string().required(),
     description: Yup.string()
@@ -49,7 +51,7 @@ const BtnEditBalance: FC<IProps> = (props) => {
       .max(1000000000000000, t('asset.invalidBalcane')),
   });
 
-  const onSubmit = async (values: IEditBalance) => {
+  const onSubmit = async (values: IWithdrawAccumulate) => {
     setLoading(true);
 
     setTimeout(() => {
@@ -59,25 +61,18 @@ const BtnEditBalance: FC<IProps> = (props) => {
     }, 1000);
   };
 
-  const defaulDescription = 'Điều chỉnh số dư "{A}"';
+  const defaulDescription = 'Rút tiền ra khỏi tích lũy "{A}"';
 
-  const formik = useFormik<IEditBalance>({
+  const formik = useFormik<IWithdrawAccumulate>({
     initialValues: {
-      balance: Number(props.source.balance),
-      sourceId: props.source._id,
+      money: '',
       actionAt: '',
+      sourceId: '',
       description: defaulDescription.replace('{A}', props.source.name),
     },
     validationSchema,
     onSubmit,
   });
-
-  const calcSalt = () => {
-    const balance = Number(props.source.balance) || 0;
-    const newBalance = Number(formik.values.balance) || 0;
-
-    return balance - newBalance;
-  };
 
   return (
     <>
@@ -87,8 +82,37 @@ const BtnEditBalance: FC<IProps> = (props) => {
       >
         {props.title}
       </div>
-      <Modal isVisible={modalVisible} title={props.title} onClose={handleCloseModal}>
+      <Modal
+        isVisible={modalVisible}
+        subTitle={props.source.name}
+        title={'Rút tiền ra khỏi tích lũy'}
+        onClose={handleCloseModal}
+      >
         <form onSubmit={formik.handleSubmit} className="px-[10px]">
+          <FormInput
+            type="number"
+            name="money"
+            id="money"
+            placeholder="Số tiền"
+            onChange={formik.handleChange}
+            value={formik.values.money}
+            onBlur={formik.handleBlur}
+            touched={formik.touched.money}
+            error={formik.errors.money}
+          />
+
+          <InputWithLabel
+            label="Tài khoản đích"
+            type="text"
+            name="sourceId"
+            id="sourceId"
+            onChange={formik.handleChange}
+            value={formik.values.sourceId}
+            onBlur={formik.handleBlur}
+            touched={formik.touched.sourceId}
+            error={formik.errors.sourceId}
+          />
+
           <InputWithLabel
             label="Ngày thực hiện"
             type="datetime-local"
@@ -101,30 +125,17 @@ const BtnEditBalance: FC<IProps> = (props) => {
             touched={formik.touched.actionAt}
             error={formik.errors.actionAt}
           />
-
-          <div className="h-[30px]">
-            Số dư hiện tại: {formatCurrency(Number(props.source.balance)) || 0}
-          </div>
-
-          <FormInput
+          <InputWithLabel
             type="number"
-            name="balance"
-            id="balance"
-            placeholder="Số tiền"
+            name="otherMoney"
+            id="otherMoney"
+            label="Chi phí phát sinh(nếu có)"
             onChange={formik.handleChange}
-            value={formik.values.balance}
+            value={formik.values.otherMoney}
             onBlur={formik.handleBlur}
-            touched={formik.touched.balance}
-            error={formik.errors.balance}
+            touched={formik.touched.otherMoney}
+            error={formik.errors.otherMoney}
           />
-
-          <div className="h-[30px]">
-            {calcSalt() > 0 ? (
-              <>Giảm bớt: {formatCurrency(Math.abs(calcSalt())) || 0}</>
-            ) : (
-              <>Tăng thêm: {formatCurrency(Math.abs(calcSalt())) || 0}</>
-            )}
-          </div>
 
           <FormTextArea
             label={'Chú thích'}
@@ -139,7 +150,7 @@ const BtnEditBalance: FC<IProps> = (props) => {
 
           <div className="h-[80px] flex items-center ">
             <CommonButton type="submit" className="font-bold text-xl">
-              Chuyển
+              Rút
             </CommonButton>
           </div>
         </form>
@@ -148,4 +159,4 @@ const BtnEditBalance: FC<IProps> = (props) => {
   );
 };
 
-export default BtnEditBalance;
+export default BtnWithdrawAccumulate;
