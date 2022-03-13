@@ -83,11 +83,24 @@ export async function callApi<T = any, D = any>(
 
     return { result: result?.data };
   } catch (error: any) {
-    /**Message from server */
-    if (error.response) return { error: error.response?.data?.message };
-    if (error.message === 'Network Error') return { error: ErrorCode.Network_Error };
+    return handleError(error);
+  }
+}
 
-    return { error: ErrorCode.Unexpected_Error };
+export async function handleError(error: any): Promise<any> {
+  if (error.response) return { error: error.response?.data?.message };
+  if (error.message === 'Network Error') return { error: ErrorCode.Network_Error };
+
+  return { error: ErrorCode.Unexpected_Error };
+}
+
+export async function catchError(callback: () => Promise<any>): Promise<any> {
+  try {
+    const result = await callback();
+
+    return { result };
+  } catch (error: any) {
+    return handleError(error);
   }
 }
 
@@ -99,11 +112,7 @@ export async function callMultipleApi<T = any, D = any>(
 
     return { result: results.map((item) => item.data) };
   } catch (error: any) {
-    /**Message from server */
-    if (error.response) return { error: error.response?.data?.message };
-    if (error.message === 'Network Error') return { error: ErrorCode.Network_Error };
-
-    return { error: ErrorCode.Unexpected_Error };
+    return handleError(error);
   }
 }
 

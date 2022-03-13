@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
-import { ILoginParams, ILoginResult } from 'pages/LoginPage';
+import { ILoginParams, ILoginResult, ISocialLoginParams } from 'pages/LoginPage';
 import { ISignUpParams, ISignUpResult } from 'pages/SignUpPage';
 import AxiosInstance, { ACCESS_TOKEN, IResult, REFRESH_TOKEN } from './axios';
 
@@ -13,6 +13,14 @@ export const login = (data: ILoginParams) => () => {
     AxiosResponse<IResult<ILoginResult>, ILoginParams>,
     ILoginParams
   >('/login', data);
+};
+
+export const loginBySocial = (data: ISocialLoginParams) => () => {
+  return AxiosInstance.post<
+    IResult<ILoginResult>,
+    AxiosResponse<IResult<ILoginResult>, ISocialLoginParams>,
+    ISocialLoginParams
+  >('/login-social', data);
 };
 
 export const signUp = (data: ISignUpParams) => () => {

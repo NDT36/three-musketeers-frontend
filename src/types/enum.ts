@@ -26,3 +26,8 @@ export const RoutePath = {
   MORE: '/more',
   Notification: '/notification',
 };
+
+export enum LoginSocialType {
+  GOOGLE = 'Google',
+  FACEBOOK = 'Facebook',
+}

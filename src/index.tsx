@@ -5,6 +5,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './utils/i18n';
+import 'utils/firebase/init';
 import store from 'state';
 
 ReactDOM.render(

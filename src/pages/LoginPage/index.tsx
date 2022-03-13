@@ -1,5 +1,5 @@
-import { login, setTokenToCookies } from 'api/auth';
-import { ACCESS_TOKEN, callApi } from 'api/axios';
+import { login, loginBySocial, setTokenToCookies } from 'api/auth';
+import { ACCESS_TOKEN, callApi, catchError } from 'api/axios';
 import CommonAuthInput from 'components/CommonAuthInput';
 import CommonButton from 'components/CommonButton/Index';
 import { useFormik } from 'formik';
@@ -9,6 +9,8 @@ import { useAlert } from 'react-alert';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useSetLoading } from 'state/global/hooks';
+import { LoginSocialType } from 'types/enum';
+import { loginByFirebase } from 'utils/auth_google_provider_create';
 import * as Yup from 'yup';
 
 export interface ILoginResult {
@@ -19,6 +21,11 @@ export interface ILoginResult {
 export interface ILoginParams {
   email: string;
   password: string;
+}
+
+export interface ISocialLoginParams {
+  token: string;
+  type: LoginSocialType;
 }
 
 function Login() {
@@ -55,7 +62,32 @@ function Login() {
   };
 
   const onLoginSocial = () => {
-    reactAlert.info('Comming soon...!');
+    reactAlert.info('Coming soon...!');
+  };
+
+  const onLoginGoogle = async () => {
+    setLoading(true);
+
+    const { result: idToken } = await catchError(loginByFirebase);
+
+    if (idToken) {
+      const { error, result } = await callApi(
+        loginBySocial({
+          type: LoginSocialType.GOOGLE,
+          token: idToken,
+        })
+      );
+      if (error) {
+        reactAlert.error(t(`error.${error}`));
+      }
+
+      if (result) {
+        setTokenToCookies(result.data);
+        navigate('/home');
+      }
+    }
+
+    setLoading(false);
   };
 
   const formik = useFormik<ILoginParams>({
@@ -121,7 +153,7 @@ function Login() {
                 </CommonButton>
               </div>
               <div className="w-1/2  p-3 text-[#DD4B39] ">
-                <CommonButton className="font-bold h-[40px]" onClick={onLoginSocial}>
+                <CommonButton className="font-bold h-[40px]" onClick={onLoginGoogle}>
                   Google
                 </CommonButton>
               </div>
