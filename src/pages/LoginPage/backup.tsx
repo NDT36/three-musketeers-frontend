@@ -1,52 +1,54 @@
-import { setTokenToCookies, signUp } from 'api/auth';
-import { ACCESS_TOKEN, callApi } from 'api/axios';
+import { login, loginBySocial, setTokenToCookies } from 'api/auth';
+import { ACCESS_TOKEN, callApi, catchError } from 'api/axios';
 import CommonAuthInput from 'components/CommonAuthInput';
 import CommonButton from 'components/CommonButton/Index';
 import { useFormik } from 'formik';
 import Cookies from 'js-cookie';
-import React, { FC, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useAlert } from 'react-alert';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useSetLoading } from 'state/global/hooks';
+import { LoginSocialType } from 'types/enum';
+import { loginByFirebase } from 'utils/auth_google_provider_create';
 import * as Yup from 'yup';
 
-export interface ISignUpResult {
+export interface ILoginResult {
   accessToken: string;
   refreshToken: string;
 }
 
-export interface ISignUpParams {
-  name: string;
+export interface ILoginParams {
   email: string;
   password: string;
 }
 
-const SignUpPage: FC = () => {
+export interface ISocialLoginParams {
+  token: string;
+  type: LoginSocialType;
+}
+
+function Login() {
   const reactAlert = useAlert();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const setLoading = useSetLoading();
 
-  const validationSchema: Yup.SchemaOf<ISignUpParams> = Yup.object().shape({
-    name: Yup.string()
-      .min(1, t('signUp.invalidNickname'))
-      .max(30, t('signUp.invalidNickname'))
-      .required(t('signUp.nicknameIsRequired')),
+  const validationSchema: Yup.SchemaOf<ILoginParams> = Yup.object().shape({
     email: Yup.string()
-      .matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, t('signUp.invalidEmail'))
-      .email(t('signUp.invalidEmail'))
-      .required(t('signUp.emailIsRequired')),
+      .matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, t('login.invalidEmail'))
+      .email(t('login.invalidEmail'))
+      .required(t('login.emailIsRequired')),
     password: Yup.string()
-      .min(6, t('signUp.invalidPassword'))
-      .max(32, t('signUp.invalidPassword'))
-      .required(t('signUp.passwordIsRequired')),
+      .min(6, t('login.invalidPassword'))
+      .max(32, t('login.invalidPassword'))
+      .required(t('login.passwordIsRequired')),
   });
 
-  const onSubmit = async (values: ISignUpParams) => {
+  const onSubmit = async (values: ILoginParams) => {
     setLoading(true);
 
-    const { error, result } = await callApi<ISignUpResult, ISignUpParams>(signUp(values));
+    const { error, result } = await callApi(login(values));
     if (error) {
       reactAlert.error(t(`error.${error}`));
     }
@@ -60,11 +62,36 @@ const SignUpPage: FC = () => {
   };
 
   const onLoginSocial = () => {
-    reactAlert.info('Comming soon...!');
+    reactAlert.info('Coming soon...!');
   };
 
-  const formik = useFormik<ISignUpParams>({
-    initialValues: { name: '', email: '', password: '' },
+  const onLoginGoogle = async () => {
+    setLoading(true);
+
+    const { result: idToken } = await catchError(loginByFirebase);
+
+    if (idToken) {
+      const { error, result } = await callApi(
+        loginBySocial({
+          type: LoginSocialType.GOOGLE,
+          token: idToken,
+        })
+      );
+      if (error) {
+        reactAlert.error(t(`error.${error}`));
+      }
+
+      if (result) {
+        setTokenToCookies(result.data);
+        navigate('/home');
+      }
+    }
+
+    setLoading(false);
+  };
+
+  const formik = useFormik<ILoginParams>({
+    initialValues: { email: '', password: '' },
     validationSchema,
     onSubmit,
   });
@@ -86,18 +113,6 @@ const SignUpPage: FC = () => {
         </div>
         <div>
           <form onSubmit={formik.handleSubmit}>
-            <CommonAuthInput
-              type="text"
-              name="name"
-              id="name"
-              placeholder="Name"
-              onChange={formik.handleChange}
-              value={formik.values.name}
-              onBlur={formik.handleBlur}
-              touched={formik.touched.name}
-              error={formik.errors.name}
-            />
-
             <CommonAuthInput
               type="email"
               name="email"
@@ -124,13 +139,13 @@ const SignUpPage: FC = () => {
 
             <div className="h-[80px] flex items-center">
               <CommonButton type="submit" className="font-bold text-2xl">
-                {t('signUp.txtSignUp')}
+                {t('login.txtLogin')}
               </CommonButton>
             </div>
           </form>
 
           <div className="h-[100px]">
-            <p className="text-sm text-[#808080]">{t('signUp.orSignUpWith')}</p>
+            <p className="text-sm text-[#808080]">{t('login.orLoginWith')}</p>
             <div className="flex flex-row justify-between">
               <div className="w-1/2 p-3 text-[#4267B2] ">
                 <CommonButton className="font-bold h-[40px]" onClick={onLoginSocial}>
@@ -138,22 +153,22 @@ const SignUpPage: FC = () => {
                 </CommonButton>
               </div>
               <div className="w-1/2  p-3 text-[#DD4B39] ">
-                <CommonButton className="font-bold h-[40px]" onClick={onLoginSocial}>
+                <CommonButton className="font-bold h-[40px]" onClick={onLoginGoogle}>
                   Google
                 </CommonButton>
               </div>
             </div>
           </div>
           <div className="text-[#808080]">
-            {t('signUp.alreadyRegistered')}
-            <a href="#/login" className="text-[#5fa8f3] underline decoration-1">
-              {t('signUp.loginNow')}
+            {t('login.notAMember')}
+            <a href="#/sign-up" className="text-[#5fa8f3] underline decoration-1">
+              {t('login.signupNow')}
             </a>
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default SignUpPage;
+export default Login;

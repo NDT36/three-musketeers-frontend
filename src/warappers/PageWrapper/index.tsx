@@ -6,7 +6,6 @@ import GroupPage from 'pages/GroupPage';
 import HomePage from 'pages/HomePage';
 import MorePage from 'pages/MorePage';
 import NotiPage from 'pages/NotiPage';
-import AssetPage from 'pages/AssetPage';
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { RoutePath } from 'types/enum';
@@ -29,7 +28,6 @@ export default function PageWrapper() {
         <Route path={RoutePath.HOME} element={<HomePage />} />
         <Route path={RoutePath.GROUP} element={<GroupPage />} />
         <Route path={RoutePath.CREATE} element={<CreatePage />} />
-        <Route path={RoutePath.ASSET.concat('/*')} element={<AssetPage />} />
         <Route path={RoutePath.MORE} element={<MorePage />} />
         <Route path={RoutePath.Notification} element={<NotiPage />} />
       </Routes>

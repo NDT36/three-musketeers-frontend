@@ -1,7 +1,6 @@
 import { AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import { ILoginParams, ILoginResult, ISocialLoginParams } from 'pages/LoginPage';
-import { ISignUpParams, ISignUpResult } from 'pages/SignUpPage';
 import AxiosInstance, { ACCESS_TOKEN, IResult, REFRESH_TOKEN } from './axios';
 
 export const login = (data: ILoginParams) => () => {
@@ -22,18 +21,6 @@ export const loginBySocial = (data: ISocialLoginParams) => () => {
     ISocialLoginParams
   >('/login-social', data);
 };
-
-export const signUp = (data: ISignUpParams) => () => {
-  data.email = data.email.trim();
-  data.password = data.password.trim();
-
-  return AxiosInstance.post<
-    IResult<ISignUpResult>,
-    AxiosResponse<IResult<ISignUpResult>, ISignUpParams>,
-    ISignUpParams
-  >('/register', data);
-};
-
 interface ISetToken {
   accessToken: string;
   refreshToken: string;
