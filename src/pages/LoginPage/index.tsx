@@ -49,12 +49,12 @@ function Login() {
     if (error) reactAlert.error(t(`error.${error}`));
 
     if (result) {
-      const fake = {
-        accessToken:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiQUNDRVNTX1RPS0VOIiwiaWF0IjoxNjQ3NDQxNDgwLCJleHAiOjE2NDc0NDI2ODB9.8XrpafUmtXMvIV1l5OyGqTQrCyTMsOWMSnL4dXt4X5E',
-        refreshToken:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiUkVGUkVTSF9UT0tFTiIsImlhdCI6MTY0NzE5NDk4OSwiZXhwIjoxNjQ5Nzg2OTg5fQ.rfdcAjNU_ZlUZL5gQTnBXkBQWbh3n92WCJcFPk5ATfk',
-      };
+      // const fake = {
+      //   accessToken:
+      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiQUNDRVNTX1RPS0VOIiwiaWF0IjoxNjQ3NDQxNDgwLCJleHAiOjE2NDc0NDI2ODB9.8XrpafUmtXMvIV1l5OyGqTQrCyTMsOWMSnL4dXt4X5E',
+      //   refreshToken:
+      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiUkVGUkVTSF9UT0tFTiIsImlhdCI6MTY0NzE5NDk4OSwiZXhwIjoxNjQ5Nzg2OTg5fQ.rfdcAjNU_ZlUZL5gQTnBXkBQWbh3n92WCJcFPk5ATfk',
+      // };
       setTokenToCookies(result.data);
       navigate('/home');
     }
@@ -75,10 +75,10 @@ function Login() {
         <div className="flex items-center w-full px-5 text-center bg-white rounded">
           <div>
             <div className="header px-2.5 font-bold text-left">
-              <div className="text-[44px] text-[#5c5c5c] leading-[51px]">
+              <div className="text-[44px] text-[#a7a7a7] leading-[51px]">
                 Find ways to manage your
               </div>
-              <div className="text-[72px] leading-[83px]">finances.</div>
+              <div className="text-[72px] leading-[83px] text-[#5c5c5c]">finances.</div>
             </div>
             <div className="h-14"></div>
             <div className="h-[100px] items-center flex flex-row justify-center">
