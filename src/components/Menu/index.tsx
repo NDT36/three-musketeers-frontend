@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import MenuItem from './MenuItem';
-import iconHome from 'assets/icons/icon-home.png';
+import iconHome from 'assets/icons-v2/icon-home.svg';
 import iconGroup from 'assets/icons/icon-group.png';
 import iconAdd from 'assets/icons/icon-add.png';
 import iconWallet from 'assets/icons/icon-wallet.png';
@@ -49,37 +49,39 @@ const Menu: FC<IProps> = (props) => {
   }, [navigatePath, location.pathname]);
 
   return (
-    <div className="absolute bottom-0 left-0 h-[75px] flex flex-row w-full bg-gray-100 rounded-br-lg rounded-bl-lg border-t border-t-gray-300 font-bold">
-      <MenuItem
-        label={MenuKey.HOME}
-        onChangeTab={handleChangeTab}
-        icon={iconHome}
-        active={active[MenuKey.HOME]}
-      />
-      <MenuItem
-        label={MenuKey.ASSET}
-        onChangeTab={handleChangeTab}
-        icon={iconWallet}
-        active={active[MenuKey.ASSET]}
-      />
-      <MenuItem
-        label={MenuKey.CREATE}
-        onChangeTab={handleChangeTab}
-        icon={iconAdd}
-        active={active[MenuKey.CREATE]}
-      />
-      <MenuItem
-        label={MenuKey.GROUP}
-        onChangeTab={handleChangeTab}
-        icon={iconGroup}
-        active={active[MenuKey.GROUP]}
-      />
-      <MenuItem
-        label={MenuKey.MORE}
-        onChangeTab={handleChangeTab}
-        icon={iconMore}
-        active={active[MenuKey.MORE]}
-      />
+    <div className="fixed bottom-0 left-0 w-full flex justify-center">
+      <div className="h-[75px] flex flex-row w-full max-w-[450px] bg-gray-100 rounded-br-lg rounded-bl-lg border-t border-t-gray-300 font-bold">
+        <MenuItem
+          label={MenuKey.HOME}
+          onChangeTab={handleChangeTab}
+          icon={iconHome}
+          active={active[MenuKey.HOME]}
+        />
+        <MenuItem
+          label={MenuKey.ASSET}
+          onChangeTab={handleChangeTab}
+          icon={iconWallet}
+          active={active[MenuKey.ASSET]}
+        />
+        <MenuItem
+          label={MenuKey.CREATE}
+          onChangeTab={handleChangeTab}
+          icon={iconAdd}
+          active={active[MenuKey.CREATE]}
+        />
+        <MenuItem
+          label={MenuKey.GROUP}
+          onChangeTab={handleChangeTab}
+          icon={iconGroup}
+          active={active[MenuKey.GROUP]}
+        />
+        <MenuItem
+          label={MenuKey.MORE}
+          onChangeTab={handleChangeTab}
+          icon={iconMore}
+          active={active[MenuKey.MORE]}
+        />
+      </div>
     </div>
   );
 };

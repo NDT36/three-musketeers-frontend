@@ -13,7 +13,7 @@ const MenuItem: FC<IProps> = (props) => {
   return (
     <div onClick={() => props.onChangeTab(props.label)} className="w-1/5 relative p">
       {props.active ? (
-        <div className="border border-gray-300 relative h-full flex items-center justify-center rounded-md bg-white">
+        <div className="border border-gray-300 relative h-full flex items-center justify-center rounded-md bg-white text-gray-500">
           {props.label}
           <div className="absolute top-3/4 left-[45%] w-[6px] h-[6px] rounded-xl bg-green-500"></div>
         </div>

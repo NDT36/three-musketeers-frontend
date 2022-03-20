@@ -5,6 +5,10 @@ module.exports = {
       fadeInUp: 'fadeInUp 0.25s ease',
     },
     extend: {
+      colors: {
+        primary: '#105F49',
+        secondary: '#337762',
+      },
       keyframes: {
         fadeInUp: {
           '0%': {

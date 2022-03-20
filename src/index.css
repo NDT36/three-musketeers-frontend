@@ -4,12 +4,27 @@
 
 html {
   font-family: 'Times New Roman', Times, serif;
-  color: #333333;
-  background-color: rgb(10, 36, 36);
+  color: #fff;
+  /* background-color: rgb(10, 36, 36); */
+  background-color: #105f49;
 }
 
 html,
 body,
 #root {
   height: 100%;
+}
+
+.bg-white-linear {
+  background: rgb(244, 244, 244);
+  background: linear-gradient(
+    180deg,
+    rgba(244, 244, 244, 1) 0%,
+    rgba(255, 255, 255, 0) 100%,
+    rgba(0, 212, 255, 1) 100%
+  );
+}
+
+.hr-gradient {
+  background: radial-gradient(50% 50% at 50% 50%, #000000 0%, rgba(0, 0, 0, 0) 100%);
 }

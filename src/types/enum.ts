@@ -24,7 +24,8 @@ export const RoutePath = {
   CREATE: '/create',
   ASSET: '/asset',
   MORE: '/more',
-  Notification: '/notification',
+  NOTIFICATION: '/notification',
+  SOURCE: '/source',
 };
 
 export enum LoginSocialType {

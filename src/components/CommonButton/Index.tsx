@@ -9,7 +9,7 @@ const CommonButton: FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = function
   return (
     <button
       className={cls(
-        'w-full p-2 outline-none transition duration-300 border-solid border border-[silver] rounded-md hover:bg-[#105F49] hover:text-white',
+        'w-full p-2 outline-none transition duration-300 border-solid border border-[silver] rounded-md hover:bg-primary hover:text-white',
         className
       )}
       {...props}
