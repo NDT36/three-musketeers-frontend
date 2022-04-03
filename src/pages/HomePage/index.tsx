@@ -14,6 +14,7 @@ import iconSaving from 'assets/icons-v2/icon-saving.svg';
 import iconSavingGray from 'assets/icons-v2/icon-saving-2.svg';
 import iconLendGray from 'assets/icons-v2/icon-lend-2.svg';
 import iconPayment from 'assets/icons-v2/icon-payment.svg';
+import { RoutePath } from 'types/enum';
 
 export const data = [
   ['Recently data', 'In', 'Out', 'Saving'],
@@ -85,7 +86,7 @@ function HomePage() {
               <div className="h-[85px] flex items-center justify-center">
                 {/* Menu item */}
                 <div className="h-[4.375rem] flex justify-between items-center">
-                  <a href="#/source" className="h-full w-20">
+                  <a href={`#${RoutePath.SOURCE}`} className="h-full w-20">
                     <div className="w-full h-full">
                       <div className="w-full flex justify-center">
                         <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">

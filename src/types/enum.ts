@@ -26,6 +26,7 @@ export const RoutePath = {
   MORE: '/more',
   NOTIFICATION: '/notification',
   SOURCE: '/source',
+  CREATE_SOURCE: '/source/create',
 };
 
 export enum LoginSocialType {

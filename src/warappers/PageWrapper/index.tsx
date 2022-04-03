@@ -12,6 +12,7 @@ import { RoutePath } from 'types/enum';
 import UserUpdater from 'state/user/updater';
 import Loader from 'components/Loader';
 import SourcePage from 'pages/SourcePage';
+import CreateSourcePage from 'pages/CreateSource';
 
 const assignMenu = (component: React.ReactNode) => (
   <>
@@ -26,7 +27,7 @@ const PageWrapper = () => {
   }
 
   return (
-    <div className="app-wrapper relative mx-auto rounded-tl-lg rounded-tr-lg bg-primary min-h-screen py-5 pb-20">
+    <div className="h-full app-wrapper relative mx-auto rounded-tl-lg rounded-tr-lg bg-primary pt-5">
       <>
         <UserUpdater />
         <Loader />
@@ -40,6 +41,7 @@ const PageWrapper = () => {
         <Route path={RoutePath.MORE} element={assignMenu(<MorePage />)} />
         <Route path={RoutePath.NOTIFICATION} element={assignMenu(<NotiPage />)} />
         <Route path={RoutePath.SOURCE} element={<SourcePage />} />
+        <Route path={RoutePath.CREATE_SOURCE} element={<CreateSourcePage />} />
       </Routes>
     </div>
   );

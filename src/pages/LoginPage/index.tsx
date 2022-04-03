@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { useAlert } from 'react-alert';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useSetLoading } from 'state/global/hooks';
+import { useLoading } from 'state/global/hooks';
 import { LoginSocialType } from 'types/enum';
 import { loginByFirebase } from 'utils/auth_google_provider_create';
 import Loader from 'components/Loader';
@@ -30,34 +30,35 @@ function Login() {
   const reactAlert = useAlert();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const setLoading = useSetLoading();
+  const setLoading = useLoading();
 
   const onLoginGoogle = async () => {
     setLoading(true);
 
-    const { result: idToken } = await catchError(loginByFirebase);
+    // const { result: idToken } = await catchError(loginByFirebase);
 
-    if (!idToken) return setLoading(false);
+    // if (!idToken) return setLoading(false);
 
-    const params = {
-      type: LoginSocialType.GOOGLE,
-      token: idToken,
+    // const params = {
+    //   type: LoginSocialType.GOOGLE,
+    //   token: idToken,
+    // };
+
+    // const { error, result } = await callApi(loginBySocial(params));
+
+    // if (error) reactAlert.error(t(`error.${error}`));
+
+    // if (result) {
+    const fake = {
+      accessToken:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiQUNDRVNTX1RPS0VOIiwiaWF0IjoxNjQ3NDQxNDgwLCJleHAiOjE2NDc0NDI2ODB9.8XrpafUmtXMvIV1l5OyGqTQrCyTMsOWMSnL4dXt4X5E',
+      refreshToken:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiUkVGUkVTSF9UT0tFTiIsImlhdCI6MTY0NzE5NDk4OSwiZXhwIjoxNjQ5Nzg2OTg5fQ.rfdcAjNU_ZlUZL5gQTnBXkBQWbh3n92WCJcFPk5ATfk',
     };
-
-    const { error, result } = await callApi(loginBySocial(params));
-
-    if (error) reactAlert.error(t(`error.${error}`));
-
-    if (result) {
-      // const fake = {
-      //   accessToken:
-      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiQUNDRVNTX1RPS0VOIiwiaWF0IjoxNjQ3NDQxNDgwLCJleHAiOjE2NDc0NDI2ODB9.8XrpafUmtXMvIV1l5OyGqTQrCyTMsOWMSnL4dXt4X5E',
-      //   refreshToken:
-      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiUkVGUkVTSF9UT0tFTiIsImlhdCI6MTY0NzE5NDk4OSwiZXhwIjoxNjQ5Nzg2OTg5fQ.rfdcAjNU_ZlUZL5gQTnBXkBQWbh3n92WCJcFPk5ATfk',
-      // };
-      setTokenToCookies(result.data);
-      navigate('/home');
-    }
+    setTokenToCookies(fake);
+    // setTokenToCookies(result.data);
+    navigate('/home');
+    // }
 
     setLoading(false);
   };

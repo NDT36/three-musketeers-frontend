@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 interface IProps {
   title: string;
+  onGoBack?: () => void;
 }
 
 const SubPageWrapper: FC<IProps> = (props) => {
@@ -12,18 +13,18 @@ const SubPageWrapper: FC<IProps> = (props) => {
   const goBack = () => navigate(-1);
 
   return (
-    <div>
-      <div className="h-[35px] relative">
+    <>
+      <div className="h-[35px] relative px-2 bg-primary">
         <div className="text-2xl text-center font-bold">{props.title}</div>
         <div
-          onClick={goBack}
-          className="h-full w-[35px] flex justify-center items-center absolute top-0 right-0"
+          onClick={props.onGoBack || goBack}
+          className="h-full w-[35px] flex justify-center items-center absolute top-0 right-0 cursor-pointer"
         >
           <img src={iconBack} alt="Back" />
         </div>
       </div>
       {props.children}
-    </div>
+    </>
   );
 };
 

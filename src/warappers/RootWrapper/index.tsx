@@ -6,7 +6,7 @@ const PageWrapper = lazy(() => import('warappers/PageWrapper'));
 
 export default function RootWrapper() {
   return (
-    <div className="app-wrapper relative max-w-[450px] mx-auto border border-white rounded-tl-lg rounded-tr-lg min-h-screen">
+    <div className="app-wrapper relative max-w-[450px] mx-auto border border-white rounded-tl-lg rounded-tr-lg h-full min-h-screen">
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/*" element={<PageWrapper />} />

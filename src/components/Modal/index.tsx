@@ -1,3 +1,4 @@
+import SubPageWrapper from 'components/SubPageWrapper/SubPageWrapper';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { timeout } from 'utils';
 
@@ -37,34 +38,16 @@ const Modal: FC<Props> = ({ title, subTitle, isVisible, children, onClose: handl
   }, [isVisible, addAnimationClose, visible, handleClose]);
 
   return visible ? (
-    <div className="fixed z-40 inset-0 h-full w-full">
+    <div className="fixed z-40 inset-0 h-full w-full ">
       <div className="max-w-[450px] h-full mx-auto relative flex justify-center items-end overflow-hidden">
-        <div className="opacity-30 absolute inset-0 bg-[#656565]" onClick={handleClose}></div>
-
-        <div className=" w-full mx-auto">
+        <div className=" w-full h-full mx-auto">
           <div
             ref={contentRef}
-            className="animate-[fadeInUp_0.25s_ease] border-0 rounded-t-lg shadow-lg relative flex flex-col w-full bg-white"
+            className="animate-[fadeInUp_0.25s_ease] rounded-t-lg shadow-lg relative flex flex-col w-full h-full border bg-primary  p-2 py-6 "
           >
-            <div className="flex items-center justify-center border-b border-blueGray-200">
-              {title && (
-                <>
-                  <div className="flex flex-col text-center p-2">
-                    <h3 className="text-2xl font-semibold">{title}</h3>
-                    {subTitle && <h3 className="text-sm
-                     p-2">"{subTitle}"</h3>}
-                  </div>
-                  <div
-                    className="absolute right-2 top-0 w-[40px] h-[50px] flex items-center justify-center cursor-pointer text-red-400 select-none"
-                    onClick={handleClose}
-                  >
-                    X
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="w-full h-full py-2">{children}</div>
+            <SubPageWrapper title="Create source" onGoBack={handleClose}>
+              {children}
+            </SubPageWrapper>
           </div>
         </div>
       </div>

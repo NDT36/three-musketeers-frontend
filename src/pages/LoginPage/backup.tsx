@@ -8,7 +8,7 @@ import React, { useEffect } from 'react';
 import { useAlert } from 'react-alert';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useSetLoading } from 'state/global/hooks';
+import { useLoading } from 'state/global/hooks';
 import { LoginSocialType } from 'types/enum';
 import { loginByFirebase } from 'utils/auth_google_provider_create';
 import * as Yup from 'yup';
@@ -32,7 +32,7 @@ function Login() {
   const reactAlert = useAlert();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const setLoading = useSetLoading();
+  const setLoading = useLoading();
 
   const validationSchema: Yup.SchemaOf<ILoginParams> = Yup.object().shape({
     email: Yup.string()
