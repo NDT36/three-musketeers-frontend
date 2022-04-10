@@ -1,10 +1,11 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import iconMathMul from 'assets/icons-v2/icon-math-multiplication.svg';
 import iconBackspace from 'assets/icons-v2/icon-backspace-erase.svg';
 import iconDivision from 'assets/icons-v2/icon-math-division.svg';
 import iconMinus from 'assets/icons-v2/icon-math-minus.svg';
 import iconPlus from 'assets/icons-v2/icon-math-plus.svg';
 import { calcFromString, formatCurrency } from 'utils';
+import Modal from 'components/Modal';
 
 interface BalanceInputProps {
   balance: number;
@@ -13,11 +14,22 @@ interface BalanceInputProps {
 const operators = ['+', '-', '*', '/'];
 const BalanceInput: FC<BalanceInputProps> = (props) => {
   const [suggestions, setSuggestions] = useState([100000, 200000, 300000]);
-  const [flag, setFlag] = useState<number>(0);
+  const [flag, setFlag] = useState<number>(props.balance);
   const [calc, setCalc] = useState<string[]>([]);
+  const [isVisible, setIsVisible] = useState(false);
 
-  const handleCalc = () => {};
+  const handleOpenKeyboard = () => {
+    setIsVisible(true);
+  };
   // calcFromString
+
+  const handleCloseKeyboard = () => {
+    const result = calcFromString(calc.join('') + flag);
+    props.onBalanceUpdate(result);
+    setCalc([]);
+    setFlag(result);
+    setIsVisible(false);
+  };
 
   const handlePressNumber = (num: number) => flag * 10 + num;
 
@@ -50,9 +62,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
     }
 
     if (key === '=') {
-      const result = calcFromString(calc.join('') + flag);
-      setCalc([]);
-      setFlag(result);
+      handleCloseKeyboard();
     }
 
     if (key === 'C') {
@@ -83,6 +93,13 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
     }
   }, [flag]);
 
+  useEffect(() => {
+    if (props.balance === 0) {
+      setFlag(0);
+      setCalc([]);
+    }
+  }, [props.balance]);
+
   const handleStr = (calc: string[], flag: number) => {
     calc = calc.map((item) => (operators.includes(item) ? item : formatCurrency(Number(item))));
     const str =
@@ -99,11 +116,14 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
 
   return (
     <>
-      <div className="h-[65px] text-gray-600 font-bold flex justify-center items-center select-none bg-white rounded-xl text-4xl">
+      <div
+        onClick={handleOpenKeyboard}
+        className="h-[65px] text-gray-600 font-bold flex justify-center items-center select-none bg-white rounded-xl text-4xl"
+      >
         {handleStr(calc, flag)}
       </div>
-      <div className="fixed bottom-0 left-0 w-full z-50">
-        <div className="max-w-[450px] h-full mx-auto px-2.5 py-5 bg-red flex items-center justify-center border border-b-0 border-orange-400 rounded-t-2xl bg-[#F6F6F6] text-xl">
+      <Modal isVisible={isVisible} onClose={handleCloseKeyboard}>
+        <div className="max-w-[450px] w-full mx-auto px-2.5 py-5 bg-red flex items-center justify-center rounded-t-2xl bg-[#F6F6F6] text-xl">
           <div className="w-full">
             {/* Suggestion */}
             <div className="h-[35px] flex justify-between text-primary font-bold text-xs mb-2">
@@ -111,7 +131,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
                 <div
                   key={index}
                   onClick={() => onApplySuggest(suggestion)}
-                  className="w-[30%] flex items-center justify-center bg-[#c1d0ca] rounded-md"
+                  className="w-[30%] cursor-pointer flex items-center justify-center bg-[#c1d0ca] rounded-md"
                 >
                   {formatCurrency(suggestion)}
                 </div>
@@ -119,15 +139,18 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
             </div>
             {/* Number */}
             <div className="flex justify-between font-bold text-white">
-              <div onClick={() => onPressBtn('AC')} className="w-1/4 h-full p-1">
-                <div className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center justify-center">
+              <div className="w-1/4 h-full p-1">
+                <div
+                  onClick={() => onPressBtn('AC')}
+                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center cursor-pointer justify-center"
+                >
                   AC
                 </div>
               </div>
               <div className="w-1/4 h-full p-1">
                 <div
                   onClick={() => onPressBtn('/')}
-                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center justify-center"
+                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center cursor-pointer justify-center"
                 >
                   <img src={iconDivision} alt="/" />
                 </div>
@@ -135,7 +158,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
               <div className="w-1/4 h-full p-1">
                 <div
                   onClick={() => onPressBtn('*')}
-                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center justify-center"
+                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center cursor-pointer justify-center"
                 >
                   <img src={iconMathMul} alt="x" />
                 </div>
@@ -143,7 +166,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
               <div className="w-1/4 h-full p-1">
                 <div
                   onClick={() => onPressBtn('C')}
-                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center justify-center"
+                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center cursor-pointer justify-center"
                 >
                   <img src={iconBackspace} alt="C" />
                 </div>
@@ -152,24 +175,24 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
             {/* Number */}
             <div className="flex justify-between font-bold text-[#333]">
               <div onClick={() => onPressBtn('7')} className="w-1/4 h-full p-1">
-                <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                   7
                 </div>
               </div>
               <div onClick={() => onPressBtn('8')} className="w-1/4 h-full p-1">
-                <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                   8
                 </div>
               </div>
               <div onClick={() => onPressBtn('9')} className="w-1/4 h-full p-1">
-                <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                   9
                 </div>
               </div>
               <div className="w-1/4 h-full p-1">
                 <div
                   onClick={() => onPressBtn('-')}
-                  className="h-[45px] bg-[#7a9b8f] text-white rounded-md flex items-center justify-center"
+                  className="h-[45px] bg-[#7a9b8f] text-white rounded-md flex items-center cursor-pointer justify-center"
                 >
                   <img src={iconMinus} alt="-" />
                 </div>
@@ -178,22 +201,22 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
             {/* Number */}
             <div className="flex justify-between font-bold text-[#333]">
               <div onClick={() => onPressBtn('4')} className="w-1/4 h-full p-1">
-                <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                   4
                 </div>
               </div>
               <div onClick={() => onPressBtn('5')} className="w-1/4 h-full p-1">
-                <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                   5
                 </div>
               </div>
               <div onClick={() => onPressBtn('6')} className="w-1/4 h-full p-1">
-                <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                   6
                 </div>
               </div>
               <div onClick={() => onPressBtn('+')} className="w-1/4 h-full p-1">
-                <div className="h-[45px] bg-[#7a9b8f] text-white rounded-md flex items-center justify-center">
+                <div className="h-[45px] bg-[#7a9b8f] text-white rounded-md flex items-center cursor-pointer justify-center">
                   <img src={iconPlus} alt="+" />
                 </div>
               </div>
@@ -203,43 +226,43 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
               <div className="w-3/4 flex flex-col">
                 <div className="w-full flex">
                   <div onClick={() => onPressBtn('1')} className="w-1/3 h-full p-1">
-                    <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                    <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                       1
                     </div>
                   </div>
                   <div onClick={() => onPressBtn('2')} className="w-1/3 h-full p-1">
-                    <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                    <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                       2
                     </div>
                   </div>
                   <div onClick={() => onPressBtn('3')} className="w-1/3 h-full p-1">
-                    <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                    <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                       3
                     </div>
                   </div>
                 </div>
                 <div className="w-full flex">
                   <div onClick={() => onPressBtn('000')} className="w-2/3 h-full p-1">
-                    <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                    <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                       000
                     </div>
                   </div>
                   <div onClick={() => onPressBtn('0')} className="w-1/3 h-full p-1">
-                    <div className="h-[45px] bg-white rounded-md flex items-center justify-center">
+                    <div className="h-[45px] bg-white rounded-md flex items-center cursor-pointer justify-center">
                       0
                     </div>
                   </div>
                 </div>
               </div>
               <div onClick={() => onPressBtn('=')} className="w-1/4 p-1">
-                <div className="bg-[#7a9b8f] text-white rounded-md flex items-center justify-center h-full">
+                <div className="bg-[#7a9b8f] text-white rounded-md flex items-center cursor-pointer justify-center h-full">
                   =
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </Modal>
     </>
   );
 };

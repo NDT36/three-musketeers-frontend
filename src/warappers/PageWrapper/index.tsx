@@ -13,6 +13,7 @@ import UserUpdater from 'state/user/updater';
 import Loader from 'components/Loader';
 import SourcePage from 'pages/SourcePage';
 import CreateSourcePage from 'pages/CreateSource';
+import EditSourcePage from 'pages/EditSourcePage';
 
 const assignMenu = (component: React.ReactNode) => (
   <>
@@ -42,6 +43,7 @@ const PageWrapper = () => {
         <Route path={RoutePath.NOTIFICATION} element={assignMenu(<NotiPage />)} />
         <Route path={RoutePath.SOURCE} element={<SourcePage />} />
         <Route path={RoutePath.CREATE_SOURCE} element={<CreateSourcePage />} />
+        <Route path={RoutePath.EDIT_SOURCE} element={<EditSourcePage />} />
       </Routes>
     </div>
   );

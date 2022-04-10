@@ -27,9 +27,15 @@ export const RoutePath = {
   NOTIFICATION: '/notification',
   SOURCE: '/source',
   CREATE_SOURCE: '/source/create',
+  EDIT_SOURCE: '/source/:id',
 };
 
 export enum LoginSocialType {
   GOOGLE = 'Google',
   FACEBOOK = 'Facebook',
+}
+
+export enum CommonStatus {
+  ACTIVE = 1,
+  INACTIVE = 0,
 }

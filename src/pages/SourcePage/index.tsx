@@ -5,11 +5,13 @@ import SourceCard from 'components/SourceCard';
 import { formatCurrency } from 'utils';
 import { useLoading } from 'state/global/hooks';
 import { callApi } from 'api/axios';
-import { fetchSources } from 'api/sources';
+import { apiDeleteSource, fetchSources } from 'api/sources';
 import ListLoading from 'components/ListLoading';
 import SourceCardSkeleton from 'components/SourceCard/SourceCardSkeleton';
 import Modal from 'components/Modal';
 import { RoutePath } from 'types/enum';
+import { useAlert } from 'react-alert';
+import { useTranslation } from 'react-i18next';
 
 export interface IAssetSources {
   _id: string;
@@ -23,6 +25,9 @@ interface IProps {}
 const SourcePage: FC<IProps> = (props) => {
   const [sourceLoading, setSourceLoading] = useState(false);
   const [sources, setSource] = useState<Array<IAssetSources>>([]);
+  const reactAlert = useAlert();
+  const setLoading = useLoading();
+  const { t } = useTranslation();
 
   const fetchListSources = useCallback(async () => {
     setSourceLoading(true);
@@ -34,6 +39,22 @@ const SourcePage: FC<IProps> = (props) => {
       })
       .finally(() => setSourceLoading(false));
   }, []);
+
+  const deleteSource = (id: string) => {
+    setLoading(true);
+
+    callApi(apiDeleteSource(id))
+      .then(({ error }) => {
+        if (error) reactAlert.error(t(`error.${error}`));
+        if (!error) {
+          reactAlert.success('Success');
+          fetchListSources();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const totalBalance = sources.reduce((a, b) => a + Number(b.balance), 0);
 
@@ -73,7 +94,7 @@ const SourcePage: FC<IProps> = (props) => {
           </>
         ) : (
           sources.map((item) => (
-            <SourceCard title={item.name} balance={formatCurrency(Number(item.balance))} />
+            <SourceCard source={item} onDelete={() => deleteSource(item._id)} />
           ))
         )}
       </SubPageWrapper>

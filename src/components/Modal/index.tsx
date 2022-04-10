@@ -1,15 +1,12 @@
-import SubPageWrapper from 'components/SubPageWrapper/SubPageWrapper';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { timeout } from 'utils';
 
 type Props = {
-  title?: string;
-  subTitle?: string;
   isVisible: boolean;
   onClose: () => void;
 };
 
-const Modal: FC<Props> = ({ title, subTitle, isVisible, children, onClose: handleClose }) => {
+const Modal: FC<Props> = ({ isVisible, children, onClose: handleClose }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(isVisible);
 
@@ -28,7 +25,7 @@ const Modal: FC<Props> = ({ title, subTitle, isVisible, children, onClose: handl
 
         if (!isVisible) {
           addAnimationClose();
-          handleClose();
+          // handleClose();
 
           await timeout(200);
           setVisible(false);
@@ -38,16 +35,19 @@ const Modal: FC<Props> = ({ title, subTitle, isVisible, children, onClose: handl
   }, [isVisible, addAnimationClose, visible, handleClose]);
 
   return visible ? (
-    <div className="fixed z-40 inset-0 h-full w-full ">
+    <div className="fixed z-40 inset-0 h-full w-full">
       <div className="max-w-[450px] h-full mx-auto relative flex justify-center items-end overflow-hidden">
-        <div className=" w-full h-full mx-auto">
+        <div
+          className="opacity-30 absolute inset-0 bg-[#656565]"
+          onClick={() => handleClose()}
+        ></div>
+
+        <div className=" w-full mx-auto">
           <div
             ref={contentRef}
-            className="animate-[fadeInUp_0.25s_ease] rounded-t-lg shadow-lg relative flex flex-col w-full h-full border bg-primary  p-2 py-6 "
+            className="animate-[fadeInUp_0.25s_ease] relative flex flex-col w-full"
           >
-            <SubPageWrapper title="Create source" onGoBack={handleClose}>
-              {children}
-            </SubPageWrapper>
+            <div className="w-full h-full">{children}</div>
           </div>
         </div>
       </div>

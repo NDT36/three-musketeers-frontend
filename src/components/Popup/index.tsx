@@ -46,7 +46,7 @@ const Popup: FC<Props> = ({ title, isVisible, children, onClose: handleClose }) 
             className="animate-[scaleUp_0.25s_ease] border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white"
           >
             <div className=" flex items-center justify-center border-b border-blueGray-200">
-              <h3 className="text-2xl font-semibold p-2">{title}</h3>
+              <h3 className="text-center text-2xl font-semibold p-2 text-gray-600">{title}</h3>
             </div>
 
             <div className="w-full h-full py-2">{children}</div>
