@@ -3,7 +3,7 @@ import LinearWrapper from 'components/LinearWrapper';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-import { formatLongString } from 'utils';
+import { formatCurrency, formatLongString } from 'utils';
 import Chart, { ChartWrapperOptions } from 'react-google-charts';
 import iconShow from 'assets/icons-v2/icon-show.svg';
 import iconSources from 'assets/icons-v2/icon-source.svg';
@@ -15,6 +15,7 @@ import iconSavingGray from 'assets/icons-v2/icon-saving-2.svg';
 import iconLendGray from 'assets/icons-v2/icon-lend-2.svg';
 import iconPayment from 'assets/icons-v2/icon-payment.svg';
 import { RoutePath } from 'types/enum';
+import ListLoading from 'components/ListLoading';
 
 export const data = [
   ['Recently data', 'In', 'Out', 'Saving'],
@@ -41,10 +42,17 @@ export const options: ChartWrapperOptions['options'] = {
 
 function HomePage() {
   const profile = useSelector((state: AppState) => state.user.profile);
+  const { sources } = useSelector((state: AppState) => state.resources);
+
+  const totalBalance = sources ? sources.reduce((a, b) => a + Number(b.balance), 0) : 0;
 
   const formatName = (name: string) => {
     const result = formatLongString(name, 20);
     return result;
+  };
+
+  const handleCurrency = () => {
+    return sources ? formatCurrency(totalBalance) || 0 : <ListLoading loading={true} />;
   };
 
   return (
@@ -79,7 +87,7 @@ function HomePage() {
                   </div>
                 </div>
                 <div className="text-5xl text-center h-[5.5rem] flex justify-center items-center font-[Arya]">
-                  100,000,000
+                  {handleCurrency()}
                 </div>
               </div>
               <div className="h-0.5 bg-slate-500 hr-gradient"></div>

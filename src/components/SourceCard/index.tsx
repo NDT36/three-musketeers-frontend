@@ -13,9 +13,10 @@ import { formatCurrency } from 'utils';
 type Props = {
   source: IAssetSources;
   onDelete: () => void;
+  isHideMenu?: boolean;
 };
 
-const SourceCard: FC<Props> = ({ source, onDelete }) => {
+const SourceCard: FC<Props> = ({ source, onDelete, ...props }) => {
   const [askVisible, setAskVisible] = useState(false);
   const navigate = useNavigate();
 
@@ -26,8 +27,17 @@ const SourceCard: FC<Props> = ({ source, onDelete }) => {
   const onOpenAskVisible = () => {
     setAskVisible(true);
   };
+
   const onClickEditSource = () => {
     navigate(RoutePath.EDIT_SOURCE.replace(':id', source._id));
+  };
+
+  const onClickEditBalance = () => {
+    navigate(RoutePath.EDIT_SOURCE_BALANCE.replace(':id', source._id));
+  };
+
+  const onClickTransferMoney = () => {
+    navigate(RoutePath.TRANSFER_MONEY.replace(':id', source._id));
   };
   return (
     <div className="flex justify-center items-center w-full h-[250px]">
@@ -70,56 +80,60 @@ const SourceCard: FC<Props> = ({ source, onDelete }) => {
             <div className="h-0.5 bg-slate-500 hr-gradient"></div>
             <div className="h-[85px] flex items-center justify-center">
               {/* Menu item */}
-              <div className="h-[4.375rem] flex justify-between items-center">
-                <div className="h-full w-20 cursor-pointer">
-                  <div className="w-full h-full">
-                    <div className="w-full flex justify-center">
-                      <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
-                        <img src={iconTransfer} alt="icon-source" />
+              {!props.isHideMenu && (
+                <>
+                  <div className="h-[4.375rem] flex justify-between items-center">
+                    <div onClick={onClickTransferMoney} className="h-full w-20 cursor-pointer">
+                      <div className="w-full h-full">
+                        <div className="w-full flex justify-center">
+                          <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
+                            <img src={iconTransfer} alt="icon-source" />
+                          </div>
+                        </div>
+                        <div className="text-center h-[30px] flex items-center justify-center">
+                          Transfer
+                        </div>
                       </div>
                     </div>
-                    <div className="text-center h-[30px] flex items-center justify-center">
-                      Transfer
-                    </div>
-                  </div>
-                </div>
-                <div className="h-full w-20 cursor-pointer">
-                  <div className="w-full h-full">
-                    <div className="w-full flex justify-center">
-                      <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
-                        <img src={iconEditBalance} alt="icon-source" />
+                    <div onClick={onClickEditBalance} className="h-full w-20 cursor-pointer">
+                      <div className="w-full h-full">
+                        <div className="w-full flex justify-center">
+                          <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
+                            <img src={iconEditBalance} alt="icon-source" />
+                          </div>
+                        </div>
+                        <div className="text-center h-[30px] flex items-center justify-center">
+                          Edit balance
+                        </div>
                       </div>
                     </div>
-                    <div className="text-center h-[30px] flex items-center justify-center">
-                      Edit balance
-                    </div>
-                  </div>
-                </div>
-                <div onClick={onClickEditSource} className="h-full w-20 cursor-pointer">
-                  <div className="w-full h-full">
-                    <div className="w-full flex justify-center">
-                      <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
-                        <img src={iconEdit} alt="icon-source" />
+                    <div onClick={onClickEditSource} className="h-full w-20 cursor-pointer">
+                      <div className="w-full h-full">
+                        <div className="w-full flex justify-center">
+                          <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
+                            <img src={iconEdit} alt="icon-source" />
+                          </div>
+                        </div>
+                        <div className="text-center h-[30px] flex items-center justify-center">
+                          Edit
+                        </div>
                       </div>
                     </div>
-                    <div className="text-center h-[30px] flex items-center justify-center">
-                      Edit
-                    </div>
-                  </div>
-                </div>
-                <div onClick={onOpenAskVisible} className="h-full w-20 cursor-pointer">
-                  <div className="w-full h-full">
-                    <div className="w-full flex justify-center">
-                      <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
-                        <img src={iconDelete} alt="icon-source" />
+                    <div onClick={onOpenAskVisible} className="h-full w-20 cursor-pointer">
+                      <div className="w-full h-full">
+                        <div className="w-full flex justify-center">
+                          <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
+                            <img src={iconDelete} alt="icon-source" />
+                          </div>
+                        </div>
+                        <div className="text-center h-[30px] flex items-center justify-center">
+                          Delete
+                        </div>
                       </div>
                     </div>
-                    <div className="text-center h-[30px] flex items-center justify-center">
-                      Delete
-                    </div>
                   </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </div>
         </div>

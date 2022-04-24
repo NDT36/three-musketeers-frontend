@@ -34,7 +34,7 @@ export function calcFromString(str: string) {
 function groupPriority(str: string) {
   let flag = '';
   const results = [] as string[];
-  const params = str.match(/[+\-\*\/]*(\.\d+|\d+(\.\d+)?)/g) || [];
+  const params = str.match(/[+\-*/]*(\.\d+|\d+(\.\d+)?)/g) || [];
 
   if (!params.length || params.length === 1) return [str];
 
@@ -64,7 +64,7 @@ function calcMulDiv(params: string[]) {
   const rs = params.map((item) => {
     if (item.includes('*') || item.includes('/')) {
       const operator = item[0] === '+' || item[0] === '-' ? item[0] : '+';
-      const p = item.match(/[\*\/]*(\.\d+|\d+(\.\d+)?)/g) || [];
+      const p = item.match(/[*/]*(\.\d+|\d+(\.\d+)?)/g) || [];
 
       const rs = p.reduce((acc, cur) => {
         if (cur.includes('*')) acc *= Number(cur.replace('*', ''));

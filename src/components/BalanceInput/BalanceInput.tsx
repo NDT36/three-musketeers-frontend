@@ -98,6 +98,9 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
       setFlag(0);
       setCalc([]);
     }
+    if (props.balance !== 0) {
+      setFlag(props.balance);
+    }
   }, [props.balance]);
 
   const handleStr = (calc: string[], flag: number) => {
@@ -122,7 +125,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
       >
         {handleStr(calc, flag)}
       </div>
-      <Modal isVisible={isVisible} onClose={handleCloseKeyboard}>
+      <Modal isVisible={isVisible} isCalc={true} onClose={handleCloseKeyboard}>
         <div className="max-w-[450px] w-full mx-auto px-2.5 py-5 bg-red flex items-center justify-center rounded-t-2xl bg-[#F6F6F6] text-xl">
           <div className="w-full">
             {/* Suggestion */}
@@ -142,7 +145,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
               <div className="w-1/4 h-full p-1">
                 <div
                   onClick={() => onPressBtn('AC')}
-                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center cursor-pointer justify-center"
+                  className="h-[45px] bg-[#39725c] rounded-md flex items-center cursor-pointer justify-center"
                 >
                   AC
                 </div>
@@ -150,7 +153,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
               <div className="w-1/4 h-full p-1">
                 <div
                   onClick={() => onPressBtn('/')}
-                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center cursor-pointer justify-center"
+                  className="h-[45px] bg-[#39725c] rounded-md flex items-center cursor-pointer justify-center"
                 >
                   <img src={iconDivision} alt="/" />
                 </div>
@@ -158,7 +161,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
               <div className="w-1/4 h-full p-1">
                 <div
                   onClick={() => onPressBtn('*')}
-                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center cursor-pointer justify-center"
+                  className="h-[45px] bg-[#39725c] rounded-md flex items-center cursor-pointer justify-center"
                 >
                   <img src={iconMathMul} alt="x" />
                 </div>
@@ -166,7 +169,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
               <div className="w-1/4 h-full p-1">
                 <div
                   onClick={() => onPressBtn('C')}
-                  className="h-[45px] bg-[#7a9b8f] rounded-md flex items-center cursor-pointer justify-center"
+                  className="h-[45px] bg-[#39725c] rounded-md flex items-center cursor-pointer justify-center"
                 >
                   <img src={iconBackspace} alt="C" />
                 </div>
@@ -192,7 +195,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
               <div className="w-1/4 h-full p-1">
                 <div
                   onClick={() => onPressBtn('-')}
-                  className="h-[45px] bg-[#7a9b8f] text-white rounded-md flex items-center cursor-pointer justify-center"
+                  className="h-[45px] bg-[#39725c] text-white rounded-md flex items-center cursor-pointer justify-center"
                 >
                   <img src={iconMinus} alt="-" />
                 </div>
@@ -216,7 +219,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
                 </div>
               </div>
               <div onClick={() => onPressBtn('+')} className="w-1/4 h-full p-1">
-                <div className="h-[45px] bg-[#7a9b8f] text-white rounded-md flex items-center cursor-pointer justify-center">
+                <div className="h-[45px] bg-[#39725c] text-white rounded-md flex items-center cursor-pointer justify-center">
                   <img src={iconPlus} alt="+" />
                 </div>
               </div>
@@ -255,7 +258,7 @@ const BalanceInput: FC<BalanceInputProps> = (props) => {
                 </div>
               </div>
               <div onClick={() => onPressBtn('=')} className="w-1/4 p-1">
-                <div className="bg-[#7a9b8f] text-white rounded-md flex items-center cursor-pointer justify-center h-full">
+                <div className="bg-[#39725c] text-white rounded-md flex items-center cursor-pointer justify-center h-full">
                   =
                 </div>
               </div>

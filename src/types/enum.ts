@@ -28,6 +28,8 @@ export const RoutePath = {
   SOURCE: '/source',
   CREATE_SOURCE: '/source/create',
   EDIT_SOURCE: '/source/:id',
+  EDIT_SOURCE_BALANCE: '/source/:id/edit-balance',
+  TRANSFER_MONEY: '/source/:id/transfer-money',
 };
 
 export enum LoginSocialType {
@@ -38,4 +40,13 @@ export enum LoginSocialType {
 export enum CommonStatus {
   ACTIVE = 1,
   INACTIVE = 0,
+}
+
+export enum TransactionType {
+  EXPENSE = 1,
+  INCOME = 2,
+  LEND = 3,
+  DEBT = 4,
+  TRANSFER_MONEY = 5,
+  UPDATE_BALANCE = 6,
 }

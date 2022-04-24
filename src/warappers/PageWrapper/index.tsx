@@ -14,6 +14,9 @@ import Loader from 'components/Loader';
 import SourcePage from 'pages/SourcePage';
 import CreateSourcePage from 'pages/CreateSource';
 import EditSourcePage from 'pages/EditSourcePage';
+import EditBalancePage from 'pages/EditBalancePage';
+import TransferMoneyPage from 'pages/TransferBalancePage';
+import { CategoryUpdater, SourceUpdater } from 'state/resources/updater';
 
 const assignMenu = (component: React.ReactNode) => (
   <>
@@ -31,6 +34,8 @@ const PageWrapper = () => {
     <div className="h-full app-wrapper relative mx-auto rounded-tl-lg rounded-tr-lg bg-primary pt-5">
       <>
         <UserUpdater />
+        <SourceUpdater />
+        <CategoryUpdater />
         <Loader />
       </>
       <Routes>
@@ -44,6 +49,8 @@ const PageWrapper = () => {
         <Route path={RoutePath.SOURCE} element={<SourcePage />} />
         <Route path={RoutePath.CREATE_SOURCE} element={<CreateSourcePage />} />
         <Route path={RoutePath.EDIT_SOURCE} element={<EditSourcePage />} />
+        <Route path={RoutePath.EDIT_SOURCE_BALANCE} element={<EditBalancePage />} />
+        <Route path={RoutePath.TRANSFER_MONEY} element={<TransferMoneyPage />} />
       </Routes>
     </div>
   );

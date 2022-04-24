@@ -104,9 +104,9 @@ export async function catchError(callback: () => Promise<any>): Promise<any> {
   }
 }
 
-export async function callMultipleApi<T = any, D = any>(
-  callbacks: Array<() => Promise<AxiosResponse<IResult<T>, D>>>
-): Promise<{ error?: string; result?: Array<IResult<T>> }> {
+export async function callMultipleApi(
+  callbacks: Array<() => Promise<AxiosResponse<IResult<any>, any>>>
+): Promise<{ error?: string; result?: Array<IResult<any>> }> {
   try {
     const results = await Promise.all(callbacks.map((item) => item()));
 

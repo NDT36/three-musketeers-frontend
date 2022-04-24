@@ -12,6 +12,7 @@ import { apiUpdateSource, createSource, fetchDetailsSources } from 'api/sources'
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IAssetSources } from 'pages/SourcePage';
+import useFetchSourcesCallback from 'hooks/useFetchSourcesCallback';
 
 interface IProps {}
 export interface IUpdateSource {
@@ -25,6 +26,7 @@ const EditSourcePage: FC<IProps> = (props) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [source, setSource] = useState<IAssetSources | null>(null);
+  const fetchSource = useFetchSourcesCallback();
 
   const validationSchema: Yup.SchemaOf<IUpdateSource> = Yup.object().shape({
     name: Yup.string().min(0, 'Name is required').required('Name is required'),
@@ -50,12 +52,13 @@ const EditSourcePage: FC<IProps> = (props) => {
     if (error) reactAlert.error(t(`error.${error}`));
 
     if (!error) {
-      reactAlert.success('Update success');
-      formik.resetForm();
-      navigate(-1);
+      fetchSource().finally(() => {
+        reactAlert.success('Update success');
+        formik.resetForm();
+        navigate(-1);
+        setLoading(false);
+      });
     }
-
-    setLoading(false);
   };
 
   const formik = useFormik<IUpdateSource>({

@@ -24,86 +24,80 @@ import { AppState } from 'state';
 import SourceCard from 'components/SourceCard';
 import LinearWrapper from 'components/LinearWrapper';
 import Loading from 'components/ListLoading';
-import { ICategory } from 'state/resources/actions';
-import { TransactionType } from 'types/enum';
-import useFetchSourcesCallback from 'hooks/useFetchSourcesCallback';
-import useSetRecentlyCategoryCallback from 'hooks/useSetRecentlyCategoryCallback';
-import useSetRecentlySourceCallback from 'hooks/useSetRecentlySourceCallback';
 
 interface IProps {}
-export interface ICreateTransaction {
+export interface ITransferMoney {
   description?: string;
   balance: number;
-  source?: IAssetSources | null;
-  category?: ICategory | null;
+  targetSource?: IAssetSources | null;
   actionAt?: number;
 }
 
-const CreateTransactionPage: FC<IProps> = (props) => {
+const TransferMoneyPage: FC<IProps> = (props) => {
   const reactAlert = useAlert();
   const setLoading = useLoading();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
+  const [source, setSource] = useState<IAssetSources | null>(null);
   // const [change, setChange] = useState<number>(0);
   const [actionAt, setActionAt] = useState<string>(moment().format('YYYY-MM-DD'));
   const [targets, setTargets] = useState<IAssetSources[]>([]);
-  const [chooseCategories, setChooseCategories] = useState<ICategory[]>([]);
-  const { sources, recentlyCategoryId, recentlySourceId, categories } = useSelector(
-    (state: AppState) => state.resources
-  );
+  const { sources } = useSelector((state: AppState) => state.resources);
   const [isOpenModalChooseSource, setIsOpenModalChooseSource] = useState<boolean>(false);
-  const [isOpenModalChooseCategory, setIsOpenModalChooseCategory] = useState<boolean>(false);
 
-  const fetchListSources = useFetchSourcesCallback();
-  const setRecentlyCategory = useSetRecentlyCategoryCallback();
-  const setRecentlySource = useSetRecentlySourceCallback();
-
-  const validationSchema: Yup.SchemaOf<ICreateTransaction> = Yup.object().shape({
+  const validationSchema: Yup.SchemaOf<ITransferMoney> = Yup.object().shape({
     balance: Yup.number().min(0, 'Balance must be greater than 0').required('Balance is required'),
     description: Yup.string().max(255),
-    source: Yup.mixed<IAssetSources>().required('Source target source is required!'),
-    category: Yup.mixed<ICategory>().required('Category target source is required!'),
+    targetSource: Yup.mixed<IAssetSources>().required('Mission target source is required!'),
     actionAt: Yup.number(),
   });
 
-  const onSubmit = async (values: ICreateTransaction) => {
+  const fetchDetailsSource = async (id: string) => {
+    // setLoading(true);
+
+    const { error, result } = await callApi(fetchDetailsSources(String(id)));
+    if (error) reactAlert.error(t(`error.${error}`));
+
+    if (result) {
+      setSource(result.data);
+    }
+
+    // setLoading(false);
+  };
+
+  const onSubmit = async (values: ITransferMoney) => {
     setLoading(true);
 
     const { error } = await callApi(
       createTransaction({
-        categoryId: String(values.category?._id),
+        categoryId: null,
         description: values.description || '',
         actionAt: Date.now(),
         groupId: null,
-        money: -values.balance,
-        sourceId: String(values.source?._id),
-        targetSourceId: null,
-        type: TransactionType.EXPENSE,
+        money: values.balance,
+        sourceId: String(source?._id),
+        targetSourceId: String(values.targetSource?._id),
+        type: 5,
         users: [],
       })
     );
     if (error) reactAlert.error(t(`error.${error}`));
 
     if (!error) {
-      fetchListSources().finally(() => {
-        reactAlert.success('Edit balance success');
-        formik.resetForm();
-        setRecentlyCategory(values.category?._id || '');
-        setRecentlySource(values.source?._id || '');
-        navigate(-1);
-      });
+      reactAlert.success('Edit balance success');
+      formik.resetForm();
+      navigate(-1);
     }
 
     setLoading(false);
   };
 
-  const formik = useFormik<ICreateTransaction>({
+  const formik = useFormik<ITransferMoney>({
     initialValues: {
       description: '',
       balance: 0,
-      source: null,
-      category: null,
+      targetSource: null,
       actionAt: Date.now(),
     },
     validationSchema,
@@ -115,34 +109,21 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (sources && !formik.values.source) {
-      const targets = sources?.filter((item) => item);
-      setTargets(targets);
-
-      const recentlySource = sources?.find((item) => item._id === recentlySourceId);
-
-      const firstItem = recentlySource ? recentlySource : targets.find((item) => item);
-
-      if (firstItem) {
-        formik.setFieldValue('source', firstItem);
-      }
-    }
-  }, [sources, formik.values.source, recentlySourceId]);
+    fetchDetailsSource(String(id));
+  }, [id]);
 
   useEffect(() => {
-    if (categories && !formik.values.category) {
-      const targets = categories?.filter((item) => item);
-      setChooseCategories(targets);
+    if (source && sources && !formik.values.targetSource) {
+      const targets = sources?.filter((item) => item._id !== source._id);
+      setTargets(targets);
 
-      const recentlyCategory = categories?.find((item) => item._id === recentlyCategoryId);
-
-      const firstItem = recentlyCategory ? recentlyCategory : targets.find((item) => item);
+      const firstItem = targets.find((item) => item);
 
       if (firstItem) {
-        formik.setFieldValue('category', firstItem);
+        formik.setFieldValue('targetSource', firstItem);
       }
     }
-  }, [categories, formik.values.category, recentlyCategoryId]);
+  }, [source, sources, formik.values.targetSource]);
 
   // useEffect(() => {
   //   if (source) {
@@ -151,14 +132,8 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   // }, [change, source?.balance, formik.values.balance]);
 
   const onChooseSource = (source: IAssetSources) => {
-    if (source._id !== formik.values.source?._id) {
-      formik.setFieldValue('source', source);
-    }
-  };
-
-  const onChooseCategory = (category: ICategory) => {
-    if (category._id !== formik.values.category?._id) {
-      formik.setFieldValue('category', category);
+    if (source._id !== formik.values.targetSource?._id) {
+      formik.setFieldValue('targetSource', source);
     }
   };
 
@@ -168,48 +143,8 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   const onOpenModalChooseSource = () => {
     setIsOpenModalChooseSource(true);
   };
-  const onCloseModalChooseCategory = () => {
-    setIsOpenModalChooseCategory(false);
-  };
-  const onOpenModalChooseCategory = () => {
-    setIsOpenModalChooseCategory(true);
-  };
   return (
     <div className="h-full flex flex-col">
-      {/* Select source */}
-      <Modal
-        isFullHeight={true}
-        isVisible={isOpenModalChooseCategory}
-        onClose={onCloseModalChooseCategory}
-      >
-        <div className="w-full h-full bg-primary px-2">
-          <SubPageWrapper onGoBack={onCloseModalChooseCategory} title="">
-            <div className="font-bold text-4xl px-2">Choose Category</div>
-            <br />
-            {chooseCategories && chooseCategories.length
-              ? chooseCategories.map((item) => (
-                  <div key={item._id} onClick={() => onChooseCategory(item)}>
-                    {item._id === formik.values.category?._id ? (
-                      <LinearWrapper customBg="bg-white" className="rounded-3xl px-2">
-                        <div className="h-full w-full py-2">
-                          <div className="h-16 flex justify-center items-center text-3xl font-bold bg-secondary rounded-3xl">
-                            {item.name}
-                          </div>
-                        </div>
-                      </LinearWrapper>
-                    ) : (
-                      <div className="h-full w-full py-2">
-                        <div className="h-16 flex justify-center items-center text-3xl font-bold bg-secondary rounded-3xl  border border-white">
-                          {item.name}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))
-              : ''}
-          </SubPageWrapper>
-        </div>
-      </Modal>
       <Modal
         isFullHeight={true}
         isVisible={isOpenModalChooseSource}
@@ -222,7 +157,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
             {targets && targets.length
               ? targets.map((item) => (
                   <div key={item._id} onClick={() => onChooseSource(item)}>
-                    {item._id === formik.values.source?._id ? (
+                    {item._id === formik.values.targetSource?._id ? (
                       <LinearWrapper customBg="bg-white" className="rounded-3xl px-2">
                         <SourceCard isHideMenu={true} source={item} onDelete={() => {}} />
                       </LinearWrapper>
@@ -238,9 +173,15 @@ const CreateTransactionPage: FC<IProps> = (props) => {
         </div>
       </Modal>
       <SubPageWrapper title="">
-        <div className="font-bold text-4xl px-2">Create Transaction</div>
+        <div className="font-bold text-4xl px-2">Transfer Money</div>
         <br />
-
+        <div className="font-bold h-10 text-4xl px-2 text-[#E9FFAC]">
+          {source ? source.name : <Loading loading={true} />}
+        </div>
+        <br />
+        <div className="h-10 font-bold text-4xl px-2">
+          {source ? formatCurrency(Number(source?.balance || 0)) : <Loading loading={true} />}
+        </div>
         {/* Body */}
         <form
           action=""
@@ -250,29 +191,16 @@ const CreateTransactionPage: FC<IProps> = (props) => {
           <label htmlFor="name">Balance</label>
           <BalanceInput balance={formik.values.balance} onBalanceUpdate={handleUpdateBalance} />
           <br />
-          <NoFormInput onEdit={onOpenModalChooseCategory} title="Categories" icon={iconSource2}>
+          <NoFormInput onEdit={onOpenModalChooseSource} title="Target source" icon={iconSource2}>
             <div className="text-xl text-white font-bold">
-              {formik.values.category ? (
+              {formik.values.targetSource ? (
                 <>
-                  <div>{formik.values.category.name}</div>
-                </>
-              ) : categories ? (
-                <div className="text-center">Category empty</div>
-              ) : (
-                <Loading loading={true} />
-              )}
-            </div>
-          </NoFormInput>
-          <NoFormInput onEdit={onOpenModalChooseSource} title="Source" icon={iconSource2}>
-            <div className="text-xl text-white font-bold">
-              {formik.values.source ? (
-                <>
-                  <div>{formik.values.source.name}</div>
+                  <div>{formik.values.targetSource.name}</div>
                   <div className="text-base">
-                    {formatCurrency(Number(formik.values.source.balance))}
+                    {formatCurrency(Number(formik.values.targetSource.balance))}
                   </div>
                 </>
-              ) : sources ? (
+              ) : source ? (
                 <div className="text-center">Source not found</div>
               ) : (
                 <Loading loading={true} />
@@ -285,7 +213,6 @@ const CreateTransactionPage: FC<IProps> = (props) => {
               <div>{actionAt}</div>
             </div>
           </NoFormInput>
-          <br />
 
           <FormTextArea
             name="description"
@@ -314,4 +241,4 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   );
 };
 
-export default CreateTransactionPage;
+export default TransferMoneyPage;

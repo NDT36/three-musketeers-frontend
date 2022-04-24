@@ -18,13 +18,13 @@ const FormTextArea: FC<IProps> = function ({ touched, error, ...props }) {
   }, [ref, touched, error]);
 
   return (
-    <div className="relative h-32 flex flex-col py-3">
-      <div className="px-0.5 absolute top-0 left-2.5 bg-white text-[silver]">{props.label}</div>
+    <div className="flex flex-col ">
+      <div className="px-0.5 text-[silver]">{props.label}</div>
       <textarea
         ref={ref}
         className="w-full p-2 outline-none transition duration-300 rounded-md text-neutral-500 border border-[silver]"
         cols={30}
-        rows={10}
+        rows={3}
         {...props}
       ></textarea>
       <div className="h-5 w-full">
