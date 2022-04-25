@@ -2,7 +2,7 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import MenuItem from './MenuItem';
 import iconHome from 'assets/icons-v2/icon-home.svg';
 import iconGroup from 'assets/icons/icon-group.png';
-import iconAdd from 'assets/icons/icon-add.png';
+import iconAdd from 'assets/icons-v2/icon-add.svg';
 import iconWallet from 'assets/icons/icon-wallet.png';
 import iconMore from 'assets/icons/icon-more.png';
 import { MenuKey, RoutePath } from 'types/enum';

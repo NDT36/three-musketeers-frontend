@@ -1,10 +1,12 @@
 import React, { FC, useEffect, useRef } from 'react';
 import iconPencil from 'assets/icons-v2/icon-pencil.svg';
+import classNames from 'classnames';
 
 interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
   title?: string;
   icon?: string;
   onEdit?: () => void;
+  iconRounded?: boolean;
 }
 const NoFormInput: FC<IProps> = function (props) {
   return (
@@ -13,7 +15,12 @@ const NoFormInput: FC<IProps> = function (props) {
       <div className="h-full w-full bg-secondary flex flex-row items-center rounded-[12px]">
         {/* Icon */}
         <div className="h-[65px] w-[65px] p-[7.5px]">
-          <div className="w-[50px] h-[50px] border border-white bg-white rounded-[17px] flex justify-center items-center">
+          <div
+            className={classNames(
+              'w-[50px] h-[50px] border border-white bg-white flex justify-center items-center',
+              props.iconRounded ? 'rounded-full' : 'rounded-[17px]'
+            )}
+          >
             {props.icon && <img src={props.icon} alt="Edit" />}
           </div>
         </div>

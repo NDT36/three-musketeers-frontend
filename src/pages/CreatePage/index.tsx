@@ -190,17 +190,39 @@ const CreateTransactionPage: FC<IProps> = (props) => {
               ? chooseCategories.map((item) => (
                   <div key={item._id} onClick={() => onChooseCategory(item)}>
                     {item._id === formik.values.category?._id ? (
-                      <LinearWrapper customBg="bg-white" className="rounded-3xl px-2">
-                        <div className="h-full w-full py-2">
-                          <div className="h-16 flex justify-center items-center text-3xl font-bold bg-secondary rounded-3xl">
-                            {item.name}
+                      <LinearWrapper customBg="bg-white" className="rounded-3xl p-1">
+                        <div className="m-1 h-16 flex justify-center items-center text-3xl font-bold bg-secondary rounded-3xl  border border-white">
+                          {/* Icon */}
+                          <div className="h-[65px] w-[65px] p-[7.5px]">
+                            <div
+                              className={
+                                'w-[50px] h-[50px] border border-white bg-white flex justify-center items-center rounded-full'
+                              }
+                            >
+                              {item.avatar && <img src={item.avatar} alt="Icon" />}
+                            </div>
+                          </div>
+                          <div className="w-full p-[7.5px]">
+                            <div className="text-xl text-white font-bold">{item.name}</div>
                           </div>
                         </div>
                       </LinearWrapper>
                     ) : (
-                      <div className="h-full w-full py-2">
-                        <div className="h-16 flex justify-center items-center text-3xl font-bold bg-secondary rounded-3xl  border border-white">
-                          {item.name}
+                      <div className="p-1">
+                        <div className="m-1 h-16 flex justify-center items-center text-3xl font-bold bg-secondary rounded-3xl  border border-white">
+                          {/* Icon */}
+                          <div className="h-[65px] w-[65px] p-[7.5px]">
+                            <div
+                              className={
+                                'w-[50px] h-[50px] border border-white bg-white flex justify-center items-center rounded-full'
+                              }
+                            >
+                              {item.avatar && <img src={item.avatar} alt="Icon" />}
+                            </div>
+                          </div>
+                          <div className="w-full p-[7.5px]">
+                            <div className="text-xl text-white font-bold">{item.name}</div>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -250,7 +272,12 @@ const CreateTransactionPage: FC<IProps> = (props) => {
           <label htmlFor="name">Balance</label>
           <BalanceInput balance={formik.values.balance} onBalanceUpdate={handleUpdateBalance} />
           <br />
-          <NoFormInput onEdit={onOpenModalChooseCategory} title="Categories" icon={iconSource2}>
+          <NoFormInput
+            onEdit={onOpenModalChooseCategory}
+            title="Categories"
+            icon={formik.values.category?.avatar}
+            iconRounded={true}
+          >
             <div className="text-xl text-white font-bold">
               {formik.values.category ? (
                 <>

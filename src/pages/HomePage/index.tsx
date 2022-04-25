@@ -1,6 +1,6 @@
-import { logout } from 'api/axios';
+import { callApi, logout } from 'api/axios';
 import LinearWrapper from 'components/LinearWrapper';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { formatCurrency, formatLongString } from 'utils';
@@ -16,6 +16,28 @@ import iconLendGray from 'assets/icons-v2/icon-lend-2.svg';
 import iconPayment from 'assets/icons-v2/icon-payment.svg';
 import { RoutePath } from 'types/enum';
 import ListLoading from 'components/ListLoading';
+import { useAlert } from 'react-alert';
+import { useLoading } from 'state/global/hooks';
+import { fetchListTransactions } from 'api/transaction';
+import { useTranslation } from 'react-i18next';
+
+export interface IItemListTransaction {
+  _id: string;
+  users: string[];
+  money: number;
+  type: number;
+  categoryId: string;
+  sourceId: string;
+  targetSourceId: string | null;
+  description: string;
+  status: number;
+  groupId: string | null;
+  actionAt: number;
+  createdBy: string;
+  updateBy: string;
+  updateAt: number;
+  createdAt: number;
+}
 
 export const data = [
   ['Recently data', 'In', 'Out', 'Saving'],
@@ -41,8 +63,14 @@ export const options: ChartWrapperOptions['options'] = {
 };
 
 function HomePage() {
+  const reactAlert = useAlert();
+  const setLoading = useLoading();
+  const { t } = useTranslation();
   const profile = useSelector((state: AppState) => state.user.profile);
   const { sources } = useSelector((state: AppState) => state.resources);
+  const [params, setParams] = useState({ pageIndex: 1, pageSize: 10 });
+
+  const [transactions, setTransactions] = useState<IItemListTransaction[]>([]);
 
   const totalBalance = sources ? sources.reduce((a, b) => a + Number(b.balance), 0) : 0;
 
@@ -55,6 +83,22 @@ function HomePage() {
     return sources ? formatCurrency(totalBalance) || 0 : <ListLoading loading={true} />;
   };
 
+  const fetchTransactions = useCallback(async () => {
+    setLoading(true);
+
+    const { error, result } = await callApi(fetchListTransactions(params));
+    if (error) reactAlert.error(t(`error.${error}`));
+
+    if (!error && result?.data) {
+      setTransactions(result.data);
+    }
+
+    setLoading(false);
+  }, [reactAlert, setLoading, t, params]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [params]);
   return (
     <div className="px-2.5">
       {/* Header */}
