@@ -1,3 +1,5 @@
+import { ICategory } from 'state/resources/actions';
+
 export const customNavigate = (path: string) => {
   window.location.hash = `#${path}`;
 };
@@ -82,3 +84,11 @@ function calcMulDiv(params: string[]) {
   });
   return rs;
 }
+
+export const getCategoryById = (categoryId: string, categories?: ICategory[]) => {
+  if (categories && Array.isArray(categories)) {
+    return categories.find((item) => item._id === categoryId);
+  }
+
+  return;
+};

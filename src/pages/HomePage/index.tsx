@@ -3,7 +3,7 @@ import LinearWrapper from 'components/LinearWrapper';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-import { formatCurrency, formatLongString } from 'utils';
+import { formatCurrency, formatLongString, getCategoryById } from 'utils';
 import Chart, { ChartWrapperOptions } from 'react-google-charts';
 import iconShow from 'assets/icons-v2/icon-show.svg';
 import iconSources from 'assets/icons-v2/icon-source.svg';
@@ -14,12 +14,14 @@ import iconSaving from 'assets/icons-v2/icon-saving.svg';
 import iconSavingGray from 'assets/icons-v2/icon-saving-2.svg';
 import iconLendGray from 'assets/icons-v2/icon-lend-2.svg';
 import iconPayment from 'assets/icons-v2/icon-payment.svg';
-import { RoutePath } from 'types/enum';
+import { RoutePath, TransactionType } from 'types/enum';
 import ListLoading from 'components/ListLoading';
 import { useAlert } from 'react-alert';
 import { useLoading } from 'state/global/hooks';
 import { fetchListTransactions } from 'api/transaction';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
+import Loading from 'components/ListLoading';
 
 export interface IItemListTransaction {
   _id: string;
@@ -67,8 +69,9 @@ function HomePage() {
   const setLoading = useLoading();
   const { t } = useTranslation();
   const profile = useSelector((state: AppState) => state.user.profile);
-  const { sources } = useSelector((state: AppState) => state.resources);
-  const [params, setParams] = useState({ pageIndex: 1, pageSize: 10 });
+  const { sources, categories } = useSelector((state: AppState) => state.resources);
+  const [params, setParams] = useState({ pageIndex: 1, pageSize: 4 });
+  const [transactionLoading, setTransactionLoading] = useState(false);
 
   const [transactions, setTransactions] = useState<IItemListTransaction[]>([]);
 
@@ -84,7 +87,7 @@ function HomePage() {
   };
 
   const fetchTransactions = useCallback(async () => {
-    setLoading(true);
+    setTransactionLoading(true);
 
     const { error, result } = await callApi(fetchListTransactions(params));
     if (error) reactAlert.error(t(`error.${error}`));
@@ -93,12 +96,69 @@ function HomePage() {
       setTransactions(result.data);
     }
 
-    setLoading(false);
+    setTransactionLoading(false);
   }, [reactAlert, setLoading, t, params]);
+
+  const handleMoneyColor = (type: TransactionType, money: number) => {
+    switch (type) {
+      case TransactionType.EXPENSE:
+        return 'text-orange-500';
+
+      case TransactionType.INCOME:
+        return 'text-[#2E58C5]';
+
+      case TransactionType.SAVING:
+        return 'text-[#04B489]';
+
+      case TransactionType.UPDATE_BALANCE:
+        return money < 0 ? 'text-orange-500' : 'text-[#2E58C5]';
+
+      default:
+        return 'text-[#04B489]';
+    }
+  };
+
+  const handleIconTransaction = (type: TransactionType, categoryAvatar?: string) => {
+    switch (type) {
+      case TransactionType.EXPENSE:
+        return categoryAvatar;
+
+      case TransactionType.INCOME:
+        return '/assets/icon-payment-card.svg';
+
+      case TransactionType.UPDATE_BALANCE:
+        return '/assets/icon-payment-card.svg';
+
+      case TransactionType.SAVING:
+        return '/assets/icon-saving.svg';
+
+      default:
+        return '/assets/icon-payment-card.svg';
+    }
+  };
 
   useEffect(() => {
     fetchTransactions();
   }, [params]);
+
+  const SkeletonTransaction = () => (
+    <div className="py-1">
+      <div className="h-[60px] shadow rounded-md p-3">
+        <div className="animate-pulse flex space-x-4">
+          <div className="rounded-full bg-slate-200 h-10 w-10"></div>
+          <div className="flex-1 space-y-6 py-1">
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="h-2 bg-slate-200 rounded col-span-1"></div>
+                <div className="h-2 bg-slate-200 rounded col-span-2"></div>
+              </div>
+              <div className="h-2 bg-slate-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
   return (
     <div className="px-2.5">
       {/* Header */}
@@ -131,7 +191,7 @@ function HomePage() {
                   </div>
                 </div>
                 <div className="text-5xl text-center h-[5.5rem] flex justify-center items-center font-[Arya]">
-                  {handleCurrency()}
+                  {sources ? handleCurrency() : <Loading loading={true} />}
                 </div>
               </div>
               <div className="h-0.5 bg-slate-500 hr-gradient"></div>
@@ -199,69 +259,54 @@ function HomePage() {
           <div>Transactions</div>
           <div className="w-full">
             {/* Item */}
-            <div className="h-[60px] flex justify-between items-center">
-              <div className="w-[50px] h-[50px]">
-                <div className="rounded-3xl w-[50px] h-[50px] bg-white flex items-center justify-center">
-                  <img src={iconEat} alt="icon-eat" />
+            {transactionLoading ? (
+              <>
+                <SkeletonTransaction />
+                <SkeletonTransaction />
+                <SkeletonTransaction />
+                <SkeletonTransaction />
+              </>
+            ) : (
+              transactions.map((item) => (
+                <div className="py-1" key={item._id}>
+                  <div className="h-[60px] shadow rounded-md p-4 flex justify-between items-center">
+                    <div className="w-[50px] h-[50px]">
+                      <div className="rounded-3xl w-[50px] h-[50px] bg-white flex items-center justify-center">
+                        <img
+                          src={handleIconTransaction(
+                            item.type,
+                            getCategoryById(item.categoryId, categories)?.avatar
+                          )}
+                          alt="icon-eat"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col w-full pl-2.5">
+                      {item.description ? (
+                        <>
+                          <div className="text-gray-700 font-bold">{item.description}</div>
+                          <div className="text-xs">
+                            {getCategoryById(item.categoryId, categories)?.name}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-gray-700 font-bold">
+                          {getCategoryById(item.categoryId, categories)?.name}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <div
+                        className={classNames('font-bold', handleMoneyColor(item.type, item.money))}
+                      >
+                        {formatCurrency(item.money)}
+                      </div>
+                      <div className="text-xs">{new Date(item.createdAt).toLocaleDateString()}</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col w-full pl-2.5">
-                <div className="text-gray-700 font-bold">Cơm rang dưa bò</div>
-                <div className="text-xs">Food</div>
-              </div>
-              <div className="text-right">
-                <div className="text-orange-500 font-bold">-50,000</div>
-                <div className="text-xs">Mar 11</div>
-              </div>
-            </div>
-            {/* Item */}
-            <div className="h-[60px] flex justify-between items-center">
-              <div className="w-[50px] h-[50px]">
-                <div className="rounded-3xl w-[50px] h-[50px] bg-white flex items-center justify-center">
-                  <img src={iconPayment} alt="icon-eat" />
-                </div>
-              </div>
-              <div className="flex flex-col w-full pl-2.5">
-                <div className="text-gray-700 font-bold">Nạp tiền vào tài khoản</div>
-                <div className="text-xs">Payment</div>
-              </div>
-              <div className="text-right">
-                <div className="text-[#2E58C5] font-bold">+20,000,000</div>
-                <div className="text-xs">Mar 11</div>
-              </div>
-            </div>
-            {/* Item */}
-            <div className="h-[60px] flex justify-between items-center">
-              <div className="w-[50px] h-[50px]">
-                <div className="rounded-3xl w-[50px] h-[50px] bg-white flex items-center justify-center">
-                  <img src={iconLendGray} alt="icon-eat" />
-                </div>
-              </div>
-              <div className="flex flex-col w-full pl-2.5">
-                <div className="text-gray-700 font-bold">Cho Mr.A vay tiền</div>
-                <div className="text-xs">Lend</div>
-              </div>
-              <div className="text-right">
-                <div className="text-orange-500 font-bold">-1,500,000</div>
-                <div className="text-xs">Mar 11</div>
-              </div>
-            </div>
-            {/* Item */}
-            <div className="h-[60px] flex justify-between items-center">
-              <div className="w-[50px] h-[50px]">
-                <div className="rounded-3xl w-[50px] h-[50px] bg-white flex items-center justify-center">
-                  <img src={iconSavingGray} alt="icon-eat" />
-                </div>
-              </div>
-              <div className="flex flex-col w-full pl-2.5">
-                <div className="text-gray-700 font-bold">Gửi vào tích lũy</div>
-                <div className="text-xs">Saving</div>
-              </div>
-              <div className="text-right">
-                <div className="text-[#04B489] font-bold">-1,100,000</div>
-                <div className="text-xs">Mar 11</div>
-              </div>
-            </div>
+              ))
+            )}
             <div className="text-center">
               <a href="/" className="underline">
                 View more...

@@ -49,4 +49,5 @@ export enum TransactionType {
   DEBT = 4,
   TRANSFER_MONEY = 5,
   UPDATE_BALANCE = 6,
+  SAVING = 7,
 }
