@@ -38,14 +38,14 @@ const EditBalancePage: FC<IProps> = (props) => {
     description: Yup.string().max(255),
   });
 
-  const fetchDetailsSource = useCallback(
+  const getDetailsSource = useCallback(
     async (id: string) => {
       setLoading(true);
       if (sources) {
-        const s = sources.find((item) => item._id === String(id));
-        if (s) {
+        const item = sources.find((item) => item._id === String(id));
+        if (item) {
           setLoading(false);
-          return setSource({ ...s });
+          return setSource({ ...item });
         }
       }
 
@@ -58,7 +58,7 @@ const EditBalancePage: FC<IProps> = (props) => {
 
       setLoading(false);
     },
-    [reactAlert, setLoading, sources, t]
+    [sources, reactAlert, setLoading, t]
   );
 
   const onSubmit = async (values: IUpdateSourceBalance) => {
@@ -102,16 +102,14 @@ const EditBalancePage: FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    fetchDetailsSource(String(id)).then(() => {
-      formik.setFieldValue('balance', source?.balance || '');
-    });
-  }, [id, source?.balance, fetchDetailsSource, formik]);
+    getDetailsSource(String(id));
+  }, [id, getDetailsSource]);
 
   useEffect(() => {
     if (source) {
       setChange(formik.values.balance - Number(source?.balance));
     }
-  }, [change, source, formik.values.balance]);
+  }, [source, formik.values.balance]);
 
   return (
     <div className="h-full flex flex-col">
@@ -130,7 +128,11 @@ const EditBalancePage: FC<IProps> = (props) => {
           onSubmit={formik.handleSubmit}
         >
           <label htmlFor="name">Balance</label>
-          <BalanceInput balance={formik.values.balance} onBalanceUpdate={handleUpdateBalance} />
+          <BalanceInput
+            balance={formik.values.balance}
+            defaultVisible={false}
+            onBalanceUpdate={handleUpdateBalance}
+          />
           <br />
           <div>
             Change:

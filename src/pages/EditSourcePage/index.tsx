@@ -12,8 +12,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IAssetSources } from 'pages/SourcePage';
 import useFetchSourcesCallback from 'hooks/useFetchSourcesCallback';
-import { useSelector } from 'react-redux';
-import { AppState } from 'state';
 
 interface IProps {}
 export interface IUpdateSource {
@@ -26,40 +24,14 @@ const EditSourcePage: FC<IProps> = (props) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
-  const [source, setSource] = useState<IAssetSources | null>(null);
   const fetchSource = useFetchSourcesCallback();
-  const { sources } = useSelector((state: AppState) => state.resources);
 
   const validationSchema: Yup.SchemaOf<IUpdateSource> = Yup.object().shape({
     name: Yup.string().min(0, 'Name is required').required('Name is required'),
   });
 
-  const fetchDetailsSource = useCallback(
-    async (id: string) => {
-      setLoading(true);
-
-      const { error, result } = await callApi(fetchDetailsSources(String(id)));
-      if (error) reactAlert.error(t(`error.${error}`));
-
-      if (result) {
-        setSource(result.data);
-      }
-
-      setLoading(false);
-    },
-    [reactAlert, setLoading, t]
-  );
-
   const onSubmit = async (values: IUpdateSource) => {
     setLoading(true);
-
-    if (sources) {
-      const source = sources.find((item) => item._id === String(id));
-      if (source) {
-        setLoading(false);
-        return setSource({ ...source });
-      }
-    }
 
     const { error } = await callApi(apiUpdateSource(String(id), values.name));
     if (error) reactAlert.error(t(`error.${error}`));
@@ -82,11 +54,25 @@ const EditSourcePage: FC<IProps> = (props) => {
     onSubmit,
   });
 
+  const fetchDetailsSource = useCallback(
+    async (id: string) => {
+      setLoading(true);
+
+      const { error, result } = await callApi(fetchDetailsSources(String(id)));
+      if (error) reactAlert.error(t(`error.${error}`));
+
+      if (result) {
+        formik.setFieldValue('name', result.data?.name || '');
+      }
+
+      setLoading(false);
+    },
+    [setLoading, t, reactAlert]
+  );
+
   useEffect(() => {
-    fetchDetailsSource(String(id)).then((rs) => {
-      formik.setFieldValue('name', source?.name || '');
-    });
-  }, [id, source?.name, fetchDetailsSource, formik]);
+    fetchDetailsSource(String(id));
+  }, [id, fetchDetailsSource]);
 
   return (
     <div className="h-full flex flex-col">

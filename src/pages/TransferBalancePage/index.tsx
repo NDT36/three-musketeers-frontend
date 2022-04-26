@@ -118,7 +118,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
   }, [id, fetchDetailsSource]);
 
   useEffect(() => {
-    if (source && sources && !formik.values.targetSource) {
+    if (source && sources && !formik.values.targetSource?._id) {
       const targets = sources?.filter((item) => item._id !== source._id);
       setTargets(targets);
 
@@ -128,7 +128,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
         formik.setFieldValue('targetSource', firstItem);
       }
     }
-  }, [source, sources, formik, formik.values.targetSource]);
+  }, [source, sources, formik.values.targetSource?._id]);
 
   // useEffect(() => {
   //   if (source) {

@@ -35,30 +35,30 @@ function Login() {
   const onLoginGoogle = async () => {
     setLoading(true);
 
-    // const { result: idToken } = await catchError(loginByFirebase);
+    const { result: idToken } = await catchError(loginByFirebase);
 
-    // if (!idToken) return setLoading(false);
+    if (!idToken) return setLoading(false);
 
-    // const params = {
-    //   type: LoginSocialType.GOOGLE,
-    //   token: idToken,
-    // };
-
-    // const { error, result } = await callApi(loginBySocial(params));
-
-    // if (error) reactAlert.error(t(`error.${error}`));
-
-    // if (result) {
-    const fake = {
-      accessToken:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiQUNDRVNTX1RPS0VOIiwiaWF0IjoxNjUwODAwNTYyLCJleHAiOjE2NTA4MDE3NjJ9.BMoLFBcV_h8CicxBVTNmWpTtL-8ucqAKWmM2bw-9QDs',
-      refreshToken:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiUkVGUkVTSF9UT0tFTiIsImlhdCI6MTY1MDgwMDUxOCwiZXhwIjoxNjUzMzkyNTE4fQ.ry7613cpI3AJ3c64FwICzgHH5jXsdSIO5ttY35te0ak',
+    const params = {
+      type: LoginSocialType.GOOGLE,
+      token: idToken,
     };
-    setTokenToCookies(fake);
-    // setTokenToCookies(result.data);
-    navigate('/home');
-    // }
+
+    const { error, result } = await callApi(loginBySocial(params));
+
+    if (error) reactAlert.error(t(`error.${error}`));
+
+    if (result) {
+      // const fake = {
+      //   accessToken:
+      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiQUNDRVNTX1RPS0VOIiwiaWF0IjoxNjUwODAwNTYyLCJleHAiOjE2NTA4MDE3NjJ9.BMoLFBcV_h8CicxBVTNmWpTtL-8ucqAKWmM2bw-9QDs',
+      //   refreshToken:
+      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjJlMzM2ZDJiYjg1ODZiNmJkYzRlMWQiLCJ0eXBlIjoiUkVGUkVTSF9UT0tFTiIsImlhdCI6MTY1MDgwMDUxOCwiZXhwIjoxNjUzMzkyNTE4fQ.ry7613cpI3AJ3c64FwICzgHH5jXsdSIO5ttY35te0ak',
+      // };
+      // setTokenToCookies(fake);
+      setTokenToCookies(result.data);
+      navigate('/home');
+    }
 
     setLoading(false);
   };

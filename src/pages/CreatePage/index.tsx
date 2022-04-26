@@ -108,7 +108,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (sources && !formik.values.source) {
+    if (sources && !formik.values.source?._id) {
       const targets = sources?.filter((item) => item);
       setTargets(targets);
 
@@ -120,7 +120,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
         formik.setFieldValue('source', firstItem);
       }
     }
-  }, [sources, formik, formik.values.source, recentlySourceId]);
+  }, [sources, formik.values.source?._id, recentlySourceId]);
 
   useEffect(() => {
     if (categories && !formik.values.category) {
@@ -135,7 +135,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
         formik.setFieldValue('category', firstItem);
       }
     }
-  }, [categories, formik, formik.values.category, recentlyCategoryId]);
+  }, [categories, formik.values.category, recentlyCategoryId]);
 
   // useEffect(() => {
   //   if (source) {
