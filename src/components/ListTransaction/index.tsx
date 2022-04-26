@@ -5,10 +5,14 @@ import { formatCurrency, getCategoryById } from 'utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { TransactionType } from 'types/enum';
+import Loading from 'components/ListLoading';
 
 interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
   loading?: boolean;
+  isLoadMore?: boolean;
   transactions: IItemListTransaction[];
+  onViewMore: () => void;
+  isOffPaging?: boolean;
 }
 const ListTransaction: FC<IProps> = function (props) {
   const { categories } = useSelector((state: AppState) => state.resources);
@@ -118,11 +122,12 @@ const ListTransaction: FC<IProps> = function (props) {
           </div>
         ))
       )}
-      {!!props.transactions.length && (
+      <Loading loading={!!props.isLoadMore} />
+      {!!props.transactions.length && !props.isOffPaging && (
         <div className="text-center pt-2">
-          <a href="/" className="underline">
+          <div onClick={props.onViewMore} className="underline">
             View more...
-          </a>
+          </div>
         </div>
       )}
     </div>

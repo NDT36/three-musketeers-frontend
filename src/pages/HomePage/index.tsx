@@ -64,7 +64,13 @@ function HomePage() {
   const { t } = useTranslation();
   const profile = useSelector((state: AppState) => state.user.profile);
   const { sources } = useSelector((state: AppState) => state.resources);
-  const [params] = useState({ pageIndex: 1, pageSize: 4 });
+  const [params, setParams] = useState<{
+    pageIndex: number;
+    pageSize: number;
+    totalItems?: number;
+    isOffPaging?: boolean;
+  }>({ pageIndex: 1, pageSize: 4, totalItems: undefined, isOffPaging: false });
+
   const [transactionLoading, setTransactionLoading] = useState(false);
 
   const [transactions, setTransactions] = useState<IItemListTransaction[]>([]);
@@ -87,15 +93,36 @@ function HomePage() {
     if (error) reactAlert.error(t(`error.${error}`));
 
     if (!error && result?.data) {
-      setTransactions(result.data);
+      setParams({ ...params, totalItems: result.totalItems });
+      setTransactions([...transactions, ...result.data]);
     }
 
     setTransactionLoading(false);
   }, [reactAlert, t, params]);
 
+  const onViewMore = (pageSize?: number) => {
+    pageSize = pageSize || params.pageSize;
+
+    if (params.totalItems !== undefined) {
+      const totalPage = Math.ceil(Number(params.totalItems) / params.pageSize);
+
+      if (params.pageIndex + 1 <= totalPage) {
+        setParams({
+          pageIndex: params.pageIndex + 1,
+          pageSize,
+          isOffPaging: params.pageIndex + 1 === totalPage,
+        });
+
+        return;
+      }
+    } else {
+      setParams({ pageIndex: params.pageIndex + 1, pageSize });
+    }
+  };
+
   useEffect(() => {
     fetchTransactions();
-  }, [params, fetchTransactions]);
+  }, [params.pageIndex]);
 
   return (
     <div className="px-2.5">
@@ -160,7 +187,7 @@ function HomePage() {
                       </div>
                     </div>
                   </div>
-                  <div className="h-full w-20">
+                  <a href={`#${RoutePath.TRANSACTION}`} className="h-full w-20">
                     <div className="w-full h-full">
                       <div className="w-full flex justify-center">
                         <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
@@ -171,7 +198,7 @@ function HomePage() {
                         Transactions
                       </div>
                     </div>
-                  </div>
+                  </a>
                   <div className="h-full w-20">
                     <div className="w-full h-full">
                       <div className="w-full flex justify-center">
@@ -195,7 +222,13 @@ function HomePage() {
         <div className="w-full rounded-3xl px-5 py-3 bg-[#f6f6f6]">
           {/* Header */}
           <div className="">Recently transactions</div>
-          <ListTransaction loading={transactionLoading} transactions={transactions} />
+          <ListTransaction
+            onViewMore={() => onViewMore(4)}
+            loading={transactionLoading && params.pageIndex === 1}
+            transactions={transactions}
+            isLoadMore={transactionLoading && params.pageIndex !== 1}
+            isOffPaging={params.isOffPaging}
+          />
         </div>
       </div>
       {/* Chart */}

@@ -29,6 +29,7 @@ export const RoutePath = {
   EDIT_SOURCE: '/source/:id',
   EDIT_SOURCE_BALANCE: '/source/:id/edit-balance',
   TRANSFER_MONEY: '/source/:id/transfer-money',
+  TRANSACTION: '/transaction',
 };
 
 export enum LoginSocialType {

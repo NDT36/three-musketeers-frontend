@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IAssetSources } from 'pages/SourcePage';
 import useFetchSourcesCallback from 'hooks/useFetchSourcesCallback';
+import { RoutePath } from 'types/enum';
 
 interface IProps {}
 export interface IUpdateSource {
@@ -40,7 +41,7 @@ const EditSourcePage: FC<IProps> = (props) => {
       fetchSource().finally(() => {
         reactAlert.success('Update success');
         formik.resetForm();
-        navigate(-1);
+        navigate(RoutePath.SOURCE);
         setLoading(false);
       });
     }

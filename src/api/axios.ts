@@ -72,6 +72,7 @@ export interface IResult<T> {
   status: number;
   pageIndex: number;
   pageSize: number;
+  totalItems: number;
   [key: string]: any;
 }
 

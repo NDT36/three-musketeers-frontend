@@ -17,6 +17,7 @@ import EditSourcePage from 'pages/EditSourcePage';
 import EditBalancePage from 'pages/EditBalancePage';
 import TransferMoneyPage from 'pages/TransferBalancePage';
 import { CategoryUpdater, SourceUpdater } from 'state/resources/updater';
+import TransactionPage from 'pages/TransactionPage';
 
 const assignMenu = (component: React.ReactNode) => (
   <>
@@ -51,6 +52,7 @@ const PageWrapper = () => {
         <Route path={RoutePath.EDIT_SOURCE} element={<EditSourcePage />} />
         <Route path={RoutePath.EDIT_SOURCE_BALANCE} element={<EditBalancePage />} />
         <Route path={RoutePath.TRANSFER_MONEY} element={<TransferMoneyPage />} />
+        <Route path={RoutePath.TRANSACTION} element={<TransactionPage />} />
       </Routes>
     </div>
   );

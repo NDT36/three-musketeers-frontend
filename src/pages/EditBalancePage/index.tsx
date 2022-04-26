@@ -23,6 +23,11 @@ export interface IUpdateSourceBalance {
   balance: number;
 }
 
+const validationSchema: Yup.SchemaOf<IUpdateSourceBalance> = Yup.object().shape({
+  balance: Yup.number().min(0, 'Balance must be greater than 0').required('Balance is required'),
+  description: Yup.string().max(255),
+});
+
 const EditBalancePage: FC<IProps> = (props) => {
   const reactAlert = useAlert();
   const setLoading = useLoading();
@@ -32,34 +37,6 @@ const EditBalancePage: FC<IProps> = (props) => {
   const [source, setSource] = useState<IAssetSources | null>(null);
   const [change, setChange] = useState<number>(0);
   const { sources } = useSelector((state: AppState) => state.resources);
-
-  const validationSchema: Yup.SchemaOf<IUpdateSourceBalance> = Yup.object().shape({
-    balance: Yup.number().min(0, 'Balance must be greater than 0').required('Balance is required'),
-    description: Yup.string().max(255),
-  });
-
-  const getDetailsSource = useCallback(
-    async (id: string) => {
-      setLoading(true);
-      if (sources) {
-        const item = sources.find((item) => item._id === String(id));
-        if (item) {
-          setLoading(false);
-          return setSource({ ...item });
-        }
-      }
-
-      const { error, result } = await callApi(fetchDetailsSources(String(id)));
-      if (error) reactAlert.error(t(`error.${error}`));
-
-      if (result) {
-        setSource(result.data);
-      }
-
-      setLoading(false);
-    },
-    [sources, reactAlert, setLoading, t]
-  );
 
   const onSubmit = async (values: IUpdateSourceBalance) => {
     setLoading(true);
@@ -101,15 +78,41 @@ const EditBalancePage: FC<IProps> = (props) => {
     formik.setFieldValue('balance', balance);
   };
 
+  const getDetailsSource = useCallback(
+    async (id: string) => {
+      setLoading(true);
+      if (sources) {
+        const item = sources.find((item) => item._id === String(id));
+        if (item) {
+          setLoading(false);
+          handleUpdateBalance(Number(item.balance));
+          setSource({ ...item });
+          return;
+        }
+      }
+
+      const { error, result } = await callApi(fetchDetailsSources(String(id)));
+      if (error) reactAlert.error(t(`error.${error}`));
+
+      if (result) {
+        handleUpdateBalance(Number(result.data.balance));
+        setSource(result.data);
+      }
+
+      setLoading(false);
+    },
+    [sources, reactAlert, setLoading, t]
+  );
+
   useEffect(() => {
     getDetailsSource(String(id));
-  }, [id, getDetailsSource]);
+  }, [id]);
 
   useEffect(() => {
     if (source) {
       setChange(formik.values.balance - Number(source?.balance));
     }
-  }, [source, formik.values.balance]);
+  }, [source, formik.values.balance, source?.balance]);
 
   return (
     <div className="h-full flex flex-col">
