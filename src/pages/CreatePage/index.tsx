@@ -7,9 +7,7 @@ import { useLoading } from 'state/global/hooks';
 import CommonButton from 'components/CommonButton/Index';
 import BalanceInput from 'components/BalanceInput/BalanceInput';
 import { callApi } from 'api/axios';
-import { fetchDetailsSources } from 'api/sources';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
 import iconSource2 from 'assets/icons-v2/icon-source-2.svg';
 import iconScheduleCalendar from 'assets/icons-v2/icon-schedule-calendar.svg';
 import { IAssetSources } from 'pages/SourcePage';
@@ -43,10 +41,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   const reactAlert = useAlert();
   const setLoading = useLoading();
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { id } = useParams();
-  // const [change, setChange] = useState<number>(0);
-  const [actionAt, setActionAt] = useState<string>(moment().format('YYYY-MM-DD'));
+  const [actionAt] = useState<string>(moment().format('YYYY-MM-DD'));
   const [targets, setTargets] = useState<IAssetSources[]>([]);
   const [chooseCategories, setChooseCategories] = useState<ICategory[]>([]);
   const { sources, recentlyCategoryId, recentlySourceId, categories } = useSelector(
@@ -73,7 +68,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
     const { error } = await callApi(
       createTransaction({
         categoryId: String(values.category?._id),
-        description: values.description || '',
+        description: values.description || 'Transaction ' + String(values.category?.name),
         actionAt: Date.now(),
         groupId: null,
         money: -values.balance,
@@ -89,9 +84,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
       fetchListSources().finally(() => {
         reactAlert.success('Edit balance success');
         formik.resetForm();
-        setRecentlyCategory(values.category?._id || '');
-        setRecentlySource(values.source?._id || '');
-        navigate(-1);
+        // navigate(-1);
       });
     }
 
@@ -127,7 +120,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
         formik.setFieldValue('source', firstItem);
       }
     }
-  }, [sources, formik.values.source, recentlySourceId]);
+  }, [sources, formik, formik.values.source, recentlySourceId]);
 
   useEffect(() => {
     if (categories && !formik.values.category) {
@@ -142,7 +135,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
         formik.setFieldValue('category', firstItem);
       }
     }
-  }, [categories, formik.values.category, recentlyCategoryId]);
+  }, [categories, formik, formik.values.category, recentlyCategoryId]);
 
   // useEffect(() => {
   //   if (source) {
@@ -153,26 +146,30 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   const onChooseSource = (source: IAssetSources) => {
     if (source._id !== formik.values.source?._id) {
       formik.setFieldValue('source', source);
+      setRecentlySource(source?._id || '');
+      setTimeout(() => onCloseModalChooseSource(), 100);
     }
   };
 
   const onChooseCategory = (category: ICategory) => {
     if (category._id !== formik.values.category?._id) {
       formik.setFieldValue('category', category);
+      setRecentlyCategory(category?._id || '');
+      setTimeout(() => onCloseModalChooseCategory(), 100);
     }
   };
 
   const onCloseModalChooseSource = () => {
-    setIsOpenModalChooseSource(false);
+    if (isOpenModalChooseSource) setIsOpenModalChooseSource(false);
   };
   const onOpenModalChooseSource = () => {
-    setIsOpenModalChooseSource(true);
+    if (!isOpenModalChooseSource) setIsOpenModalChooseSource(true);
   };
   const onCloseModalChooseCategory = () => {
-    setIsOpenModalChooseCategory(false);
+    if (isOpenModalChooseCategory) setIsOpenModalChooseCategory(false);
   };
   const onOpenModalChooseCategory = () => {
-    setIsOpenModalChooseCategory(true);
+    if (!isOpenModalChooseCategory) setIsOpenModalChooseCategory(true);
   };
   return (
     <div className="h-full flex flex-col">
@@ -259,8 +256,8 @@ const CreateTransactionPage: FC<IProps> = (props) => {
           </SubPageWrapper>
         </div>
       </Modal>
-      <SubPageWrapper title="">
-        <div className="font-bold text-4xl px-2">Create Transaction</div>
+      <SubPageWrapper title="" isDisableBtnBack={true}>
+        <div className="font-bold text-center text-4xl px-2">Create Transaction</div>
         <br />
 
         {/* Body */}
@@ -269,12 +266,11 @@ const CreateTransactionPage: FC<IProps> = (props) => {
           className="h-full bg-primary w-full rounded-[14px] text-base p-3 text-[#DDDDDD]"
           onSubmit={formik.handleSubmit}
         >
-          <label htmlFor="name">Balance</label>
           <BalanceInput balance={formik.values.balance} onBalanceUpdate={handleUpdateBalance} />
           <br />
           <NoFormInput
             onEdit={onOpenModalChooseCategory}
-            title="Categories"
+            title="Category"
             icon={formik.values.category?.avatar}
             iconRounded={true}
           >
@@ -307,8 +303,8 @@ const CreateTransactionPage: FC<IProps> = (props) => {
             </div>
           </NoFormInput>
 
-          <NoFormInput title="Date" icon={iconScheduleCalendar}>
-            <div className="text-2xl text-center text-white font-bold">
+          <NoFormInput isDisableEdit={true} title="Date" icon={iconScheduleCalendar}>
+            <div className="text-2xl text-white font-bold">
               <div>{actionAt}</div>
             </div>
           </NoFormInput>

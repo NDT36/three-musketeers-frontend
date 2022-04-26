@@ -12,7 +12,7 @@ export enum MenuKey {
   HOME = 'Home',
   GROUP = 'Group',
   CREATE = 'Create',
-  ASSET = 'Asset',
+  NOTIFY = 'Notify',
   MORE = 'More',
 }
 
@@ -22,7 +22,6 @@ export const RoutePath = {
   HOME: '/home',
   GROUP: '/group',
   CREATE: '/create',
-  ASSET: '/asset',
   MORE: '/more',
   NOTIFICATION: '/notification',
   SOURCE: '/source',

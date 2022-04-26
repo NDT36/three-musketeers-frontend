@@ -1,6 +1,5 @@
-import FormInput from 'components/FormInput';
 import SubPageWrapper from 'components/SubPageWrapper/SubPageWrapper';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { useAlert } from 'react-alert';
@@ -8,13 +7,15 @@ import { useLoading } from 'state/global/hooks';
 import CommonButton from 'components/CommonButton/Index';
 import BalanceInput from 'components/BalanceInput/BalanceInput';
 import { callApi } from 'api/axios';
-import { createSource, fetchDetailsSources } from 'api/sources';
+import { fetchDetailsSources } from 'api/sources';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import FormTextArea from 'components/FormTextArea';
 import { IAssetSources } from 'pages/SourcePage';
 import { formatCurrency } from 'utils';
 import { createTransaction } from 'api/transaction';
+import { useSelector } from 'react-redux';
+import { AppState } from 'state';
 
 interface IProps {}
 export interface IUpdateSourceBalance {
@@ -30,24 +31,35 @@ const EditBalancePage: FC<IProps> = (props) => {
   const { id } = useParams();
   const [source, setSource] = useState<IAssetSources | null>(null);
   const [change, setChange] = useState<number>(0);
+  const { sources } = useSelector((state: AppState) => state.resources);
 
   const validationSchema: Yup.SchemaOf<IUpdateSourceBalance> = Yup.object().shape({
     balance: Yup.number().min(0, 'Balance must be greater than 0').required('Balance is required'),
     description: Yup.string().max(255),
   });
 
-  const fetchDetailsSource = async (id: string) => {
-    setLoading(true);
+  const fetchDetailsSource = useCallback(
+    async (id: string) => {
+      setLoading(true);
+      if (sources) {
+        const s = sources.find((item) => item._id === String(id));
+        if (s) {
+          setLoading(false);
+          return setSource({ ...s });
+        }
+      }
 
-    const { error, result } = await callApi(fetchDetailsSources(String(id)));
-    if (error) reactAlert.error(t(`error.${error}`));
+      const { error, result } = await callApi(fetchDetailsSources(String(id)));
+      if (error) reactAlert.error(t(`error.${error}`));
 
-    if (result) {
-      setSource(result.data);
-    }
+      if (result) {
+        setSource(result.data);
+      }
 
-    setLoading(false);
-  };
+      setLoading(false);
+    },
+    [reactAlert, setLoading, sources, t]
+  );
 
   const onSubmit = async (values: IUpdateSourceBalance) => {
     setLoading(true);
@@ -78,7 +90,7 @@ const EditBalancePage: FC<IProps> = (props) => {
 
   const formik = useFormik<IUpdateSourceBalance>({
     initialValues: {
-      description: '',
+      description: 'Update balance',
       balance: 0,
     },
     validationSchema,
@@ -93,13 +105,13 @@ const EditBalancePage: FC<IProps> = (props) => {
     fetchDetailsSource(String(id)).then(() => {
       formik.setFieldValue('balance', source?.balance || '');
     });
-  }, [id, source?.balance]);
+  }, [id, source?.balance, fetchDetailsSource, formik]);
 
   useEffect(() => {
     if (source) {
       setChange(formik.values.balance - Number(source?.balance));
     }
-  }, [change, source?.balance, formik.values.balance]);
+  }, [change, source, formik.values.balance]);
 
   return (
     <div className="h-full flex flex-col">

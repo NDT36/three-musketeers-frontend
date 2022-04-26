@@ -3,7 +3,7 @@ import MenuItem from './MenuItem';
 import iconHome from 'assets/icons-v2/icon-home.svg';
 import iconGroup from 'assets/icons/icon-group.png';
 import iconAdd from 'assets/icons-v2/icon-add.svg';
-import iconWallet from 'assets/icons/icon-wallet.png';
+import iconNotify from 'assets/icons/icon-notification.png';
 import iconMore from 'assets/icons/icon-more.png';
 import { MenuKey, RoutePath } from 'types/enum';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -18,7 +18,7 @@ const Menu: FC<IProps> = (props) => {
     [`${MenuKey.HOME}`]: false,
     [`${MenuKey.GROUP}`]: false,
     [`${MenuKey.CREATE}`]: false,
-    [`${MenuKey.ASSET}`]: false,
+    [`${MenuKey.NOTIFY}`]: false,
     [`${MenuKey.MORE}`]: false,
   });
 
@@ -27,7 +27,7 @@ const Menu: FC<IProps> = (props) => {
       [`${MenuKey.HOME}`]: RoutePath.HOME,
       [`${MenuKey.GROUP}`]: RoutePath.GROUP,
       [`${MenuKey.CREATE}`]: RoutePath.CREATE,
-      [`${MenuKey.ASSET}`]: RoutePath.ASSET,
+      [`${MenuKey.NOTIFY}`]: RoutePath.NOTIFICATION,
       [`${MenuKey.MORE}`]: RoutePath.MORE,
     }),
     []
@@ -42,7 +42,7 @@ const Menu: FC<IProps> = (props) => {
         [`${MenuKey.HOME}`]: false,
         [`${MenuKey.GROUP}`]: false,
         [`${MenuKey.CREATE}`]: false,
-        [`${MenuKey.ASSET}`]: false,
+        [`${MenuKey.NOTIFY}`]: false,
         [`${MenuKey.MORE}`]: false,
         [menuKey]: true,
       });
@@ -58,10 +58,10 @@ const Menu: FC<IProps> = (props) => {
           active={active[MenuKey.HOME]}
         />
         <MenuItem
-          label={MenuKey.ASSET}
+          label={MenuKey.GROUP}
           onChangeTab={handleChangeTab}
-          icon={iconWallet}
-          active={active[MenuKey.ASSET]}
+          icon={iconGroup}
+          active={active[MenuKey.GROUP]}
         />
         <MenuItem
           label={MenuKey.CREATE}
@@ -70,11 +70,12 @@ const Menu: FC<IProps> = (props) => {
           active={active[MenuKey.CREATE]}
         />
         <MenuItem
-          label={MenuKey.GROUP}
+          label={MenuKey.NOTIFY}
           onChangeTab={handleChangeTab}
-          icon={iconGroup}
-          active={active[MenuKey.GROUP]}
+          icon={iconNotify}
+          active={active[MenuKey.NOTIFY]}
         />
+
         <MenuItem
           label={MenuKey.MORE}
           onChangeTab={handleChangeTab}

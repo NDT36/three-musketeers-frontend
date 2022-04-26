@@ -21,6 +21,7 @@ import { CategoryUpdater, SourceUpdater } from 'state/resources/updater';
 const assignMenu = (component: React.ReactNode) => (
   <>
     {component}
+    <div className="h-20"></div>
     <Menu />
   </>
 );
@@ -41,7 +42,6 @@ const PageWrapper = () => {
       <Routes>
         <Route path="/" element={<Navigate to={RoutePath.HOME} />} />
         <Route path={RoutePath.HOME} element={assignMenu(<HomePage />)} />
-        <Route path={RoutePath.ASSET} element={assignMenu(<GroupPage />)} />
         <Route path={RoutePath.GROUP} element={assignMenu(<GroupPage />)} />
         <Route path={RoutePath.CREATE} element={assignMenu(<CreatePage />)} />
         <Route path={RoutePath.MORE} element={assignMenu(<MorePage />)} />

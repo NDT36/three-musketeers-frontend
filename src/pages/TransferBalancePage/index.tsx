@@ -1,5 +1,5 @@
 import SubPageWrapper from 'components/SubPageWrapper/SubPageWrapper';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { useAlert } from 'react-alert';
@@ -41,7 +41,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
   const { id } = useParams();
   const [source, setSource] = useState<IAssetSources | null>(null);
   // const [change, setChange] = useState<number>(0);
-  const [actionAt, setActionAt] = useState<string>(moment().format('YYYY-MM-DD'));
+  const [actionAt] = useState<string>(moment().format('YYYY-MM-DD'));
   const [targets, setTargets] = useState<IAssetSources[]>([]);
   const { sources } = useSelector((state: AppState) => state.resources);
   const [isOpenModalChooseSource, setIsOpenModalChooseSource] = useState<boolean>(false);
@@ -53,18 +53,23 @@ const TransferMoneyPage: FC<IProps> = (props) => {
     actionAt: Yup.number(),
   });
 
-  const fetchDetailsSource = async (id: string) => {
-    // setLoading(true);
+  const fetchDetailsSource = useCallback(
+    async (id: string) => {
+      if (sources) {
+        const s = sources.find((item) => item._id === id);
+        if (s) {
+          return setSource({ ...s });
+        }
+      }
+      const { error, result } = await callApi(fetchDetailsSources(String(id)));
+      if (error) reactAlert.error(t(`error.${error}`));
 
-    const { error, result } = await callApi(fetchDetailsSources(String(id)));
-    if (error) reactAlert.error(t(`error.${error}`));
-
-    if (result) {
-      setSource(result.data);
-    }
-
-    // setLoading(false);
-  };
+      if (result) {
+        setSource(result.data);
+      }
+    },
+    [reactAlert, t, setSource, sources]
+  );
 
   const onSubmit = async (values: ITransferMoney) => {
     setLoading(true);
@@ -110,7 +115,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
 
   useEffect(() => {
     fetchDetailsSource(String(id));
-  }, [id]);
+  }, [id, fetchDetailsSource]);
 
   useEffect(() => {
     if (source && sources && !formik.values.targetSource) {
@@ -123,7 +128,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
         formik.setFieldValue('targetSource', firstItem);
       }
     }
-  }, [source, sources, formik.values.targetSource]);
+  }, [source, sources, formik, formik.values.targetSource]);
 
   // useEffect(() => {
   //   if (source) {
@@ -134,6 +139,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
   const onChooseSource = (source: IAssetSources) => {
     if (source._id !== formik.values.targetSource?._id) {
       formik.setFieldValue('targetSource', source);
+      setTimeout(() => onCloseModalChooseSource(), 100);
     }
   };
 
@@ -208,8 +214,8 @@ const TransferMoneyPage: FC<IProps> = (props) => {
             </div>
           </NoFormInput>
 
-          <NoFormInput title="Date" icon={iconScheduleCalendar}>
-            <div className="text-2xl text-center text-white font-bold">
+          <NoFormInput isDisableEdit={true} title="Date" icon={iconScheduleCalendar}>
+            <div className="text-2xl text-white font-bold">
               <div>{actionAt}</div>
             </div>
           </NoFormInput>

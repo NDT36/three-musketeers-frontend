@@ -10,13 +10,16 @@ import Modal from 'components/Modal';
 interface BalanceInputProps {
   balance: number;
   onBalanceUpdate: (balance: number) => void;
+  defaultVisible?: boolean;
 }
 const operators = ['+', '-', '*', '/'];
 const BalanceInput: FC<BalanceInputProps> = (props) => {
   const [suggestions, setSuggestions] = useState([100000, 200000, 300000]);
   const [flag, setFlag] = useState<number>(props.balance);
   const [calc, setCalc] = useState<string[]>([]);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(
+    typeof props.defaultVisible === 'undefined' ? true : props.defaultVisible
+  );
 
   const handleOpenKeyboard = () => {
     setIsVisible(true);

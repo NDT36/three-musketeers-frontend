@@ -3,25 +3,20 @@ import LinearWrapper from 'components/LinearWrapper';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-import { formatCurrency, formatLongString, getCategoryById } from 'utils';
+import { formatCurrency, formatLongString } from 'utils';
 import Chart, { ChartWrapperOptions } from 'react-google-charts';
 import iconShow from 'assets/icons-v2/icon-show.svg';
 import iconSources from 'assets/icons-v2/icon-source.svg';
 import iconLend from 'assets/icons-v2/icon-lend.svg';
 import iconTransaction from 'assets/icons-v2/icon-transaction.svg';
-import iconEat from 'assets/icons-v2/icon-eat.svg';
 import iconSaving from 'assets/icons-v2/icon-saving.svg';
-import iconSavingGray from 'assets/icons-v2/icon-saving-2.svg';
-import iconLendGray from 'assets/icons-v2/icon-lend-2.svg';
-import iconPayment from 'assets/icons-v2/icon-payment.svg';
-import { RoutePath, TransactionType } from 'types/enum';
+import { RoutePath } from 'types/enum';
 import ListLoading from 'components/ListLoading';
 import { useAlert } from 'react-alert';
-import { useLoading } from 'state/global/hooks';
 import { fetchListTransactions } from 'api/transaction';
 import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
 import Loading from 'components/ListLoading';
+import ListTransaction from 'components/ListTransaction';
 
 export interface IItemListTransaction {
   _id: string;
@@ -66,11 +61,10 @@ export const options: ChartWrapperOptions['options'] = {
 
 function HomePage() {
   const reactAlert = useAlert();
-  const setLoading = useLoading();
   const { t } = useTranslation();
   const profile = useSelector((state: AppState) => state.user.profile);
-  const { sources, categories } = useSelector((state: AppState) => state.resources);
-  const [params, setParams] = useState({ pageIndex: 1, pageSize: 4 });
+  const { sources } = useSelector((state: AppState) => state.resources);
+  const [params] = useState({ pageIndex: 1, pageSize: 4 });
   const [transactionLoading, setTransactionLoading] = useState(false);
 
   const [transactions, setTransactions] = useState<IItemListTransaction[]>([]);
@@ -97,68 +91,12 @@ function HomePage() {
     }
 
     setTransactionLoading(false);
-  }, [reactAlert, setLoading, t, params]);
-
-  const handleMoneyColor = (type: TransactionType, money: number) => {
-    switch (type) {
-      case TransactionType.EXPENSE:
-        return 'text-orange-500';
-
-      case TransactionType.INCOME:
-        return 'text-[#2E58C5]';
-
-      case TransactionType.SAVING:
-        return 'text-[#04B489]';
-
-      case TransactionType.UPDATE_BALANCE:
-        return money < 0 ? 'text-orange-500' : 'text-[#2E58C5]';
-
-      default:
-        return 'text-[#04B489]';
-    }
-  };
-
-  const handleIconTransaction = (type: TransactionType, categoryAvatar?: string) => {
-    switch (type) {
-      case TransactionType.EXPENSE:
-        return categoryAvatar;
-
-      case TransactionType.INCOME:
-        return '/assets/icon-payment-card.svg';
-
-      case TransactionType.UPDATE_BALANCE:
-        return '/assets/icon-payment-card.svg';
-
-      case TransactionType.SAVING:
-        return '/assets/icon-saving.svg';
-
-      default:
-        return '/assets/icon-payment-card.svg';
-    }
-  };
+  }, [reactAlert, t, params]);
 
   useEffect(() => {
     fetchTransactions();
-  }, [params]);
+  }, [params, fetchTransactions]);
 
-  const SkeletonTransaction = () => (
-    <div className="py-1">
-      <div className="h-[60px] shadow rounded-md p-3">
-        <div className="animate-pulse flex space-x-4">
-          <div className="rounded-full bg-slate-200 h-10 w-10"></div>
-          <div className="flex-1 space-y-6 py-1">
-            <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="h-2 bg-slate-200 rounded col-span-1"></div>
-                <div className="h-2 bg-slate-200 rounded col-span-2"></div>
-              </div>
-              <div className="h-2 bg-slate-200 rounded"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
   return (
     <div className="px-2.5">
       {/* Header */}
@@ -256,63 +194,8 @@ function HomePage() {
       <div className="py-3.5 text-gray-500">
         <div className="w-full rounded-3xl px-5 py-3 bg-[#f6f6f6]">
           {/* Header */}
-          <div>Transactions</div>
-          <div className="w-full">
-            {/* Item */}
-            {transactionLoading ? (
-              <>
-                <SkeletonTransaction />
-                <SkeletonTransaction />
-                <SkeletonTransaction />
-                <SkeletonTransaction />
-              </>
-            ) : (
-              transactions.map((item) => (
-                <div className="py-1" key={item._id}>
-                  <div className="h-[60px] shadow rounded-md p-4 flex justify-between items-center">
-                    <div className="w-[50px] h-[50px]">
-                      <div className="rounded-3xl w-[50px] h-[50px] bg-white flex items-center justify-center">
-                        <img
-                          src={handleIconTransaction(
-                            item.type,
-                            getCategoryById(item.categoryId, categories)?.avatar
-                          )}
-                          alt="icon-eat"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flex-col w-full pl-2.5">
-                      {item.description ? (
-                        <>
-                          <div className="text-gray-700 font-bold">{item.description}</div>
-                          <div className="text-xs">
-                            {getCategoryById(item.categoryId, categories)?.name}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="text-gray-700 font-bold">
-                          {getCategoryById(item.categoryId, categories)?.name}
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <div
-                        className={classNames('font-bold', handleMoneyColor(item.type, item.money))}
-                      >
-                        {formatCurrency(item.money)}
-                      </div>
-                      <div className="text-xs">{new Date(item.createdAt).toLocaleDateString()}</div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-            <div className="text-center">
-              <a href="/" className="underline">
-                View more...
-              </a>
-            </div>
-          </div>
+          <div className="">Recently transactions</div>
+          <ListTransaction loading={transactionLoading} transactions={transactions} />
         </div>
       </div>
       {/* Chart */}
@@ -341,7 +224,6 @@ function HomePage() {
         </div>
       </div>
 
-      <div></div>
       <div onClick={() => logout()}>Logout</div>
     </div>
   );
