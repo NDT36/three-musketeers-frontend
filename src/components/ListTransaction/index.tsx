@@ -118,11 +118,13 @@ const ListTransaction: FC<IProps> = function (props) {
           </div>
         ))
       )}
-      <div className="text-center pt-2">
-        <a href="/" className="underline">
-          View more...
-        </a>
-      </div>
+      {!!props.transactions.length && (
+        <div className="text-center pt-2">
+          <a href="/" className="underline">
+            View more...
+          </a>
+        </div>
+      )}
     </div>
   );
 };
