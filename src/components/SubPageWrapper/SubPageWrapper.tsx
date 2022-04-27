@@ -1,17 +1,18 @@
 import React, { FC } from 'react';
 import iconBack from 'assets/icons-v2/icon-back.svg';
-import { useNavigate } from 'react-router-dom';
+import { To, useNavigate } from 'react-router-dom';
 
 interface IProps {
   title: string;
   onGoBack?: () => void;
   isDisableBtnBack?: boolean;
+  routeGoBack: string | number;
 }
 
 const SubPageWrapper: FC<IProps> = (props) => {
   const navigate = useNavigate();
 
-  const goBack = () => navigate(-1);
+  const goBack = () => navigate(props.routeGoBack as To);
 
   return (
     <>

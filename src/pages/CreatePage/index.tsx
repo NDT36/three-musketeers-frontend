@@ -23,7 +23,7 @@ import SourceCard from 'components/SourceCard';
 import LinearWrapper from 'components/LinearWrapper';
 import Loading from 'components/ListLoading';
 import { ICategory } from 'state/resources/actions';
-import { TransactionType } from 'types/enum';
+import { RoutePath, TransactionType } from 'types/enum';
 import useFetchSourcesCallback from 'hooks/useFetchSourcesCallback';
 import useSetRecentlyCategoryCallback from 'hooks/useSetRecentlyCategoryCallback';
 import useSetRecentlySourceCallback from 'hooks/useSetRecentlySourceCallback';
@@ -180,7 +180,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
         onClose={onCloseModalChooseCategory}
       >
         <div className="w-full h-full bg-primary px-2">
-          <SubPageWrapper onGoBack={onCloseModalChooseCategory} title="">
+          <SubPageWrapper onGoBack={onCloseModalChooseCategory} routeGoBack={-1} title="">
             <div className="font-bold text-4xl px-2">Choose Category</div>
             <br />
             {chooseCategories && chooseCategories.length
@@ -235,7 +235,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
         onClose={onCloseModalChooseSource}
       >
         <div className="w-full h-full bg-primary px-2">
-          <SubPageWrapper onGoBack={onCloseModalChooseSource} title="">
+          <SubPageWrapper routeGoBack={-1} onGoBack={onCloseModalChooseSource} title="">
             <div className="font-bold text-4xl px-2">Choose Source</div>
             <br />
             {targets && targets.length
@@ -256,7 +256,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
           </SubPageWrapper>
         </div>
       </Modal>
-      <SubPageWrapper title="" isDisableBtnBack={true}>
+      <SubPageWrapper routeGoBack={-1} title="" isDisableBtnBack={true}>
         <div className="font-bold text-center text-4xl px-2">Create Transaction</div>
         <br />
 

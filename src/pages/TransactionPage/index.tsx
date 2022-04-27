@@ -16,6 +16,7 @@ import { fetchListTransactions } from 'api/transaction';
 import { useTranslation } from 'react-i18next';
 import Loading from 'components/ListLoading';
 import ListTransaction from 'components/ListTransaction';
+import ProgressRing from 'pages/ProgressRing';
 
 export interface IItemListTransaction {
   _id: string;
@@ -59,6 +60,8 @@ function TransactionPage() {
 
       if (!error && result?.data) {
         setTransactions([...transactions, ...result.data]);
+        if (result.pageIndex === params.pageIndex) {
+        }
       }
 
       setTransactionLoading(false);
@@ -77,7 +80,6 @@ function TransactionPage() {
   return (
     <div className="px-2.5">
       {/* Header */}
-
       {/* Overview */}
       <div className="flex justify-center items-center w-full h-[250px]">
         <LinearWrapper className="h-[230px] w-full p-[0.75px] pt-0.5 rounded-3xl">
@@ -152,6 +154,33 @@ function TransactionPage() {
             </div>
           </div>
         </LinearWrapper>
+      </div>
+      <div className="flex justify-start">
+        <ProgressRing
+          color="pink"
+          icon="/assets/icon-payment-card.svg"
+          progress={50}
+          radius={40}
+          stroke={6}
+        />
+
+        <ProgressRing
+          color="yellow"
+          icon="/assets/icon-meal-food.svg"
+          progress={60}
+          radius={40}
+          stroke={6}
+        />
+
+        <ProgressRing
+          color="brown"
+          icon="/assets/icon-clothes.svg"
+          progress={70}
+          radius={40}
+          stroke={6}
+        />
+
+        <ProgressRing progress={30} radius={40} stroke={6} />
       </div>
       {/* Transaction history */}
       <div className="py-3.5 text-gray-500">

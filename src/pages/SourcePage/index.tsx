@@ -59,7 +59,7 @@ const SourcePage: FC<IProps> = (props) => {
     <>
       <SourceUpdater />
       <div className="px-2">
-        <SubPageWrapper title="Sources">
+        <SubPageWrapper routeGoBack={RoutePath.HOME} title="Sources">
           <div className="h-36 text-center flex items-center">
             <div className="w-full">
               <div className="text-lg text-[#F6F6F6]">Available balance</div>

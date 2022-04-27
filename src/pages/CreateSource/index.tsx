@@ -11,6 +11,7 @@ import { callApi } from 'api/axios';
 import { createSource } from 'api/sources';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { RoutePath } from 'types/enum';
 
 interface IProps {}
 export interface ICreateSource {
@@ -38,7 +39,7 @@ const CreateSourcePage: FC<IProps> = (props) => {
     if (!error) {
       reactAlert.success('Create success');
       formik.resetForm();
-      navigate(-1);
+      navigate(RoutePath.SOURCE);
     }
 
     setLoading(false);
@@ -59,7 +60,7 @@ const CreateSourcePage: FC<IProps> = (props) => {
 
   return (
     <div className="h-full flex flex-col">
-      <SubPageWrapper title="">
+      <SubPageWrapper routeGoBack={RoutePath.SOURCE} title="">
         <div className="font-bold text-4xl px-2">Create Source</div>
         {/* Body */}
         <form

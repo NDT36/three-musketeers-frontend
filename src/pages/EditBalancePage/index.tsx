@@ -16,6 +16,7 @@ import { formatCurrency } from 'utils';
 import { createTransaction } from 'api/transaction';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
+import { RoutePath } from 'types/enum';
 
 interface IProps {}
 export interface IUpdateSourceBalance {
@@ -59,7 +60,7 @@ const EditBalancePage: FC<IProps> = (props) => {
     if (!error) {
       reactAlert.success('Edit balance success');
       formik.resetForm();
-      navigate(-1);
+      navigate(RoutePath.SOURCE);
     }
 
     setLoading(false);
@@ -67,7 +68,7 @@ const EditBalancePage: FC<IProps> = (props) => {
 
   const formik = useFormik<IUpdateSourceBalance>({
     initialValues: {
-      description: 'Update balance',
+      description: '',
       balance: 0,
     },
     validationSchema,
@@ -80,16 +81,14 @@ const EditBalancePage: FC<IProps> = (props) => {
 
   const getDetailsSource = useCallback(
     async (id: string) => {
-      setLoading(true);
       if (sources) {
         const item = sources.find((item) => item._id === String(id));
         if (item) {
-          setLoading(false);
           handleUpdateBalance(Number(item.balance));
-          setSource({ ...item });
-          return;
+          return setSource({ ...item });
         }
       }
+      setLoading(true);
 
       const { error, result } = await callApi(fetchDetailsSources(String(id)));
       if (error) reactAlert.error(t(`error.${error}`));
@@ -116,7 +115,7 @@ const EditBalancePage: FC<IProps> = (props) => {
 
   return (
     <div className="h-full flex flex-col">
-      <SubPageWrapper title="">
+      <SubPageWrapper routeGoBack={RoutePath.SOURCE} title="">
         <div className="font-bold text-4xl px-2">Edit Balance</div>
         <br />
         <div className="font-bold text-4xl px-2 text-[#E9FFAC]">{source?.name}</div>

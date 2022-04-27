@@ -24,6 +24,7 @@ import { AppState } from 'state';
 import SourceCard from 'components/SourceCard';
 import LinearWrapper from 'components/LinearWrapper';
 import Loading from 'components/ListLoading';
+import { RoutePath } from 'types/enum';
 
 interface IProps {}
 export interface ITransferMoney {
@@ -92,7 +93,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
     if (!error) {
       reactAlert.success('Edit balance success');
       formik.resetForm();
-      navigate(-1);
+      navigate(RoutePath.SOURCE);
     }
 
     setLoading(false);
@@ -157,7 +158,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
         onClose={onCloseModalChooseSource}
       >
         <div className="w-full h-full bg-primary px-2">
-          <SubPageWrapper onGoBack={onCloseModalChooseSource} title="">
+          <SubPageWrapper routeGoBack={-1} onGoBack={onCloseModalChooseSource} title="">
             <div className="font-bold text-4xl px-2">Choose Source</div>
             <br />
             {targets && targets.length
@@ -178,7 +179,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
           </SubPageWrapper>
         </div>
       </Modal>
-      <SubPageWrapper title="">
+      <SubPageWrapper routeGoBack={RoutePath.SOURCE} title="">
         <div className="font-bold text-4xl px-2">Transfer Money</div>
         <br />
         <div className="font-bold h-10 text-4xl px-2 text-[#E9FFAC]">

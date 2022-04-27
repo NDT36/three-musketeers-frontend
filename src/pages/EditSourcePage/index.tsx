@@ -13,6 +13,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { IAssetSources } from 'pages/SourcePage';
 import useFetchSourcesCallback from 'hooks/useFetchSourcesCallback';
 import { RoutePath } from 'types/enum';
+import { useSelector } from 'react-redux';
+import { AppState } from 'state';
 
 interface IProps {}
 export interface IUpdateSource {
@@ -25,6 +27,7 @@ const EditSourcePage: FC<IProps> = (props) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
+  const { sources } = useSelector((state: AppState) => state.resources);
   const fetchSource = useFetchSourcesCallback();
 
   const validationSchema: Yup.SchemaOf<IUpdateSource> = Yup.object().shape({
@@ -57,6 +60,11 @@ const EditSourcePage: FC<IProps> = (props) => {
 
   const fetchDetailsSource = useCallback(
     async (id: string) => {
+      if (sources) {
+        const item = sources.find((item) => item._id === String(id));
+        if (item) return formik.setFieldValue('name', item.name || '');
+      }
+
       setLoading(true);
 
       const { error, result } = await callApi(fetchDetailsSources(String(id)));
@@ -77,7 +85,7 @@ const EditSourcePage: FC<IProps> = (props) => {
 
   return (
     <div className="h-full flex flex-col">
-      <SubPageWrapper title="">
+      <SubPageWrapper routeGoBack={RoutePath.SOURCE} title="">
         <div className="font-bold text-4xl px-2">Update Source</div>
         {/* Body */}
         <form
