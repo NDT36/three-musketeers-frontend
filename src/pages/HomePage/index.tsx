@@ -67,9 +67,7 @@ function HomePage() {
   const [params, setParams] = useState<{
     pageIndex: number;
     pageSize: number;
-    totalItems?: number;
-    isOffPaging?: boolean;
-  }>({ pageIndex: 1, pageSize: 4, totalItems: undefined, isOffPaging: false });
+  }>({ pageIndex: 1, pageSize: 4 });
 
   const [transactionLoading, setTransactionLoading] = useState(false);
 
@@ -93,32 +91,11 @@ function HomePage() {
     if (error) reactAlert.error(t(`error.${error}`));
 
     if (!error && result?.data) {
-      setParams({ ...params, totalItems: result.totalItems });
-      setTransactions([...transactions, ...result.data]);
+      setTransactions(result.data);
     }
 
     setTransactionLoading(false);
   }, [reactAlert, t, params]);
-
-  const onViewMore = (pageSize?: number) => {
-    pageSize = pageSize || params.pageSize;
-
-    if (params.totalItems !== undefined) {
-      const totalPage = Math.ceil(Number(params.totalItems) / params.pageSize);
-
-      if (params.pageIndex + 1 <= totalPage) {
-        setParams({
-          pageIndex: params.pageIndex + 1,
-          pageSize,
-          isOffPaging: params.pageIndex + 1 === totalPage,
-        });
-
-        return;
-      }
-    } else {
-      setParams({ pageIndex: params.pageIndex + 1, pageSize });
-    }
-  };
 
   useEffect(() => {
     fetchTransactions();
@@ -223,12 +200,14 @@ function HomePage() {
           {/* Header */}
           <div className="">Recently transactions</div>
           <ListTransaction
-            onViewMore={() => onViewMore(4)}
             loading={transactionLoading && params.pageIndex === 1}
             transactions={transactions}
-            isLoadMore={transactionLoading && params.pageIndex !== 1}
-            isOffPaging={params.isOffPaging}
-          />
+            isOffPaging={true}
+          >
+            <div className="underline text-center cur">
+              <a href={`#${RoutePath.TRANSACTION}`}>View more</a>
+            </div>
+          </ListTransaction>
         </div>
       </div>
       {/* Chart */}
@@ -250,7 +229,7 @@ function HomePage() {
             </div>
           </div>
           <div className="text-center text-gray-500">
-            <a href="/" className="underline">
+            <a href="/" className="underline cursor-pointer">
               View more...
             </a>
           </div>

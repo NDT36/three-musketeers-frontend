@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import classNames from 'classnames';
 import { IItemListTransaction } from 'pages/HomePage';
-import { formatCurrency, getCategoryById } from 'utils';
+import { formatCurrency, formatLongString, getCategoryById } from 'utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { TransactionType } from 'types/enum';
@@ -11,7 +11,7 @@ interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
   loading?: boolean;
   isLoadMore?: boolean;
   transactions: IItemListTransaction[];
-  onViewMore: () => void;
+  onViewMore?: () => void;
   isOffPaging?: boolean;
 }
 const ListTransaction: FC<IProps> = function (props) {
@@ -101,7 +101,7 @@ const ListTransaction: FC<IProps> = function (props) {
               <div className="flex flex-col w-full pl-2.5 font-bold">
                 {item.description ? (
                   <>
-                    <div className="text-gray-700">{item.description}</div>
+                    <div className="text-gray-700">{formatLongString(item.description, 28)}</div>
                     <div className="text-xs">
                       {getCategoryById(item.categoryId, categories)?.name}
                     </div>
@@ -122,14 +122,21 @@ const ListTransaction: FC<IProps> = function (props) {
           </div>
         ))
       )}
+      {/* <div className="py-1">
+        <div className="h-[60px] shadow rounded-md p-2 flex flex-col items-center">
+          <div className="h-5">Showing 1 to 10 of 97 results</div>
+          <div className="h-10">Showing 1 to 10 of 97 results</div>
+        </div>
+      </div> */}
       <Loading loading={!!props.isLoadMore} />
       {!!props.transactions.length && !props.isOffPaging && (
         <div className="text-center pt-2">
-          <div onClick={props.onViewMore} className="underline">
+          <div onClick={props.onViewMore} className="underline cursor-pointer">
             View more...
           </div>
         </div>
       )}
+      {props.children}
     </div>
   );
 };
