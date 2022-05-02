@@ -122,6 +122,7 @@ function TransactionPage() {
 
   const fetchTransactions = useCallback(
     async (params) => {
+      if (ignoreDateFilter) return;
       setTransactionLoading(true);
 
       const { error, result } = await callApi(
