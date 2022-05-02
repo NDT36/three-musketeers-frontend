@@ -33,7 +33,7 @@ const ProgressRing: FC<{
             strokeWidth={props.stroke}
             strokeDasharray={circumference + ' ' + circumference}
             style={{ strokeDashoffset }}
-            stroke-width={props.stroke}
+            // stroke-width={props.stroke}
             r={normalizedRadius}
             cx={props.radius}
             cy={props.radius}

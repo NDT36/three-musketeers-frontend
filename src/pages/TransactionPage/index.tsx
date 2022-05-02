@@ -113,6 +113,7 @@ function TransactionPage() {
     endDate: moment().endOf('month').format('YYYY-MM-DD'),
     currentMonth: moment().format('YYYY-MM'),
   });
+  const [ignoreDateFilter, setIgnoreDateFilter] = useState(false);
 
   const [statistics, setStatistics] = useState({ totalSpent: 0, totalEarned: 0 });
 
@@ -123,16 +124,33 @@ function TransactionPage() {
     async (params) => {
       setTransactionLoading(true);
 
-      const { error, result } = await callApi(fetchListTransactions(params));
+      const { error, result } = await callApi(
+        fetchListTransactions({
+          ...params,
+          startDate: ignoreDateFilter ? '' : statisticsParams.startDate,
+          endDate: ignoreDateFilter ? '' : statisticsParams.endDate,
+        })
+      );
       if (error) reactAlert.error(t(`error.${error}`));
 
       if (!error && result?.data) {
-        setTransactions([...transactions, ...result.data]);
+        if (result.pageIndex === 1) {
+          setTransactions(result.data);
+        } else {
+          setTransactions([...transactions, ...result.data]);
+        }
       }
 
       setTimeout(() => setTransactionLoading(false), 250);
     },
-    [reactAlert, t, transactions]
+    [
+      reactAlert,
+      t,
+      transactions,
+      statisticsParams.startDate,
+      statisticsParams.endDate,
+      ignoreDateFilter,
+    ]
   );
 
   const fetchChartData = useCallback(async (prams) => {
@@ -205,9 +223,17 @@ function TransactionPage() {
     });
   };
 
+  const onIgnoreDateFilter = (value: boolean) => {
+    setIgnoreDateFilter(value);
+    setParams({
+      ...params,
+      pageIndex: 1,
+    });
+  };
+
   useEffect(() => {
     fetchTransactions(params);
-  }, [params]);
+  }, [params, statisticsParams.startDate, statisticsParams.endDate, ignoreDateFilter]);
 
   useEffect(() => {
     fetchChartData(statisticsParams);
@@ -230,7 +256,7 @@ function TransactionPage() {
                 options={options}
               />
             ) : (
-              'No data'
+              <div className="h-full w-full flex items-center justify-center text-xl">Empty</div>
             )}
           </div>
         </div>
@@ -242,12 +268,24 @@ function TransactionPage() {
             <div className="rounded-3xl text-sm font-bold bg-white h-14 w-72 shadow flex justify-center items-center p-2">
               <div className="pl-5 w-full">
                 <div>Earned</div>
-                <div className="text-[#2E58C5]">+{statistics.totalEarned}</div>
+                <div className="text-[#2E58C5]">
+                  {chartLoading ? (
+                    <Loading loading={true} />
+                  ) : (
+                    `+${formatCurrency(statistics.totalEarned)}`
+                  )}
+                </div>
               </div>
               <div className="w-[0px] h-full border-r-2 border-dashed border-gray-400"></div>
               <div className="pl-5 w-full">
                 <div>Spent</div>
-                <div className="text-orange-500">-{statistics.totalSpent}</div>
+                <div className="text-orange-500">
+                  {chartLoading ? (
+                    <Loading loading={true} />
+                  ) : (
+                    `-${formatCurrency(statistics.totalSpent)}`
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -270,7 +308,13 @@ function TransactionPage() {
                 </svg>
               </div>
               <div>
-                {statisticsParams.startDate} ~ {statisticsParams.endDate}
+                {chartLoading ? (
+                  <Loading loading={true} />
+                ) : (
+                  <div>
+                    {statisticsParams.startDate} ~ {statisticsParams.endDate}
+                  </div>
+                )}
               </div>
               <div
                 onClick={() => onChangeChartMonth(1)}
@@ -319,13 +363,25 @@ function TransactionPage() {
               <ProgressRing progress={30} radius={40} stroke={6} />
             </div>
             {/* Header */}
-            <div className="">Recently transactions</div>
+            <div className="flex justify-between">
+              <div className="">History transactions</div>
+              <div className="">
+                <input
+                  type="checkbox"
+                  name="checkbox"
+                  id="checkbox"
+                  onChange={(e) => onIgnoreDateFilter(e.target.checked)}
+                  checked={ignoreDateFilter}
+                />
+                <span className="pl-1">All recently transactions</span>
+              </div>
+            </div>
             <ListTransaction
               onViewMore={() => onViewMore(10)}
               loading={transactionLoading && params.pageIndex === 1}
               transactions={transactions}
               isLoadMore={transactionLoading && params.pageIndex !== 1}
-              isOffPaging={params.isOffPaging}
+              isOffPaging={transactions.length < params.pageSize || params.isOffPaging}
             />
           </div>
         </div>

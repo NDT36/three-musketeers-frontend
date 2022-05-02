@@ -74,7 +74,7 @@ const ListTransaction: FC<IProps> = function (props) {
     </div>
   );
   return (
-    <div className="w-full min-h-[296px]">
+    <div className={classNames('w-full min-h-[296px] relative', props.children ? 'pb-5' : '')}>
       {/* Item */}
       {props.loading ? (
         <>
@@ -83,7 +83,7 @@ const ListTransaction: FC<IProps> = function (props) {
           <SkeletonTransaction />
           <SkeletonTransaction />
         </>
-      ) : (
+      ) : props.transactions?.length ? (
         props.transactions.map((item) => (
           <div className="py-1" key={item._id}>
             <div className="h-[60px] shadow rounded-md p-2 flex justify-between items-center">
@@ -121,6 +121,8 @@ const ListTransaction: FC<IProps> = function (props) {
             </div>
           </div>
         ))
+      ) : (
+        <div className="flex items-center justify-center text-xl">Empty</div>
       )}
       {/* <div className="py-1">
         <div className="h-[60px] shadow rounded-md p-2 flex flex-col items-center">
@@ -136,7 +138,9 @@ const ListTransaction: FC<IProps> = function (props) {
           </div>
         </div>
       )}
-      {props.children}
+      <div className="w-full absolute bottom-0 left-0">
+        {!!props.transactions.length && props.children}
+      </div>
     </div>
   );
 };

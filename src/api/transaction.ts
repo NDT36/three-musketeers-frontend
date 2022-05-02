@@ -25,6 +25,8 @@ export const createTransaction = (data: ITransaction) => () => {
 interface IFetchTransaction {
   pageIndex?: number;
   pageSize?: number;
+  startDate?: string;
+  endDate?: string;
 }
 export const fetchListTransactions = (params: IFetchTransaction) => () => {
   if (!params.pageIndex) params.pageIndex = 1;
