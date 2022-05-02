@@ -131,7 +131,7 @@ const ListTransaction: FC<IProps> = function (props) {
         </div>
       </div> */}
       <Loading loading={!!props.isLoadMore} />
-      {!!props.transactions.length && !props.isOffPaging && (
+      {!!props?.transactions?.length && !props.isOffPaging && (
         <div className="text-center pt-2">
           <div onClick={props.onViewMore} className="underline cursor-pointer">
             View more...
@@ -139,7 +139,7 @@ const ListTransaction: FC<IProps> = function (props) {
         </div>
       )}
       <div className="w-full absolute bottom-0 left-0">
-        {!!props.transactions.length && props.children}
+        {!!props?.transactions.length && props.children}
       </div>
     </div>
   );

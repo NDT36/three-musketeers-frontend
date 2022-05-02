@@ -134,6 +134,9 @@ function TransactionPage() {
       if (error) reactAlert.error(t(`error.${error}`));
 
       if (!error && result?.data) {
+        if (result.pageIndex === 1) {
+          setParams({ ...params, totalItems: result.totalItems });
+        }
         setTransactions([...transactions, ...result.data]);
       }
 
@@ -191,18 +194,16 @@ function TransactionPage() {
 
     if (params.totalItems !== undefined) {
       const totalPage = Math.ceil(Number(params.totalItems) / params.pageSize);
+      console.log(totalPage, params.pageIndex);
 
-      if (params.pageIndex + 1 <= totalPage) {
-        setParams({
-          pageIndex: params.pageIndex + 1,
-          pageSize,
-          isOffPaging: params.pageIndex + 1 === totalPage,
-        });
-
-        return;
-      }
+      setParams({
+        ...params,
+        pageIndex: params.pageIndex + 1,
+        pageSize,
+        isOffPaging: params.pageIndex + 1 === totalPage,
+      });
     } else {
-      setParams({ pageIndex: params.pageIndex + 1, pageSize });
+      setParams({ ...params, pageIndex: params.pageIndex + 1, pageSize });
     }
   };
 
@@ -229,7 +230,7 @@ function TransactionPage() {
 
   useEffect(() => {
     fetchTransactions(params);
-  }, [params, statisticsParams.startDate, statisticsParams.endDate, ignoreDateFilter]);
+  }, [params.pageIndex, statisticsParams.startDate, statisticsParams.endDate, ignoreDateFilter]);
 
   useEffect(() => {
     fetchChartData(statisticsParams);
@@ -377,7 +378,7 @@ function TransactionPage() {
               loading={transactionLoading && params.pageIndex === 1}
               transactions={transactions}
               isLoadMore={transactionLoading && params.pageIndex !== 1}
-              isOffPaging={transactions.length < params.pageSize || params.isOffPaging}
+              isOffPaging={params.isOffPaging}
             />
           </div>
         </div>
