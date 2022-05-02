@@ -83,7 +83,7 @@ const SourceCard: FC<Props> = ({ source, onDelete, ...props }) => {
               {!props.isHideMenu && (
                 <>
                   <div className="h-[4.375rem] text-xs flex justify-between items-center">
-                    <div onClick={onClickTransferMoney} className="h-full w-1/5 cursor-pointer">
+                    <div onClick={onClickTransferMoney} className="h-full w-16 cursor-pointer">
                       <div className="w-full h-full">
                         <div className="w-full flex justify-center">
                           <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
@@ -95,7 +95,7 @@ const SourceCard: FC<Props> = ({ source, onDelete, ...props }) => {
                         </div>
                       </div>
                     </div>
-                    <div onClick={onClickEditBalance} className="h-full w-1/5 cursor-pointer">
+                    <div onClick={onClickEditBalance} className="h-full w-16 cursor-pointer">
                       <div className="w-full h-full">
                         <div className="w-full flex justify-center">
                           <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
@@ -103,11 +103,11 @@ const SourceCard: FC<Props> = ({ source, onDelete, ...props }) => {
                           </div>
                         </div>
                         <div className="text-center h-[30px] flex items-center justify-center">
-                          Balance
+                          Edit balance
                         </div>
                       </div>
                     </div>
-                    <div onClick={onClickEditSource} className="h-full w-1/5 cursor-pointer">
+                    <div onClick={onClickEditSource} className="h-full w-16 cursor-pointer">
                       <div className="w-full h-full">
                         <div className="w-full flex justify-center">
                           <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
@@ -119,7 +119,7 @@ const SourceCard: FC<Props> = ({ source, onDelete, ...props }) => {
                         </div>
                       </div>
                     </div>
-                    <div onClick={onOpenAskVisible} className="h-full w-1/5 cursor-pointer">
+                    <div onClick={onOpenAskVisible} className="h-full w-16 cursor-pointer">
                       <div className="w-full h-full">
                         <div className="w-full flex justify-center">
                           <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">

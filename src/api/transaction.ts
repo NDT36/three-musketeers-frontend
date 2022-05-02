@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { IItemListTransaction } from 'pages/HomePage';
+import { ITransactionStatisticsResults } from 'pages/TransactionPage';
 import AxiosInstance, { IResult } from './axios';
 
 export interface ITransaction {
@@ -32,6 +33,19 @@ export const fetchListTransactions = (params: IFetchTransaction) => () => {
     IResult<IItemListTransaction[]>,
     AxiosResponse<IResult<IItemListTransaction[]>>
   >(`/transaction/user`, {
+    params,
+  });
+};
+
+interface IFetchTransactionStatistics {
+  startDate: string;
+  endDate: string;
+}
+export const fetchTransactionStatistics = (params: IFetchTransactionStatistics) => () => {
+  return AxiosInstance.get<
+    IResult<ITransactionStatisticsResults>,
+    AxiosResponse<IResult<ITransactionStatisticsResults>>
+  >(`/transaction/statistics`, {
     params,
   });
 };

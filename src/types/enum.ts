@@ -51,3 +51,18 @@ export enum TransactionType {
   UPDATE_BALANCE = 6,
   SAVING = 7,
 }
+
+export const MONTH_NAME = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];

@@ -3,22 +3,23 @@ import LinearWrapper from 'components/LinearWrapper';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-import { formatCurrency } from 'utils';
+import { formatCurrency, handleChartData } from 'utils';
 import iconShow from 'assets/icons-v2/icon-show.svg';
 import iconSources from 'assets/icons-v2/icon-source.svg';
 import iconLend from 'assets/icons-v2/icon-lend.svg';
 import iconTransaction from 'assets/icons-v2/icon-transaction.svg';
 import iconSaving from 'assets/icons-v2/icon-saving.svg';
-import { RoutePath } from 'types/enum';
+import { MONTH_NAME, RoutePath } from 'types/enum';
 import ListLoading from 'components/ListLoading';
 import { useAlert } from 'react-alert';
-import { fetchListTransactions } from 'api/transaction';
+import { fetchListTransactions, fetchTransactionStatistics } from 'api/transaction';
 import { useTranslation } from 'react-i18next';
 import Loading from 'components/ListLoading';
 import ListTransaction from 'components/ListTransaction';
 import ProgressRing from 'pages/ProgressRing';
 import Chart, { ChartWrapperOptions } from 'react-google-charts';
 import SubPageWrapper from 'components/SubPageWrapper/SubPageWrapper';
+import moment from 'moment';
 
 export interface IItemListTransaction {
   _id: string;
@@ -38,31 +39,50 @@ export interface IItemListTransaction {
   createdAt: number;
 }
 
-export const data = [
-  ['April 2022', 'In', 'Out', 'Saving'],
-  ['01', 10000000, 4000000, 6000000],
-  ['02', 11000000, 3500000, 6500000],
-  ['03', 12000000, 6000000, 4000000],
-  ['04', 9000000, 3000000, 6000000],
-  ['05', 20000000, 8000000, 12000000],
-  ['06', 10000000, 4500000, 5500000],
-  ['07', 11000000, 4600000, 5400000],
-  ['08', 12000000, 4000000, 6000000],
-  ['09', 13000000, 4500000, 5500000],
-  ['10', 12000000, 3000000, 7000000],
-  ['11', 11000000, 4500000, 5500000],
-  ['12', 10000000, 4000000, 6000000],
-  ['13', 11000000, 3500000, 6500000],
-  ['14', 12000000, 6000000, 4000000],
-  ['15', 9000000, 3000000, 6000000],
-  ['16', 10000000, 4000000, 6000000],
-  ['17', 10000000, 4500000, 5500000],
-  ['18', 11000000, 4600000, 5400000],
-  ['19', 12000000, 4000000, 6000000],
-  ['20', 13000000, 4500000, 5500000],
-  ['21', 12000000, 3000000, 7000000],
-  ['22', 11000000, 4500000, 5500000],
-];
+export interface ITransactionStatisticsResults {
+  earned: {
+    _id: string;
+    amount: number;
+    count: number;
+  }[];
+  spent: {
+    _id: string;
+    amount: number;
+    count: number;
+  }[];
+}
+
+const data = {
+  earned: [
+    {
+      _id: '2022-04-20',
+      amount: 500000,
+      count: 1,
+    },
+    {
+      _id: '2022-04-25',
+      amount: 100000,
+      count: 1,
+    },
+    {
+      _id: '2022-04-24',
+      amount: 3562923,
+      count: 5,
+    },
+  ],
+  spent: [
+    {
+      _id: '2022-04-24',
+      amount: -8711000,
+      count: 4,
+    },
+    {
+      _id: '2022-04-25',
+      amount: -800000,
+      count: 11,
+    },
+  ],
+};
 
 export const options: ChartWrapperOptions['options'] = {
   chart: {
@@ -72,7 +92,7 @@ export const options: ChartWrapperOptions['options'] = {
   series: {
     0: { color: '#2E58C5' },
     1: { color: '#F97C08' },
-    2: { color: '#04B489' },
+    // 2: { color: '#04B489' },
   },
   legend: { position: 'none' },
 };
@@ -87,8 +107,15 @@ function TransactionPage() {
     isOffPaging?: boolean;
   }>({ pageIndex: 1, pageSize: 10, totalItems: undefined, isOffPaging: false });
   const [transactionLoading, setTransactionLoading] = useState(false);
-
   const [transactions, setTransactions] = useState<IItemListTransaction[]>([]);
+  const [statisticsParams, setStatisticsParams] = useState({
+    startDate: moment().startOf('month').format('YYYY-MM-DD'),
+    endDate: moment().endOf('month').format('YYYY-MM-DD'),
+    currentMonth: moment().format('YYYY-MM'),
+  });
+
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartLoading, setChartLoading] = useState<boolean>(false);
 
   const fetchTransactions = useCallback(
     async (params) => {
@@ -99,14 +126,37 @@ function TransactionPage() {
 
       if (!error && result?.data) {
         setTransactions([...transactions, ...result.data]);
-        if (result.pageIndex === params.pageIndex) {
-        }
       }
 
-      setTransactionLoading(false);
+      setTimeout(() => setTransactionLoading(false), 250);
     },
     [reactAlert, t, transactions]
   );
+
+  const fetchChartData = useCallback(async (prams) => {
+    setChartLoading(true);
+    const { error, result } = await callApi(fetchTransactionStatistics(prams));
+    if (error) reactAlert.error(t(`error.${error}`));
+
+    if (!error && result?.data) {
+      const initChartData = [
+        `${MONTH_NAME[moment(statisticsParams.currentMonth, 'YYYY-MM').get('month')]} ${moment(
+          statisticsParams.currentMonth,
+          'YYYY-MM'
+        ).get('year')}`,
+        'Earn',
+        'Spent',
+      ];
+
+      setChartData([
+        initChartData,
+        ...handleChartData(result?.data, prams.startDate, prams.endDate),
+      ]);
+      if (result.pageIndex === params.pageIndex) {
+      }
+    }
+    setChartLoading(false);
+  }, []);
 
   const onViewMore = (pageSize?: number) => {
     pageSize = pageSize || params.pageSize;
@@ -128,16 +178,42 @@ function TransactionPage() {
     }
   };
 
+  const onChangeChartMonth = (change = 0) => {
+    const currentMonth = moment(statisticsParams.currentMonth, 'YYYY-MM').add(change, 'month');
+    const startDate = currentMonth.startOf('month').format('YYYY-MM-DD');
+    const endDate = currentMonth.endOf('month').format('YYYY-MM-DD');
+
+    setStatisticsParams({ startDate, endDate, currentMonth: currentMonth.format('YYYY-MM') });
+  };
+
   useEffect(() => {
     fetchTransactions(params);
   }, [params]);
+
+  useEffect(() => {
+    fetchChartData(statisticsParams);
+  }, [statisticsParams]);
 
   return (
     <div className="px-2.5">
       <SubPageWrapper routeGoBack={RoutePath.HOME} title="Transactions">
         {/* Overview */}
         <div className="rounded-3xl p-5 mt-5 bg-white">
-          <Chart chartType="Line" width="100%" height="350px" data={data} options={options} />
+          <div className="h-[350px] text-gray-600">
+            {chartLoading ? (
+              <Loading loading={true} />
+            ) : chartData && chartData.length > 1 ? (
+              <Chart
+                chartType="Line"
+                width="100%"
+                height="350px"
+                data={chartData}
+                options={options}
+              />
+            ) : (
+              'No data'
+            )}
+          </div>
         </div>
 
         {/* Transaction history */}
@@ -160,7 +236,7 @@ function TransactionPage() {
           <div className="w-full rounded-3xl px-5 py-3 bg-[#f6f6f6]">
             <div className="h-6 w-full"></div>
             <div className="py-2 flex justify-between items-center">
-              <div className="">
+              <div className="cursor-pointer" onClick={() => onChangeChartMonth(-1)}>
                 <svg
                   width="30"
                   height="30"
@@ -174,8 +250,13 @@ function TransactionPage() {
                   />
                 </svg>
               </div>
-              <div>2022-04-01 ~ 2022-04-30</div>
-              <div className="transform rotate-180">
+              <div>
+                {statisticsParams.startDate} ~ {statisticsParams.endDate}
+              </div>
+              <div
+                onClick={() => onChangeChartMonth(1)}
+                className="cursor-pointer transform rotate-180"
+              >
                 <svg
                   width="30"
                   height="30"

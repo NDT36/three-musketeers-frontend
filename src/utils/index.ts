@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { ICategory } from 'state/resources/actions';
 
 export const customNavigate = (path: string) => {
@@ -92,3 +93,23 @@ export const getCategoryById = (categoryId: string, categories?: ICategory[]) =>
 
   return;
 };
+
+export function handleChartData(
+  data: { spent: { [key: string]: any }[]; earned: { [key: string]: any }[] },
+  startDate: string,
+  endDate: string
+) {
+  const listDate = new Array(moment(endDate).add(1, 'd').diff(moment(startDate), 'd'))
+    .fill(null)
+    .map((item, index) => {
+      return moment(startDate).add(index, 'd').format('YYYY-MM-DD');
+    });
+  return listDate.reduce((acc, cur, index) => {
+    const earn = data?.earned.find((item) => item._id === cur);
+    const spent = data?.spent.find((item) => item._id === cur);
+    const amountEarn = earn ? earn.amount : acc?.[index - 1]?.[1] || 0;
+    const amountSpent = spent ? spent.amount : acc?.[index - 1]?.[2] || 0;
+    acc.push([moment(cur).format('DD'), amountEarn, Math.abs(amountSpent)]);
+    return acc;
+  }, [] as any[]);
+}
