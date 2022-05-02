@@ -103,9 +103,8 @@ function TransactionPage() {
   const [params, setParams] = useState<{
     pageIndex: number;
     pageSize: number;
-    totalItems?: number;
     isOffPaging?: boolean;
-  }>({ pageIndex: 1, pageSize: 10, totalItems: undefined, isOffPaging: false });
+  }>({ pageIndex: 1, pageSize: 10, isOffPaging: false });
   const [transactionLoading, setTransactionLoading] = useState(false);
   const [transactions, setTransactions] = useState<IItemListTransaction[]>([]);
   const [statisticsParams, setStatisticsParams] = useState({
@@ -135,7 +134,7 @@ function TransactionPage() {
 
       if (!error && result?.data) {
         if (result.pageIndex === 1) {
-          setParams({ ...params, totalItems: result.totalItems });
+          setParams({ ...params });
         }
         setTransactions([...transactions, ...result.data]);
       }
@@ -192,19 +191,7 @@ function TransactionPage() {
   const onViewMore = (pageSize?: number) => {
     pageSize = pageSize || params.pageSize;
 
-    if (params.totalItems !== undefined) {
-      const totalPage = Math.ceil(Number(params.totalItems) / params.pageSize);
-      console.log(totalPage, params.pageIndex);
-
-      setParams({
-        ...params,
-        pageIndex: params.pageIndex + 1,
-        pageSize,
-        isOffPaging: params.pageIndex + 1 === totalPage,
-      });
-    } else {
-      setParams({ ...params, pageIndex: params.pageIndex + 1, pageSize });
-    }
+    setParams({ ...params, pageIndex: params.pageIndex + 1, pageSize });
   };
 
   const onChangeChartMonth = (change = 0) => {
