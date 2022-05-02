@@ -134,11 +134,7 @@ function TransactionPage() {
       if (error) reactAlert.error(t(`error.${error}`));
 
       if (!error && result?.data) {
-        if (result.pageIndex === 1) {
-          setTransactions(result.data);
-        } else {
-          setTransactions([...transactions, ...result.data]);
-        }
+        setTransactions([...transactions, ...result.data]);
       }
 
       setTimeout(() => setTransactionLoading(false), 250);
@@ -221,14 +217,14 @@ function TransactionPage() {
       endDate,
       currentMonth: currentMonth.format('YYYY-MM'),
     });
+    setParams({ ...params, pageIndex: 1 });
+    setTransactions([]);
   };
 
   const onIgnoreDateFilter = (value: boolean) => {
     setIgnoreDateFilter(value);
-    setParams({
-      ...params,
-      pageIndex: 1,
-    });
+    setParams({ ...params, pageIndex: 1 });
+    setTransactions([]);
   };
 
   useEffect(() => {
