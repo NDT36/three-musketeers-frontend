@@ -103,6 +103,7 @@ function TransactionPage() {
   const [params, setParams] = useState<{
     pageIndex: number;
     pageSize: number;
+    totalPage?: number;
     isOffPaging?: boolean;
   }>({ pageIndex: 1, pageSize: 10, isOffPaging: false });
   const [transactionLoading, setTransactionLoading] = useState(false);
@@ -134,8 +135,9 @@ function TransactionPage() {
 
       if (!error && result?.data) {
         if (result.pageIndex === 1) {
-          setParams({ ...params });
+          setParams({ ...params, totalPage: Math.ceil(result.totalItems / result.pageSize) });
         }
+
         setTransactions([...transactions, ...result.data]);
       }
 
@@ -205,13 +207,13 @@ function TransactionPage() {
       endDate,
       currentMonth: currentMonth.format('YYYY-MM'),
     });
-    setParams({ ...params, pageIndex: 1 });
+    setParams({ ...params, pageIndex: 1, totalPage: undefined });
     setTransactions([]);
   };
 
   const onIgnoreDateFilter = (value: boolean) => {
     setIgnoreDateFilter(value);
-    setParams({ ...params, pageIndex: 1 });
+    setParams({ ...params, pageIndex: 1, totalPage: undefined });
     setTransactions([]);
   };
 
@@ -365,7 +367,7 @@ function TransactionPage() {
               loading={transactionLoading && params.pageIndex === 1}
               transactions={transactions}
               isLoadMore={transactionLoading && params.pageIndex !== 1}
-              isOffPaging={params.isOffPaging}
+              isOffPaging={params.pageIndex === params.totalPage || params.isOffPaging}
             />
           </div>
         </div>
