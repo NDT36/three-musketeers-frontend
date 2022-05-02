@@ -114,6 +114,8 @@ function TransactionPage() {
     currentMonth: moment().format('YYYY-MM'),
   });
 
+  const [statistics, setStatistics] = useState({ totalSpent: 0, totalEarned: 0 });
+
   const [chartData, setChartData] = useState<any[]>([]);
   const [chartLoading, setChartLoading] = useState<boolean>(false);
 
@@ -148,10 +150,22 @@ function TransactionPage() {
         'Spent',
       ];
 
+      const totalEarned = result.data?.earned?.reduce(
+        (acc, cur) => acc + Math.abs(Number(cur.amount)),
+        0
+      );
+      const totalSpent = result.data?.spent?.reduce(
+        (acc, cur) => acc + Math.abs(Number(cur.amount)),
+        0
+      );
+
+      setStatistics({ totalEarned: totalEarned || 0, totalSpent: totalSpent || 0 });
+
       setChartData([
         initChartData,
         ...handleChartData(result?.data, prams.startDate, prams.endDate),
       ]);
+
       if (result.pageIndex === params.pageIndex) {
       }
     }
@@ -183,7 +197,12 @@ function TransactionPage() {
     const startDate = currentMonth.startOf('month').format('YYYY-MM-DD');
     const endDate = currentMonth.endOf('month').format('YYYY-MM-DD');
 
-    setStatisticsParams({ startDate, endDate, currentMonth: currentMonth.format('YYYY-MM') });
+    setStatisticsParams({
+      ...statisticsParams,
+      startDate,
+      endDate,
+      currentMonth: currentMonth.format('YYYY-MM'),
+    });
   };
 
   useEffect(() => {
@@ -223,12 +242,12 @@ function TransactionPage() {
             <div className="rounded-3xl text-sm font-bold bg-white h-14 w-72 shadow flex justify-center items-center p-2">
               <div className="pl-5 w-full">
                 <div>Earned</div>
-                <div className="text-[#2E58C5]">+100,000,000</div>
+                <div className="text-[#2E58C5]">+{statistics.totalEarned}</div>
               </div>
               <div className="w-[0px] h-full border-r-2 border-dashed border-gray-400"></div>
               <div className="pl-5 w-full">
                 <div>Spent</div>
-                <div className="text-orange-500">-20,000,000</div>
+                <div className="text-orange-500">-{statistics.totalSpent}</div>
               </div>
             </div>
           </div>

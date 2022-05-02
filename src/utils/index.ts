@@ -99,17 +99,24 @@ export function handleChartData(
   startDate: string,
   endDate: string
 ) {
-  const listDate = new Array(moment(endDate).add(1, 'd').diff(moment(startDate), 'd'))
+  const currentDate = moment().format('YYYY-MM-DD');
+
+  const listDate = new Array(moment(endDate).diff(moment(startDate), 'd') + 1)
     .fill(null)
     .map((item, index) => {
       return moment(startDate).add(index, 'd').format('YYYY-MM-DD');
     });
-  return listDate.reduce((acc, cur, index) => {
+
+  const rs = listDate.reduce((acc, cur, index) => {
     const earn = data?.earned.find((item) => item._id === cur);
     const spent = data?.spent.find((item) => item._id === cur);
+    if (cur > currentDate && !earn && !spent) return acc;
+
     const amountEarn = earn ? earn.amount : acc?.[index - 1]?.[1] || 0;
     const amountSpent = spent ? spent.amount : acc?.[index - 1]?.[2] || 0;
     acc.push([moment(cur).format('DD'), amountEarn, Math.abs(amountSpent)]);
     return acc;
   }, [] as any[]);
+
+  return rs;
 }
