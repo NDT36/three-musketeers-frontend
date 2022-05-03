@@ -8,6 +8,7 @@ import iconMore from 'assets/icons/icon-more.png';
 import { MenuKey, RoutePath } from 'types/enum';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { reverseObjectEnum } from 'utils';
+import IconAdd from 'assets/icons-v2/iconAddComponent';
 
 interface IProps {}
 
@@ -66,7 +67,7 @@ const Menu: FC<IProps> = (props) => {
         <MenuItem
           label={MenuKey.CREATE}
           onChangeTab={handleChangeTab}
-          icon={iconAdd}
+          icon={<IconAdd />}
           active={active[MenuKey.CREATE]}
         />
         <MenuItem

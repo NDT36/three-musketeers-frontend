@@ -5,7 +5,7 @@ import { MenuKey } from 'types/enum';
 
 interface IProps {
   active?: boolean;
-  icon?: string;
+  icon?: string | JSX.Element;
   label: MenuKey;
   onChangeTab: (key: MenuKey) => void;
 }
@@ -23,11 +23,15 @@ const MenuItem: FC<IProps> = (props) => {
         </div>
       ) : (
         <div className="relative h-full flex items-center justify-center rounded-lg">
-          <img
-            className={classNames(props.label === MenuKey.CREATE && 'w-[50px] h-[50px]')}
-            src={props.icon}
-            alt={props.label}
-          />
+          {typeof props.icon === 'string' ? (
+            <img
+              className={classNames(props.label === MenuKey.CREATE && 'w-[50px] h-[50px]')}
+              src={props.icon}
+              alt={props.label}
+            />
+          ) : (
+            <div className="w-[50px] h-[50px] flex items-center justify-center">{props.icon}</div>
+          )}
         </div>
       )}
     </div>

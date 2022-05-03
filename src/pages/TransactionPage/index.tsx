@@ -52,38 +52,6 @@ export interface ITransactionStatisticsResults {
   }[];
 }
 
-const data = {
-  earned: [
-    {
-      _id: '2022-04-20',
-      amount: 500000,
-      count: 1,
-    },
-    {
-      _id: '2022-04-25',
-      amount: 100000,
-      count: 1,
-    },
-    {
-      _id: '2022-04-24',
-      amount: 3562923,
-      count: 5,
-    },
-  ],
-  spent: [
-    {
-      _id: '2022-04-24',
-      amount: -8711000,
-      count: 4,
-    },
-    {
-      _id: '2022-04-25',
-      amount: -800000,
-      count: 11,
-    },
-  ],
-};
-
 export const options: ChartWrapperOptions['options'] = {
   chart: {
     // title: 'Analytics',
@@ -95,6 +63,7 @@ export const options: ChartWrapperOptions['options'] = {
     // 2: { color: '#04B489' },
   },
   legend: { position: 'none' },
+  curveType: 'function',
 };
 
 function TransactionPage() {
@@ -354,8 +323,8 @@ function TransactionPage() {
               <div className="">
                 <input
                   type="checkbox"
-                  name="checkbox"
-                  id="checkbox"
+                  name="all-transactions-checkbox"
+                  id="all-transactions-checkbox"
                   onChange={(e) => onIgnoreDateFilter(e.target.checked)}
                   checked={ignoreDateFilter}
                 />

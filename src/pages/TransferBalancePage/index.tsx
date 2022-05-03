@@ -25,6 +25,7 @@ import SourceCard from 'components/SourceCard';
 import LinearWrapper from 'components/LinearWrapper';
 import Loading from 'components/ListLoading';
 import { RoutePath } from 'types/enum';
+import NoFormDateInput from 'components/NoFormDateInput';
 
 interface IProps {}
 export interface ITransferMoney {
@@ -42,7 +43,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
   const { id } = useParams();
   const [source, setSource] = useState<IAssetSources | null>(null);
   // const [change, setChange] = useState<number>(0);
-  const [actionAt] = useState<string>(moment().format('YYYY-MM-DD'));
+  const [actionAt, setActionAt] = useState<string>(moment().format('YYYY-MM-DD'));
   const [targets, setTargets] = useState<IAssetSources[]>([]);
   const { sources } = useSelector((state: AppState) => state.resources);
   const [isOpenModalChooseSource, setIsOpenModalChooseSource] = useState<boolean>(false);
@@ -220,6 +221,12 @@ const TransferMoneyPage: FC<IProps> = (props) => {
               <div>{actionAt}</div>
             </div>
           </NoFormInput>
+
+          <NoFormDateInput onEdit={(actionAt: string) => setActionAt(actionAt)} title="Date">
+            <div className="text-2xl text-white font-bold">
+              <div>{actionAt}</div>
+            </div>
+          </NoFormDateInput>
 
           <FormTextArea
             name="description"

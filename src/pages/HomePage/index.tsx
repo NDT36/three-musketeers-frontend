@@ -152,7 +152,7 @@ function HomePage() {
                       </div>
                     </div>
                   </a>
-                  <div className="h-full w-20">
+                  <a href={`#${RoutePath.LEND}`} className="h-full w-20">
                     <div className="w-full h-full">
                       <div className="w-full flex justify-center">
                         <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
@@ -163,7 +163,7 @@ function HomePage() {
                         Lend
                       </div>
                     </div>
-                  </div>
+                  </a>
                   <a href={`#${RoutePath.TRANSACTION}`} className="h-full w-20">
                     <div className="w-full h-full">
                       <div className="w-full flex justify-center">
@@ -176,7 +176,7 @@ function HomePage() {
                       </div>
                     </div>
                   </a>
-                  <div className="h-full w-20">
+                  <a href={`#${RoutePath.SAVING}`} className="h-full w-20">
                     <div className="w-full h-full">
                       <div className="w-full flex justify-center">
                         <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
@@ -187,7 +187,7 @@ function HomePage() {
                         Saving
                       </div>
                     </div>
-                  </div>
+                  </a>
                 </div>
               </div>
             </div>

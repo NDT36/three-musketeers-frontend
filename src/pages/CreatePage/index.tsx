@@ -27,6 +27,7 @@ import { RoutePath, TransactionType } from 'types/enum';
 import useFetchSourcesCallback from 'hooks/useFetchSourcesCallback';
 import useSetRecentlyCategoryCallback from 'hooks/useSetRecentlyCategoryCallback';
 import useSetRecentlySourceCallback from 'hooks/useSetRecentlySourceCallback';
+import NoFormDateInput from 'components/NoFormDateInput';
 
 interface IProps {}
 export interface ICreateTransaction {
@@ -41,7 +42,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   const reactAlert = useAlert();
   const setLoading = useLoading();
   const { t } = useTranslation();
-  const [actionAt] = useState<string>(moment().format('YYYY-MM-DD'));
+  const [actionAt, setActionAt] = useState<string>(moment().format('YYYY-MM-DD'));
   const [targets, setTargets] = useState<IAssetSources[]>([]);
   const [chooseCategories, setChooseCategories] = useState<ICategory[]>([]);
   const { sources, recentlyCategoryId, recentlySourceId, categories } = useSelector(
@@ -49,6 +50,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   );
   const [isOpenModalChooseSource, setIsOpenModalChooseSource] = useState<boolean>(false);
   const [isOpenModalChooseCategory, setIsOpenModalChooseCategory] = useState<boolean>(false);
+  const [isFromOtherSource, setIsFromOtherSource] = useState<boolean>(false);
 
   const fetchListSources = useFetchSourcesCallback();
   const setRecentlyCategory = useSetRecentlyCategoryCallback();
@@ -72,7 +74,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
         actionAt: Date.now(),
         groupId: null,
         money: -values.balance,
-        sourceId: String(values.source?._id),
+        sourceId: isFromOtherSource ? String(values.source?._id) : null,
         targetSourceId: null,
         type: TransactionType.EXPENSE,
         users: [],
@@ -82,7 +84,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
 
     if (!error) {
       fetchListSources().finally(() => {
-        reactAlert.success('Edit balance success');
+        reactAlert.success('Create transaction success!');
         formik.resetForm();
         // navigate(-1);
       });
@@ -170,6 +172,9 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   };
   const onOpenModalChooseCategory = () => {
     if (!isOpenModalChooseCategory) setIsOpenModalChooseCategory(true);
+  };
+  const onChoseOtherSource = (value: boolean) => {
+    setIsFromOtherSource(value);
   };
   return (
     <div className="h-full flex flex-col">
@@ -286,7 +291,13 @@ const CreateTransactionPage: FC<IProps> = (props) => {
               )}
             </div>
           </NoFormInput>
-          <NoFormInput onEdit={onOpenModalChooseSource} title="Source" icon={iconSource2}>
+
+          <NoFormInput
+            onEdit={onOpenModalChooseSource}
+            title="Source"
+            disabled={isFromOtherSource}
+            icon={iconSource2}
+          >
             <div className="text-xl text-white font-bold">
               {formik.values.source ? (
                 <>
@@ -302,12 +313,24 @@ const CreateTransactionPage: FC<IProps> = (props) => {
               )}
             </div>
           </NoFormInput>
+          <div>
+            <input
+              type="checkbox"
+              name="other-source-checkbox"
+              id="other-source-checkbox"
+              onChange={(e) => onChoseOtherSource(e.target.checked)}
+            />
+            <label htmlFor="other-source-checkbox" className="select-none cursor-pointer pl-1">
+              From other source
+            </label>
+          </div>
 
-          <NoFormInput isDisableEdit={true} title="Date" icon={iconScheduleCalendar}>
+          <NoFormDateInput onEdit={(actionAt: string) => setActionAt(actionAt)} title="Date">
             <div className="text-2xl text-white font-bold">
               <div>{actionAt}</div>
             </div>
-          </NoFormInput>
+          </NoFormDateInput>
+
           <br />
 
           <FormTextArea

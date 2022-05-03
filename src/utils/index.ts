@@ -100,6 +100,7 @@ export function handleChartData(
   endDate: string
 ) {
   const currentDate = moment().format('YYYY-MM-DD');
+  let hasData = false;
 
   const listDate = new Array(moment(endDate).diff(moment(startDate), 'd') + 1)
     .fill(null)
@@ -110,6 +111,8 @@ export function handleChartData(
   const rs = listDate.reduce((acc, cur, index) => {
     const earn = data?.earned.find((item) => item._id === cur);
     const spent = data?.spent.find((item) => item._id === cur);
+    if (earn || spent) hasData = true;
+
     if (cur > currentDate && !earn && !spent) return acc;
 
     const amountEarn = earn ? earn.amount : acc?.[index - 1]?.[1] || 0;
@@ -118,5 +121,6 @@ export function handleChartData(
     return acc;
   }, [] as any[]);
 
+  if (!hasData) return [];
   return rs;
 }

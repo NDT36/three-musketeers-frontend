@@ -8,12 +8,16 @@ interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onEdit?: () => void;
   iconRounded?: boolean;
   isDisableEdit?: boolean;
+  disabled?: boolean;
 }
 const NoFormInput: FC<IProps> = function (props) {
   return (
-    <div className="h-[90px] w-full flex flex-col">
+    <div className="h-[90px] w-full flex flex-col ">
       <div className="h-[25px]">{props.title}</div>
-      <div className="h-full w-full bg-secondary flex flex-row items-center shadow rounded-[12px]">
+      <div className="relative h-full w-full bg-secondary flex flex-row items-center shadow rounded-[12px]">
+        {props.disabled && (
+          <div className="w-full h-full absolute top-0 left-0 bg-secondary opacity-70 rounded-[12px]"></div>
+        )}
         {/* Icon */}
         <div className="h-[65px] w-[65px] p-[7.5px]">
           <div
