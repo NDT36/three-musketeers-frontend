@@ -116,7 +116,7 @@ const ListTransaction: FC<IProps> = function (props) {
                 <div className={classNames('font-bold', handleMoneyColor(item.type, item.money))}>
                   {item.money > 0 ? '+' + formatCurrency(item.money) : formatCurrency(item.money)}
                 </div>
-                <div className="text-xs">{new Date(item.createdAt).toLocaleDateString()}</div>
+                <div className="text-xs">{new Date(item.actionAt).toLocaleDateString()}</div>
               </div>
             </div>
           </div>
