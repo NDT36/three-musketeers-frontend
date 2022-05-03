@@ -74,7 +74,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
         actionAt: Date.now(),
         groupId: null,
         money: -values.balance,
-        sourceId: isFromOtherSource ? String(values.source?._id) : null,
+        sourceId: isFromOtherSource ? null : String(values.source?._id),
         targetSourceId: null,
         type: TransactionType.EXPENSE,
         users: [],
