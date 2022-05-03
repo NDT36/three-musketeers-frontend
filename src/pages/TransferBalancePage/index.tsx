@@ -32,7 +32,6 @@ export interface ITransferMoney {
   description?: string;
   balance: number;
   targetSource?: IAssetSources | null;
-  actionAt?: number;
 }
 
 const TransferMoneyPage: FC<IProps> = (props) => {
@@ -52,7 +51,6 @@ const TransferMoneyPage: FC<IProps> = (props) => {
     balance: Yup.number().min(0, 'Balance must be greater than 0').required('Balance is required'),
     description: Yup.string().max(255),
     targetSource: Yup.mixed<IAssetSources>().required('Mission target source is required!'),
-    actionAt: Yup.number(),
   });
 
   const fetchDetailsSource = useCallback(
@@ -105,7 +103,6 @@ const TransferMoneyPage: FC<IProps> = (props) => {
       description: '',
       balance: 0,
       targetSource: null,
-      actionAt: Date.now(),
     },
     validationSchema,
     onSubmit,

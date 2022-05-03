@@ -35,7 +35,6 @@ export interface ICreateTransaction {
   balance: number;
   source?: IAssetSources | null;
   category?: ICategory | null;
-  actionAt?: number;
 }
 
 const CreateTransactionPage: FC<IProps> = (props) => {
@@ -99,7 +98,6 @@ const CreateTransactionPage: FC<IProps> = (props) => {
       balance: 0,
       source: null,
       category: null,
-      actionAt: Date.now(),
     },
     validationSchema,
     onSubmit,

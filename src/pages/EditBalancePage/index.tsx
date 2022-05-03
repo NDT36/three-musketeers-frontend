@@ -17,6 +17,7 @@ import { createTransaction } from 'api/transaction';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { RoutePath } from 'types/enum';
+import moment from 'moment';
 
 interface IProps {}
 export interface IUpdateSourceBalance {
@@ -46,7 +47,7 @@ const EditBalancePage: FC<IProps> = (props) => {
       createTransaction({
         categoryId: null,
         description: values.description || '',
-        actionAt: Date.now(),
+        actionAt: new Date(moment().format('YYYY-MM-DD')).getTime(),
         groupId: null,
         money: change,
         sourceId: String(source?._id),
