@@ -80,7 +80,7 @@ const TransferMoneyPage: FC<IProps> = (props) => {
       createTransaction({
         categoryId: null,
         description: values.description || '',
-        actionAt: Date.now(),
+        actionAt: new Date(actionAt).getTime(),
         groupId: null,
         money: values.balance,
         sourceId: String(source?._id),

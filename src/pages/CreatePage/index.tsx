@@ -71,7 +71,7 @@ const CreateTransactionPage: FC<IProps> = (props) => {
       createTransaction({
         categoryId: String(values.category?._id),
         description: values.description || 'Transaction ' + String(values.category?.name),
-        actionAt: Date.now(),
+        actionAt: new Date(actionAt).getTime(),
         groupId: null,
         money: -values.balance,
         sourceId: isFromOtherSource ? null : String(values.source?._id),
