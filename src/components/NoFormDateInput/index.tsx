@@ -18,7 +18,7 @@ const NoFormDateInput: FC<IProps> = function (props) {
   const [month, setMonth] = useState(defaultValue.get('month'));
   const [date, setDate] = useState(defaultValue.get('date'));
 
-  const getDateString = () => `${year}-${month + 1}-${date}`;
+  const getDateString = () => `${year}/${month + 1}/${date}`;
 
   const closeModalEdit = () => {
     if (props.onEdit) {
