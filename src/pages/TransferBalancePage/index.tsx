@@ -213,12 +213,6 @@ const TransferMoneyPage: FC<IProps> = (props) => {
             </div>
           </NoFormInput>
 
-          <NoFormInput isDisableEdit={true} title="Date" icon={iconScheduleCalendar}>
-            <div className="text-2xl text-white font-bold">
-              <div>{actionAt}</div>
-            </div>
-          </NoFormInput>
-
           <NoFormDateInput onEdit={(actionAt: string) => setActionAt(actionAt)} title="Date">
             <div className="text-2xl text-white font-bold">
               <div>{actionAt}</div>
