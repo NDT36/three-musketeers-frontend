@@ -63,7 +63,6 @@ export const options: ChartWrapperOptions['options'] = {
     // 2: { color: '#04B489' },
   },
   legend: { position: 'none' },
-  curveType: 'function',
 };
 
 function TransactionPage() {
@@ -82,6 +81,8 @@ function TransactionPage() {
     endDate: moment().endOf('month').format('YYYY-MM-DD'),
     currentMonth: moment().format('YYYY-MM'),
   });
+
+  const { isShowMoney } = useSelector((state: AppState) => state.setting);
   const [ignoreDateFilter, setIgnoreDateFilter] = useState(false);
 
   const [statistics, setStatistics] = useState({ totalSpent: 0, totalEarned: 0 });
@@ -199,7 +200,8 @@ function TransactionPage() {
       <SubPageWrapper routeGoBack={RoutePath.HOME} title="Transactions">
         {/* Overview */}
         <div className="rounded-3xl p-5 mt-5 bg-white">
-          <div className="h-[350px] text-gray-600">
+          <div className="h-[350px] text-gray-600 relative">
+            {!isShowMoney && <div className="bg-white absolute top-0 left-0 h-full w-5 z-50"></div>}
             {chartLoading ? (
               <Loading loading={true} />
             ) : chartData && chartData.length > 1 ? (

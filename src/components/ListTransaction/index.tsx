@@ -17,9 +17,13 @@ interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
   isOffPaging?: boolean;
 }
 const ListTransaction: FC<IProps> = function (props) {
-  const { categories, sources } = useSelector((state: AppState) => state.resources);
   const [isShowDetail, setIsShowDetail] = useState(false);
   const [details, setDetails] = useState<IItemListTransaction>();
+
+  const {
+    resources: { sources, categories },
+    setting: { isShowMoney },
+  } = useSelector((state: AppState) => state);
 
   const onOpenModalDetails = (item: IItemListTransaction) => {
     setDetails(item);
@@ -89,13 +93,17 @@ const ListTransaction: FC<IProps> = function (props) {
     </div>
   );
 
+  const handleDisplayMoney = (details: IItemListTransaction) => {
+    if (!isShowMoney) return '******';
+    return details.money > 0 ? '+' + formatCurrency(details.money) : formatCurrency(details.money);
+  };
   return (
     <div className={classNames('w-full min-h-[296px] relative', props.children ? 'pb-5' : '')}>
       <Popup onClose={onCloseModalDetails} isVisible={isShowDetail}>
         <div className="w-full h-full px-5 py-3">
-          <div className="min-h-10 relative flex items-center justify-center text-lg">
-            <div>{details?.description}</div>
-            <div className="absolute right-0 top-0 cursor-pointer">
+          <div className="min-h-10 relative flex items-center justify-center text-lg py-2">
+            <div className="font-bold">{details?.description}</div>
+            <div className="absolute right-[-10px] top-0 cursor-pointer">
               <svg
                 width="26"
                 height="26"
@@ -124,9 +132,7 @@ const ListTransaction: FC<IProps> = function (props) {
               <div
                 className={classNames('font-bold', handleMoneyColor(details.type, details.money))}
               >
-                {details.money > 0
-                  ? '+' + formatCurrency(details.money)
-                  : formatCurrency(details.money)}
+                {handleDisplayMoney(details)}
               </div>
             )}
           </div>
@@ -186,7 +192,7 @@ const ListTransaction: FC<IProps> = function (props) {
           <div className="py-1" key={item._id}>
             <div
               onClick={() => onOpenModalDetails(item)}
-              className="h-[60px] shadow rounded-md p-2 flex justify-between items-center"
+              className="h-[60px] shadow rounded-md p-2 flex justify-between items-center cursor-pointer"
             >
               <div className="w-[50px] h-[50px]">
                 <div className="rounded-3xl w-[50px] h-[50px] bg-white flex items-center justify-center">
@@ -215,7 +221,7 @@ const ListTransaction: FC<IProps> = function (props) {
               </div>
               <div className="text-right">
                 <div className={classNames('font-bold', handleMoneyColor(item.type, item.money))}>
-                  {item.money > 0 ? '+' + formatCurrency(item.money) : formatCurrency(item.money)}
+                  {handleDisplayMoney(item)}
                 </div>
                 <div className="text-xs">{new Date(item.actionAt).toLocaleDateString()}</div>
               </div>

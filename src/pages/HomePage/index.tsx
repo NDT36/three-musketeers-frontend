@@ -6,10 +6,7 @@ import { AppState } from 'state';
 import { formatCurrency, formatLongString } from 'utils';
 import Chart, { ChartWrapperOptions } from 'react-google-charts';
 import iconShow from 'assets/icons-v2/icon-show.svg';
-import iconSources from 'assets/icons-v2/icon-source.svg';
-import iconLend from 'assets/icons-v2/icon-lend.svg';
-import iconTransaction from 'assets/icons-v2/icon-transaction.svg';
-import iconSaving from 'assets/icons-v2/icon-saving.svg';
+import iconHide from 'assets/icons-v2/icon-hide.svg';
 import { RoutePath } from 'types/enum';
 import ListLoading from 'components/ListLoading';
 import { useAlert } from 'react-alert';
@@ -17,6 +14,11 @@ import { fetchListTransactions } from 'api/transaction';
 import { useTranslation } from 'react-i18next';
 import Loading from 'components/ListLoading';
 import ListTransaction from 'components/ListTransaction';
+import IconSource from 'assets/icons-v2/iconSource';
+import IconLend from 'assets/icons-v2/iconLend';
+import IconTransaction from 'assets/icons-v2/iconTransaction';
+import IconSaving from 'assets/icons-v2/iconSaving';
+import { useUpdateSetting } from 'state/setting/hooks';
 
 export interface IItemListTransaction {
   _id: string;
@@ -63,11 +65,16 @@ function HomePage() {
   const reactAlert = useAlert();
   const { t } = useTranslation();
   const profile = useSelector((state: AppState) => state.user.profile);
-  const { sources } = useSelector((state: AppState) => state.resources);
-  const [params, setParams] = useState<{
+  const {
+    resources: { sources },
+    setting: { isShowMoney },
+  } = useSelector((state: AppState) => state);
+  const [params] = useState<{
     pageIndex: number;
     pageSize: number;
   }>({ pageIndex: 1, pageSize: 4 });
+
+  const updateSetting = useUpdateSetting();
 
   const [transactionLoading, setTransactionLoading] = useState(false);
 
@@ -80,7 +87,11 @@ function HomePage() {
     return result;
   };
 
+  const showMoney = () => updateSetting(true);
+  const hideMoney = () => updateSetting(false);
+
   const handleCurrency = () => {
+    if (!isShowMoney) return '*** ***';
     return sources ? formatCurrency(totalBalance) || 0 : <ListLoading loading={true} />;
   };
 
@@ -129,7 +140,11 @@ function HomePage() {
                 <div className="h-[25px] relative">
                   <div className="text-center text-lg text-[#f6f6f6]">Available balance</div>
                   <div className="absolute right-0 top-0 h-[25px] w-[25px] flex items-center justify-center">
-                    <img src={iconShow} alt="eye" />
+                    {isShowMoney ? (
+                      <img onClick={hideMoney} src={iconShow} alt="show" />
+                    ) : (
+                      <img onClick={showMoney} src={iconHide} alt="hide" />
+                    )}
                   </div>
                 </div>
                 <div className="text-5xl text-center h-[5.5rem] flex justify-center items-center font-[Arya]">
@@ -144,7 +159,7 @@ function HomePage() {
                     <div className="w-full h-full">
                       <div className="w-full flex justify-center">
                         <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
-                          <img src={iconSources} alt="icon-source" />
+                          <IconSource />
                         </div>
                       </div>
                       <div className="text-center h-[30px] flex items-center justify-center">
@@ -156,7 +171,7 @@ function HomePage() {
                     <div className="w-full h-full">
                       <div className="w-full flex justify-center">
                         <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
-                          <img src={iconLend} alt="icon-source" />
+                          <IconLend />
                         </div>
                       </div>
                       <div className="text-center h-[30px] flex items-center justify-center">
@@ -168,7 +183,7 @@ function HomePage() {
                     <div className="w-full h-full">
                       <div className="w-full flex justify-center">
                         <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
-                          <img src={iconTransaction} alt="icon-source" />
+                          <IconTransaction />
                         </div>
                       </div>
                       <div className="text-center h-[30px] flex items-center justify-center">
@@ -180,7 +195,7 @@ function HomePage() {
                     <div className="w-full h-full">
                       <div className="w-full flex justify-center">
                         <div className="w-[50px] h-[50px] border border-white bg-[#E9FFAC] rounded-[17px] flex justify-center items-center">
-                          <img src={iconSaving} alt="icon-source" />
+                          <IconSaving />
                         </div>
                       </div>
                       <div className="text-center h-[30px] flex items-center justify-center">

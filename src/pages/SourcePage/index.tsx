@@ -29,7 +29,10 @@ const SourcePage: FC<IProps> = (props) => {
   const reactAlert = useAlert();
   const setLoading = useLoading();
   const { t } = useTranslation();
-  const { sources } = useSelector((state: AppState) => state.resources);
+  const {
+    resources: { sources },
+    setting: { isShowMoney },
+  } = useSelector((state: AppState) => state);
   const fetchSource = useFetchSourcesCallback();
 
   const deleteSource = (id: string) => {
@@ -53,6 +56,10 @@ const SourcePage: FC<IProps> = (props) => {
       });
   };
 
+  const handleDisplayMoney = (money: number) => {
+    if (!isShowMoney) return '*** ***';
+    return money > 0 ? '+' + formatCurrency(money) : formatCurrency(money);
+  };
   const totalBalance = sources ? sources.reduce((a, b) => a + Number(b.balance), 0) : 0;
 
   return (
@@ -64,7 +71,7 @@ const SourcePage: FC<IProps> = (props) => {
             <div className="w-full">
               <div className="text-lg text-[#F6F6F6]">Available balance</div>
               <div className="text-5xl h-20 font-bold font-[Arya] flex items-center justify-center">
-                {sources ? formatCurrency(totalBalance) : <ListLoading loading={true} />}
+                {sources ? handleDisplayMoney(totalBalance) : <ListLoading loading={true} />}
               </div>
             </div>
           </div>

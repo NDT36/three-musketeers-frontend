@@ -9,6 +9,8 @@ import { IAssetSources } from 'pages/SourcePage';
 import { RoutePath } from 'types/enum';
 import Popup from 'components/Popup';
 import { formatCurrency } from 'utils';
+import { useSelector } from 'react-redux';
+import { AppState } from 'state';
 
 type Props = {
   source: IAssetSources;
@@ -19,6 +21,7 @@ type Props = {
 const SourceCard: FC<Props> = ({ source, onDelete, ...props }) => {
   const [askVisible, setAskVisible] = useState(false);
   const navigate = useNavigate();
+  const { isShowMoney } = useSelector((state: AppState) => state.setting);
 
   const onCloseAskVisible = () => {
     setAskVisible(false);
@@ -39,6 +42,12 @@ const SourceCard: FC<Props> = ({ source, onDelete, ...props }) => {
   const onClickTransferMoney = () => {
     navigate(RoutePath.TRANSFER_MONEY.replace(':id', source._id));
   };
+
+  const handleShowMoney = () => {
+    if (!isShowMoney) return '*** ***';
+    return formatCurrency(Number(source.balance));
+  };
+
   return (
     <div className="flex justify-center items-center w-full h-[250px]">
       <LinearWrapper className="h-[230px] w-full p-[1px] pt-0.5 rounded-3xl">
@@ -74,7 +83,7 @@ const SourceCard: FC<Props> = ({ source, onDelete, ...props }) => {
                 <div className="text-left text-lg font-bold text-[#f6f6f6]">{source.name}</div>
               </div>
               <div className="text-5xl text-center h-[5.5rem] flex justify-center items-center font-[Arya] font-bold">
-                {formatCurrency(Number(source.balance))}
+                {handleShowMoney()}
               </div>
             </div>
             <div className="h-0.5 bg-slate-500 hr-gradient"></div>
