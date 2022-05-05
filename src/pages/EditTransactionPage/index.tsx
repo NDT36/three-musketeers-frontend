@@ -88,9 +88,9 @@ const UpdateTransactionPage: FC<IProps> = (props) => {
 
     if (!error) {
       fetchListSources().finally(() => {
-        reactAlert.success('Create transaction success!');
+        reactAlert.success('Update transaction success!');
         formik.resetForm();
-        // navigate(RoutePath.TRANSACTION);
+        navigate(-1);
       });
     }
 
