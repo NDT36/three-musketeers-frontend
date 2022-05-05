@@ -4,7 +4,7 @@ import { IItemListTransaction } from 'pages/HomePage';
 import { formatCurrency, formatLongString, getCategoryById } from 'utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-import { TransactionType } from 'types/enum';
+import { RoutePath, TransactionType } from 'types/enum';
 import Loading from 'components/ListLoading';
 import Popup from 'components/Popup';
 import moment from 'moment';
@@ -103,7 +103,10 @@ const ListTransaction: FC<IProps> = function (props) {
         <div className="w-full h-full px-5 py-3">
           <div className="min-h-10 relative flex items-center justify-center text-lg py-2">
             <div className="font-bold">{details?.description}</div>
-            <div className="absolute right-[-10px] top-0 cursor-pointer">
+            <a
+              href={'#' + RoutePath.UPDATE_TRANSACTION.replace(':id', String(details?._id))}
+              className="absolute right-[-10px] top-[-10px] cursor-pointer"
+            >
               <svg
                 width="26"
                 height="26"
@@ -125,7 +128,7 @@ const ListTransaction: FC<IProps> = function (props) {
                   </clipPath>
                 </defs>
               </svg>
-            </div>
+            </a>
           </div>
           <div className="h-10 relative flex items-center justify-center text-2xl">
             {details && (

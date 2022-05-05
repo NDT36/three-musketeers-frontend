@@ -15,6 +15,15 @@ export interface ITransaction {
   targetSourceId: string | null;
 }
 
+export interface IUpdateTransaction {
+  categoryId: string | null;
+  description?: string;
+  actionAt: number;
+  money: number;
+  users: string[];
+  sourceId: string | null;
+}
+
 export const createTransaction = (data: ITransaction) => () => {
   return AxiosInstance.post<IResult<unknown>, AxiosResponse<IResult<unknown>>>(
     `/transaction`,
@@ -50,4 +59,18 @@ export const fetchTransactionStatistics = (params: IFetchTransactionStatistics) 
   >(`/transaction/statistics`, {
     params,
   });
+};
+
+export const fetchDetailTransaction = (id: string) => () => {
+  return AxiosInstance.get<
+    IResult<IItemListTransaction>,
+    AxiosResponse<IResult<IItemListTransaction>>
+  >(`/transaction/${id}`);
+};
+
+export const updateTransactionItem = (id: string, params: IUpdateTransaction) => () => {
+  return AxiosInstance.put<
+    IResult<IItemListTransaction>,
+    AxiosResponse<IResult<IItemListTransaction>>
+  >(`/transaction/${id}`, params);
 };

@@ -58,7 +58,7 @@ const SourcePage: FC<IProps> = (props) => {
 
   const handleDisplayMoney = (money: number) => {
     if (!isShowMoney) return '*** ***';
-    return money > 0 ? '+' + formatCurrency(money) : formatCurrency(money);
+    return money > 0 ? formatCurrency(money) : formatCurrency(money);
   };
   const totalBalance = sources ? sources.reduce((a, b) => a + Number(b.balance), 0) : 0;
 

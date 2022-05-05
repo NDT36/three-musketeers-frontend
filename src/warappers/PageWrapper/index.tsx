@@ -20,6 +20,7 @@ import { CategoryUpdater, SourceUpdater } from 'state/resources/updater';
 import TransactionPage from 'pages/TransactionPage';
 import LendPage from 'pages/LendPage';
 import SavingPage from 'pages/SavingPage';
+import UpdateTransactionPage from 'pages/EditTransactionPage';
 
 const assignMenu = (component: React.ReactNode) => (
   <>
@@ -57,6 +58,7 @@ const PageWrapper = () => {
         <Route path={RoutePath.TRANSACTION} element={<TransactionPage />} />
         <Route path={RoutePath.LEND} element={<LendPage />} />
         <Route path={RoutePath.SAVING} element={<SavingPage />} />
+        <Route path={RoutePath.UPDATE_TRANSACTION} element={<UpdateTransactionPage />} />
       </Routes>
     </div>
   );
