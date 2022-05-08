@@ -30,9 +30,12 @@ export const RoutePath = {
   EDIT_SOURCE_BALANCE: '/source/:id/edit-balance',
   TRANSFER_MONEY: '/source/:id/transfer-money',
   TRANSACTION: '/transaction',
-  LEND: '/lend',
+  CREATE_LEND_DEBT: '/transaction/lend-debt/:type',
+  LEND: '/lend-debt',
   SAVING: '/saving',
   UPDATE_TRANSACTION: '/transaction/:id/edit',
+  LEND_DEBT_DETAILS: '/lend-debt/:id',
+  COLLECT_LEND_DEBT: '/lend-debt/:id/:type',
 };
 
 export enum LoginSocialType {

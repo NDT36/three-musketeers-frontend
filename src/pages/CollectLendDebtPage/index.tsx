@@ -9,12 +9,9 @@ import BalanceInput from 'components/BalanceInput/BalanceInput';
 import { callApi } from 'api/axios';
 import { useTranslation } from 'react-i18next';
 import iconSource2 from 'assets/icons-v2/icon-source-2.svg';
-import iconScheduleCalendar from 'assets/icons-v2/icon-schedule-calendar.svg';
 import { IAssetSources } from 'pages/SourcePage';
 import { formatCurrency } from 'utils';
-import { createTransaction } from 'api/transaction';
 import NoFormInput from 'components/NotFormInput';
-import FormTextArea from 'components/FormTextArea';
 import moment from 'moment';
 import Modal from 'components/Modal';
 import { useSelector } from 'react-redux';
@@ -22,70 +19,63 @@ import { AppState } from 'state';
 import SourceCard from 'components/SourceCard';
 import LinearWrapper from 'components/LinearWrapper';
 import Loading from 'components/ListLoading';
-import { ICategory } from 'state/resources/actions';
 import { RoutePath, TransactionType } from 'types/enum';
 import useFetchSourcesCallback from 'hooks/useFetchSourcesCallback';
-import useSetRecentlyCategoryCallback from 'hooks/useSetRecentlyCategoryCallback';
 import useSetRecentlySourceCallback from 'hooks/useSetRecentlySourceCallback';
 import NoFormDateInput from 'components/NoFormDateInput';
+import InputWithLabel from 'components/InputWithLabel';
+import { useNavigate, useParams } from 'react-router-dom';
+import { createLendOrDebt, updateLendDebt } from 'api/lend';
 
 interface IProps {}
 export interface ICreateTransaction {
   description?: string;
   balance: number;
   source?: IAssetSources | null;
-  category?: ICategory | null;
 }
 
-const CreateTransactionPage: FC<IProps> = (props) => {
+const CreateCollectLendDebtPage: FC<IProps> = (props) => {
   const reactAlert = useAlert();
   const setLoading = useLoading();
   const { t } = useTranslation();
+  const { type, id } = useParams();
+  const navigate = useNavigate();
   const [actionAt, setActionAt] = useState<string>(moment().format('YYYY-MM-DD'));
   const [targets, setTargets] = useState<IAssetSources[]>([]);
-  const [chooseCategories, setChooseCategories] = useState<ICategory[]>([]);
-  const { sources, recentlyCategoryId, recentlySourceId, categories } = useSelector(
-    (state: AppState) => state.resources
-  );
+  const { sources, recentlySourceId } = useSelector((state: AppState) => state.resources);
   const [isOpenModalChooseSource, setIsOpenModalChooseSource] = useState<boolean>(false);
-  const [isOpenModalChooseCategory, setIsOpenModalChooseCategory] = useState<boolean>(false);
   const [isFromOtherSource, setIsFromOtherSource] = useState<boolean>(false);
 
   const fetchListSources = useFetchSourcesCallback();
-  const setRecentlyCategory = useSetRecentlyCategoryCallback();
   const setRecentlySource = useSetRecentlySourceCallback();
 
   const validationSchema: Yup.SchemaOf<ICreateTransaction> = Yup.object().shape({
     balance: Yup.number().min(0, 'Balance must be greater than 0').required('Balance is required'),
     description: Yup.string().max(255),
     source: Yup.mixed<IAssetSources>().required('Source target source is required!'),
-    category: Yup.mixed<ICategory>().required('Category target source is required!'),
     actionAt: Yup.number(),
   });
 
   const onSubmit = async (values: ICreateTransaction) => {
     setLoading(true);
 
+    const money = type === 'lend' ? values.balance : -values.balance;
+
     const { error } = await callApi(
-      createTransaction({
-        categoryId: String(values.category?._id),
-        description: values.description || 'Transaction ' + String(values.category?.name),
+      updateLendDebt(String(id), {
+        description: values.description || '',
         actionAt: new Date(actionAt).getTime(),
-        groupId: null,
-        money: -values.balance,
+        money: money,
         sourceId: isFromOtherSource ? null : String(values.source?._id),
-        targetSourceId: null,
-        type: TransactionType.EXPENSE,
-        users: [],
       })
     );
     if (error) reactAlert.error(t(`error.${error}`));
 
     if (!error) {
       fetchListSources().finally(() => {
-        reactAlert.success('Create transaction success!');
+        reactAlert.success('Update success!');
         formik.resetForm();
-        // navigate(-1);
+        navigate(RoutePath.LEND);
       });
     }
 
@@ -97,7 +87,6 @@ const CreateTransactionPage: FC<IProps> = (props) => {
       description: '',
       balance: 0,
       source: null,
-      category: null,
     },
     validationSchema,
     onSubmit,
@@ -122,40 +111,11 @@ const CreateTransactionPage: FC<IProps> = (props) => {
     }
   }, [sources, formik.values.source?._id, recentlySourceId]);
 
-  useEffect(() => {
-    if (categories && !formik.values.category) {
-      const targets = categories?.filter((item) => item);
-      setChooseCategories(targets);
-
-      const recentlyCategory = categories?.find((item) => item._id === recentlyCategoryId);
-
-      const firstItem = recentlyCategory ? recentlyCategory : targets.find((item) => item);
-
-      if (firstItem) {
-        formik.setFieldValue('category', firstItem);
-      }
-    }
-  }, [categories, formik.values.category, recentlyCategoryId]);
-
-  // useEffect(() => {
-  //   if (source) {
-  //     setChange(formik.values.balance);
-  //   }
-  // }, [change, source?.balance, formik.values.balance]);
-
   const onChooseSource = (source: IAssetSources) => {
     if (source._id !== formik.values.source?._id) {
       formik.setFieldValue('source', source);
       setRecentlySource(source?._id || '');
       setTimeout(() => onCloseModalChooseSource(), 100);
-    }
-  };
-
-  const onChooseCategory = (category: ICategory) => {
-    if (category._id !== formik.values.category?._id) {
-      formik.setFieldValue('category', category);
-      setRecentlyCategory(category?._id || '');
-      setTimeout(() => onCloseModalChooseCategory(), 100);
     }
   };
 
@@ -165,73 +125,13 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   const onOpenModalChooseSource = () => {
     if (!isOpenModalChooseSource) setIsOpenModalChooseSource(true);
   };
-  const onCloseModalChooseCategory = () => {
-    if (isOpenModalChooseCategory) setIsOpenModalChooseCategory(false);
-  };
-  const onOpenModalChooseCategory = () => {
-    if (!isOpenModalChooseCategory) setIsOpenModalChooseCategory(true);
-  };
+
   const onChoseOtherSource = (value: boolean) => {
     setIsFromOtherSource(value);
   };
   return (
     <div className="h-full flex flex-col">
       {/* Select source */}
-      <Modal
-        isFullHeight={true}
-        isVisible={isOpenModalChooseCategory}
-        onClose={onCloseModalChooseCategory}
-      >
-        <div className="w-full h-full bg-primary px-2">
-          <SubPageWrapper onGoBack={onCloseModalChooseCategory} routeGoBack={-1} title="">
-            <div className="font-bold text-4xl px-2">Choose Category</div>
-            <br />
-            {chooseCategories && chooseCategories.length
-              ? chooseCategories.map((item) => (
-                  <div key={item._id} onClick={() => onChooseCategory(item)}>
-                    {item._id === formik.values.category?._id ? (
-                      <LinearWrapper customBg="bg-white" className="rounded-3xl p-1">
-                        <div className="m-1 h-16 flex justify-center items-center text-3xl font-bold bg-secondary rounded-3xl  border border-white">
-                          {/* Icon */}
-                          <div className="h-[65px] w-[65px] p-[7.5px]">
-                            <div
-                              className={
-                                'w-[50px] h-[50px] border border-white bg-white flex justify-center items-center rounded-full'
-                              }
-                            >
-                              {item.avatar && <img src={item.avatar} alt="Icon" />}
-                            </div>
-                          </div>
-                          <div className="w-full p-[7.5px]">
-                            <div className="text-xl text-white font-bold">{item.name}</div>
-                          </div>
-                        </div>
-                      </LinearWrapper>
-                    ) : (
-                      <div className="p-1">
-                        <div className="m-1 h-16 flex justify-center items-center text-3xl font-bold bg-secondary rounded-3xl  border border-white">
-                          {/* Icon */}
-                          <div className="h-[65px] w-[65px] p-[7.5px]">
-                            <div
-                              className={
-                                'w-[50px] h-[50px] border border-white bg-white flex justify-center items-center rounded-full'
-                              }
-                            >
-                              {item.avatar && <img src={item.avatar} alt="Icon" />}
-                            </div>
-                          </div>
-                          <div className="w-full p-[7.5px]">
-                            <div className="text-xl text-white font-bold">{item.name}</div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))
-              : ''}
-          </SubPageWrapper>
-        </div>
-      </Modal>
       <Modal
         isFullHeight={true}
         isVisible={isOpenModalChooseSource}
@@ -259,8 +159,8 @@ const CreateTransactionPage: FC<IProps> = (props) => {
           </SubPageWrapper>
         </div>
       </Modal>
-      <SubPageWrapper routeGoBack={-1} title="" isDisableBtnBack={true}>
-        <div className="font-bold text-center text-4xl px-2">Create Transaction</div>
+      <SubPageWrapper routeGoBack={-1} title="" isDisableBtnBack={false}>
+        <div className="font-bold text-center text-4xl px-2 capitalize">{type}</div>
         <br />
 
         {/* Body */}
@@ -271,24 +171,17 @@ const CreateTransactionPage: FC<IProps> = (props) => {
         >
           <BalanceInput balance={formik.values.balance} onBalanceUpdate={handleUpdateBalance} />
           <br />
-          <NoFormInput
-            onEdit={onOpenModalChooseCategory}
-            title="Category"
-            icon={formik.values.category?.avatar}
-            iconRounded={true}
-          >
-            <div className="text-xl text-white font-bold">
-              {formik.values.category ? (
-                <>
-                  <div>{formik.values.category.name}</div>
-                </>
-              ) : categories ? (
-                <div className="text-center">Category empty</div>
-              ) : (
-                <Loading loading={true} />
-              )}
-            </div>
-          </NoFormInput>
+          <InputWithLabel
+            name="description"
+            id="description"
+            placeholder="Description"
+            onChange={formik.handleChange}
+            value={formik.values.description}
+            onBlur={formik.handleBlur}
+            touched={formik.touched.description}
+            error={formik.errors.description}
+            label="Description"
+          />
 
           <NoFormInput
             onEdit={onOpenModalChooseSource}
@@ -327,25 +220,15 @@ const CreateTransactionPage: FC<IProps> = (props) => {
             </label>
           </div>
 
-          <NoFormDateInput onEdit={(actionAt: string) => setActionAt(actionAt)} title="Date">
+          <NoFormDateInput
+            onEdit={(actionAt: string) => setActionAt(actionAt)}
+            title="Borrowing date"
+          >
             <div className="text-2xl text-white font-bold">
               <div>{actionAt}</div>
             </div>
           </NoFormDateInput>
 
-          <br />
-
-          <FormTextArea
-            name="description"
-            id="description"
-            placeholder="Description"
-            onChange={formik.handleChange}
-            value={formik.values.description}
-            onBlur={formik.handleBlur}
-            touched={formik.touched.description}
-            error={formik.errors.description}
-            label="Description"
-          />
           <div className="h-[150px] items-center flex flex-row justify-center">
             <div className="w-full text-white ">
               <CommonButton
@@ -362,4 +245,4 @@ const CreateTransactionPage: FC<IProps> = (props) => {
   );
 };
 
-export default CreateTransactionPage;
+export default CreateCollectLendDebtPage;

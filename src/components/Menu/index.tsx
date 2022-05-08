@@ -38,15 +38,15 @@ const Menu: FC<IProps> = (props) => {
 
   useEffect(() => {
     const menuKey = reverseObjectEnum(navigatePath)[location.pathname];
-    if (menuKey)
-      setActive({
-        [`${MenuKey.HOME}`]: false,
-        [`${MenuKey.GROUP}`]: false,
-        [`${MenuKey.CREATE}`]: false,
-        [`${MenuKey.NOTIFY}`]: false,
-        [`${MenuKey.MORE}`]: false,
-        [menuKey]: true,
-      });
+
+    setActive({
+      [`${MenuKey.HOME}`]: false,
+      [`${MenuKey.GROUP}`]: false,
+      [`${MenuKey.CREATE}`]: false,
+      [`${MenuKey.NOTIFY}`]: false,
+      [`${MenuKey.MORE}`]: false,
+      [menuKey]: true,
+    });
   }, [navigatePath, location.pathname]);
 
   return (

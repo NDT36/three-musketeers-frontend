@@ -33,7 +33,7 @@ import useSetRecentlyCategoryCallback from 'hooks/useSetRecentlyCategoryCallback
 import useSetRecentlySourceCallback from 'hooks/useSetRecentlySourceCallback';
 import NoFormDateInput from 'components/NoFormDateInput';
 import { useNavigate, useParams } from 'react-router-dom';
-import { RoutePath } from 'types/enum';
+import { RoutePath, TransactionType } from 'types/enum';
 
 interface IProps {}
 export interface ICreateTransaction {
@@ -41,6 +41,7 @@ export interface ICreateTransaction {
   balance: number;
   source?: IAssetSources | null;
   category?: ICategory | null;
+  type?: number | null;
 }
 
 const UpdateTransactionPage: FC<IProps> = (props) => {
@@ -69,17 +70,30 @@ const UpdateTransactionPage: FC<IProps> = (props) => {
     source: Yup.mixed<IAssetSources>().required('Source target source is required!'),
     category: Yup.mixed<ICategory>().required('Category target source is required!'),
     actionAt: Yup.number(),
+    type: Yup.number(),
   });
 
   const onSubmit = async (values: ICreateTransaction) => {
     setLoading(true);
+    const handleMoney = (type: TransactionType, money: number) => {
+      switch (type) {
+        case TransactionType.EXPENSE:
+          return -money;
+
+        case TransactionType.LEND:
+          return -money;
+
+        default:
+          return money;
+      }
+    };
 
     const { error } = await callApi(
       updateTransactionItem(String(id), {
         categoryId: String(values.category?._id),
         description: values.description || 'Transaction ' + String(values.category?.name),
         actionAt: new Date(actionAt).getTime(),
-        money: -values.balance,
+        money: handleMoney(Number(values.type), values.balance),
         sourceId: isFromOtherSource ? null : String(values.source?._id),
         users: [],
       })
@@ -103,6 +117,7 @@ const UpdateTransactionPage: FC<IProps> = (props) => {
       balance: 0,
       source: null,
       category: null,
+      type: null,
     },
     validationSchema,
     onSubmit,
@@ -154,6 +169,7 @@ const UpdateTransactionPage: FC<IProps> = (props) => {
       if (!error) {
         formik.setFieldValue('balance', Math.abs(Number(result?.data.money)));
         formik.setFieldValue('description', result?.data.description);
+        formik.setFieldValue('type', result?.data.type);
         const actionDate = moment(Number(result?.data.actionAt) || undefined).format('YYYY-MM-DD');
         setActionAt(actionDate);
 

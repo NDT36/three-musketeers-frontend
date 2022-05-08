@@ -115,12 +115,19 @@ export function handleChartData(
 
     if (cur > currentDate && !earn && !spent) return acc;
 
-    const amountEarn = earn ? earn.amount : acc?.[index - 1]?.[1] || 0;
-    const amountSpent = spent ? spent.amount : acc?.[index - 1]?.[2] || 0;
+    // const amountEarn = earn ? earn.amount : acc?.[index - 1]?.[1] || 0;
+    // const amountSpent = spent ? spent.amount : acc?.[index - 1]?.[2] || 0;
+
+    const amountEarn = earn ? earn.amount : 0;
+    const amountSpent = spent ? spent.amount : 0;
     acc.push([moment(cur).format('DD'), amountEarn, Math.abs(amountSpent)]);
     return acc;
   }, [] as any[]);
 
   if (!hasData) return [];
   return rs;
+}
+
+export function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

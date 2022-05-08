@@ -88,8 +88,8 @@ export async function callApi<T = any, D = any>(
   }
 }
 
-export async function handleError(error: any): Promise<any> {
-  if (error.response) return { error: error.response?.data?.message };
+export function handleError(error: any): any {
+  if (error.response) return { error: error.response?.data?.message || ErrorCode.Unexpected_Error };
   if (error.message === 'Network Error') return { error: ErrorCode.Network_Error };
 
   return { error: ErrorCode.Unexpected_Error };

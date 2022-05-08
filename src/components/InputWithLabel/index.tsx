@@ -18,16 +18,14 @@ const InputWithLabel: FC<IProps> = function ({ touched, error, ...props }) {
   }, [ref, touched, error]);
 
   return (
-    <div className="relative h-[80px] flex flex-col py-3">
-      <div className="px-0.5 absolute top-0 left-2.5 bg-white text-sm text-[silver]">
-        {props.label}
-      </div>
+    <div className="relative flex flex-col">
+      <div className="px-0.5">{props.label}</div>
       <input
         ref={ref}
         className="w-full h-full p-2 outline-none transition duration-300 rounded-md text-neutral-500 border border-[silver]"
         {...props}
       ></input>
-      <div className="h-5 w-full">
+      <div className=" w-full">
         <FormError touched={touched} error={error} />
       </div>
     </div>

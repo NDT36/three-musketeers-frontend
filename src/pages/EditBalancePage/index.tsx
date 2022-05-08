@@ -16,7 +16,7 @@ import { formatCurrency } from 'utils';
 import { createTransaction } from 'api/transaction';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-import { RoutePath } from 'types/enum';
+import { RoutePath, TransactionType } from 'types/enum';
 import moment from 'moment';
 
 interface IProps {}
@@ -26,7 +26,7 @@ export interface IUpdateSourceBalance {
 }
 
 const validationSchema: Yup.SchemaOf<IUpdateSourceBalance> = Yup.object().shape({
-  balance: Yup.number().min(0, 'Balance must be greater than 0').required('Balance is required'),
+  balance: Yup.number().required('Balance is required'),
   description: Yup.string().max(255),
 });
 
@@ -52,7 +52,7 @@ const EditBalancePage: FC<IProps> = (props) => {
         money: change,
         sourceId: String(source?._id),
         targetSourceId: null,
-        type: 6,
+        type: TransactionType.UPDATE_BALANCE,
         users: [],
       })
     );
@@ -126,7 +126,6 @@ const EditBalancePage: FC<IProps> = (props) => {
         </div>
         {/* Body */}
         <form
-          action=""
           className="h-full bg-primary w-full rounded-[14px] text-base p-3 text-[#DDDDDD]"
           onSubmit={formik.handleSubmit}
         >

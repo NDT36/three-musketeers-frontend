@@ -195,13 +195,17 @@ function TransactionPage() {
     fetchChartData(statisticsParams);
   }, [statisticsParams]);
 
+  const handleShowMoney = (money: string) => {
+    return isShowMoney ? money : '******';
+  };
+
   return (
     <div className="px-2.5">
       <SubPageWrapper routeGoBack={RoutePath.HOME} title="Transactions">
         {/* Overview */}
         <div className="rounded-3xl p-5 mt-5 bg-white">
           <div className="h-[350px] text-gray-600 relative">
-            {!isShowMoney && <div className="bg-white absolute top-0 left-0 h-full w-5 z-50"></div>}
+            {!isShowMoney && <div className="bg-white absolute top-0 left-0 h-full w-9 z-50"></div>}
             {chartLoading ? (
               <Loading loading={true} />
             ) : chartData && chartData.length > 1 ? (
@@ -229,7 +233,7 @@ function TransactionPage() {
                   {chartLoading ? (
                     <Loading loading={true} />
                   ) : (
-                    `+${formatCurrency(statistics.totalEarned)}`
+                    handleShowMoney(`+${formatCurrency(statistics.totalEarned)}`)
                   )}
                 </div>
               </div>
@@ -240,7 +244,7 @@ function TransactionPage() {
                   {chartLoading ? (
                     <Loading loading={true} />
                   ) : (
-                    `-${formatCurrency(statistics.totalSpent)}`
+                    handleShowMoney(`-${formatCurrency(statistics.totalSpent)}`)
                   )}
                 </div>
               </div>

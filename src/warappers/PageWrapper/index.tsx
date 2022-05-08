@@ -21,6 +21,9 @@ import TransactionPage from 'pages/TransactionPage';
 import LendPage from 'pages/LendPage';
 import SavingPage from 'pages/SavingPage';
 import UpdateTransactionPage from 'pages/EditTransactionPage';
+import LendDebtDetailsPage from 'pages/LendDebtDetailsPage';
+import CreateLendPage from 'pages/CreateLendPage';
+import CreateCollectLendDebtPage from 'pages/CollectLendDebtPage';
 
 const assignMenu = (component: React.ReactNode) => (
   <>
@@ -50,15 +53,24 @@ const PageWrapper = () => {
         <Route path={RoutePath.CREATE} element={assignMenu(<CreatePage />)} />
         <Route path={RoutePath.MORE} element={assignMenu(<MorePage />)} />
         <Route path={RoutePath.NOTIFICATION} element={assignMenu(<NotiPage />)} />
-        <Route path={RoutePath.SOURCE} element={<SourcePage />} />
-        <Route path={RoutePath.CREATE_SOURCE} element={<CreateSourcePage />} />
-        <Route path={RoutePath.EDIT_SOURCE} element={<EditSourcePage />} />
-        <Route path={RoutePath.EDIT_SOURCE_BALANCE} element={<EditBalancePage />} />
-        <Route path={RoutePath.TRANSFER_MONEY} element={<TransferMoneyPage />} />
-        <Route path={RoutePath.TRANSACTION} element={<TransactionPage />} />
-        <Route path={RoutePath.LEND} element={<LendPage />} />
-        <Route path={RoutePath.SAVING} element={<SavingPage />} />
-        <Route path={RoutePath.UPDATE_TRANSACTION} element={<UpdateTransactionPage />} />
+        <Route path={RoutePath.SOURCE} element={assignMenu(<SourcePage />)} />
+        <Route path={RoutePath.CREATE_SOURCE} element={assignMenu(<CreateSourcePage />)} />
+        <Route path={RoutePath.EDIT_SOURCE} element={assignMenu(<EditSourcePage />)} />
+        <Route path={RoutePath.EDIT_SOURCE_BALANCE} element={assignMenu(<EditBalancePage />)} />
+        <Route path={RoutePath.TRANSFER_MONEY} element={assignMenu(<TransferMoneyPage />)} />
+        <Route path={RoutePath.TRANSACTION} element={assignMenu(<TransactionPage />)} />
+        <Route path={RoutePath.LEND} element={assignMenu(<LendPage />)} />
+        <Route path={RoutePath.SAVING} element={assignMenu(<SavingPage />)} />
+        <Route
+          path={RoutePath.UPDATE_TRANSACTION}
+          element={assignMenu(<UpdateTransactionPage />)}
+        />
+        <Route path={RoutePath.LEND_DEBT_DETAILS} element={assignMenu(<LendDebtDetailsPage />)} />
+        <Route path={RoutePath.CREATE_LEND_DEBT} element={assignMenu(<CreateLendPage />)} />
+        <Route
+          path={RoutePath.COLLECT_LEND_DEBT}
+          element={assignMenu(<CreateCollectLendDebtPage />)}
+        />
       </Routes>
     </div>
   );
