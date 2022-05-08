@@ -75,7 +75,7 @@ const CreateCollectLendDebtPage: FC<IProps> = (props) => {
       fetchListSources().finally(() => {
         reactAlert.success('Update success!');
         formik.resetForm();
-        navigate(RoutePath.LEND);
+        navigate(RoutePath.LEND_DEBT_DETAILS.replace(':id', String(id)));
       });
     }
 
