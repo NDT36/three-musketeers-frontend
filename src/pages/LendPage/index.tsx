@@ -32,6 +32,7 @@ const LendPage: FC<IProps> = (props) => {
   const [debts, setDebts] = useState<IListLend[]>();
   const [lendLoading, setLendLoading] = useState(false);
   const navigate = useNavigate();
+  const [isShowCompleted, setIsShowCompleted] = useState(false);
   const TAB = {
     LEND: 1,
     DEBT: 2,
@@ -43,7 +44,9 @@ const LendPage: FC<IProps> = (props) => {
   useEffect(() => {
     (async () => {
       setLendLoading(true);
-      const { error, result } = await callApi(fetchListLend({}));
+      const { error, result } = await callApi(
+        fetchListLend({ isComplete: Number(isShowCompleted) || undefined })
+      );
 
       if (error) reactAlert.error(t(`error.${error}`));
 
@@ -55,7 +58,13 @@ const LendPage: FC<IProps> = (props) => {
       }
       setLendLoading(false);
     })();
-  }, []);
+  }, [isShowCompleted]);
+
+  const onShowCompleted = (value: boolean) => {
+    console.log(isShowCompleted);
+
+    setIsShowCompleted(value);
+  };
 
   const ActiveTab: FC<{ isActive: boolean; onChangeTab: () => void }> = (props) => {
     return props.isActive ? (
@@ -143,6 +152,7 @@ const LendPage: FC<IProps> = (props) => {
               name="checkbox-show-completed-lend"
               id="checkbox-show-completed-lend"
               className="mr-1"
+              onChange={(e) => onShowCompleted(e.target.checked)}
             />
             Show completed
           </label>

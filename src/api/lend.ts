@@ -6,6 +6,7 @@ import AxiosInstance, { IResult } from './axios';
 interface IFetchListLend {
   takeAfter?: number;
   pageSize?: number;
+  isComplete?: number;
 }
 
 export const fetchListLend = (params: IFetchListLend) => () => {

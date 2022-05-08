@@ -180,7 +180,7 @@ const LendDebtDetailsPage: FC<IProps> = (props) => {
             <div>
               {details?.history?.length ? (
                 details?.history.map((item) => (
-                  <div className="py-1 px-2">
+                  <div key={item._id} className="py-1 px-2">
                     <div className="h-[60px] shadow rounded-md p-2 flex justify-between items-center cursor-pointer">
                       <div className="w-[50px] h-[50px]">
                         <div className="rounded-3xl w-[50px] h-[50px] bg-white flex items-center justify-center">
